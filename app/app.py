@@ -14,10 +14,15 @@ class App (tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title('Grafy')
-        self.geometry('1080x720')
+        self.geometry('800x600')
+
+        self.screen_state = False
 
         self.add_menu_bar()
         self.add_tabs()
+
+        self.bind('<F11>', self.toggle_fullscreen)
+        self.bind('<Escape>', self.end_fullscreen)
 
     def add_tabs(self):
         self.tabs = ttk.Notebook(self)
@@ -53,6 +58,16 @@ class App (tk.Tk):
             elif extension == 'gal':    # adjacency list
                 self.graph = AdjacencyList(file.read())
 
+    def toggle_fullscreen(self, event=None):
+        self.screen_state = not self.screen_state  # Just toggling the boolean
+        if self.screen_state:
+            self.state('zoomed')
+        else:
+            self.state('normal')
+
+    def end_fullscreen(self, event=None):
+        self.screen_state = False
+        self.state('normal')
 
 if (__name__ == '__main__'):
     app = App()
