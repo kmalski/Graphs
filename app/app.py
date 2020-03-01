@@ -55,7 +55,8 @@ class App (tk.Tk):
             if extension == '.gim':                          # incidence matrix
                 self.graph = IncidentalMatrix(file.read())
             elif extension == '.gam':                        # adjacency matrix
-                self.graph = AdjacencyMatrix(file.read())
+                self.graph = AdjacencyMatrix()
+                self.graph.from_string(file.read())
             elif extension == '.gal':                        # adjacency list
                 self.graph = AdjacencyList()
                 self.graph.from_string(file.read())

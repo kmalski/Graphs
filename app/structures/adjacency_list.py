@@ -13,7 +13,7 @@ class AdjacencyList:
             neighbors_str = line[seprator_index + 1:]
             neighbors = neighbors_str.split(',')
             self.graph[vertex] = neighbors
-
+        
     def to_string(self):
         result = ''
         for vertex, neighbors in self.graph.items():
@@ -28,7 +28,3 @@ class AdjacencyList:
 
     def get_neighbors(self, vertex):
         return self.graph[vertex]
-
-    def add_vertex(self, vertex):
-        if vertex not in self.graph:
-            self.graph[vertex]
