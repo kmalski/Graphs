@@ -23,8 +23,10 @@ class AdjacencyList:
         return result
 
     def add_edge(self, vertex_1, vertex_2):
+        vertex_1 = str(vertex_1)
+        vertex_2 = str(vertex_2)
         self.graph[vertex_1].append(vertex_2)
         self.graph[vertex_2].append(vertex_1)
 
     def get_neighbors(self, vertex):
-        return self.graph[vertex]
+        return list(map(lambda x: int(x), self.graph[str(vertex)]))

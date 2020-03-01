@@ -1,11 +1,14 @@
 class AdjacencyMatrix:
     def __init__(self):
         self.graph = []
+        self.size = 0
 
     def from_string(self, data_string):
         for line in iter(data_string.splitlines()):
             line = ''.join(line.split())
             self.graph.append(line.split('|'))
+
+        self.size = len(self.graph[0])
 
     def to_string(self):
         result = ''
@@ -18,4 +21,4 @@ class AdjacencyMatrix:
         self.graph[vertex_2][vertex_1] = '1'
 
     def get_neighbors(self, vertex):
-        neighbors = [str(i) for i, elem in enumerate(self.graph[vertex]) if elem == '1']
+        return [i for i, elem in enumerate(self.graph[vertex]) if elem == '1']

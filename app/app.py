@@ -2,7 +2,7 @@ from exercises.one import ExerciseOneTab
 from exercises.two import ExerciseTwoTab
 from structures.adjacency_list import AdjacencyList
 from structures.adjacency_matrix import AdjacencyMatrix
-from structures.incidental_matrix import IncidentalMatrix
+from structures.incidence_matrix import IncidenceMatrix
 
 import tkinter as tk
 import pathlib
@@ -53,7 +53,8 @@ class App (tk.Tk):
             extension = pathlib.Path(file_path).suffix
 
             if extension == '.gim':                          # incidence matrix
-                self.graph = IncidentalMatrix(file.read())
+                self.graph = IncidenceMatrix()
+                self.graph.from_string(file.read())
             elif extension == '.gam':                        # adjacency matrix
                 self.graph = AdjacencyMatrix()
                 self.graph.from_string(file.read())
@@ -71,6 +72,7 @@ class App (tk.Tk):
     def end_fullscreen(self, event=None):
         self.screen_state = False
         self.state('normal')
+
 
 if (__name__ == '__main__'):
     app = App()
