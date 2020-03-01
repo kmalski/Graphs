@@ -5,7 +5,7 @@ from structures.adjacency_matrix import AdjacencyMatrix
 from structures.incidental_matrix import IncidentalMatrix
 
 import tkinter as tk
-import os.path
+import pathlib
 from tkinter import ttk
 from tkinter import filedialog
 
@@ -45,21 +45,23 @@ class App (tk.Tk):
 
     def load_graph(self, event=None):
         self.graph = None
-        file_path = filedialog.askopenfilename(initialdir='/', title='Wybierz plik', filetypes=[('Pliki grafów', '*.*'),
+        file_path = filedialog.askopenfilename(initialdir='.', title='Wybierz plik', filetypes=[('Pliki grafów', '*.*'),
                                                                                                 ('Macierz incydencji', '*.gim'),
                                                                                                 ('Macierz sąsiedztwa', '*.gam'),
                                                                                                 ('Lista sąsiedztwa', '*.gal')])
         with open(file_path) as file:
-            extension = os.path.basename(file_path)
-            if extension == 'gim':      # incidence matrix
+            extension = pathlib.Path(file_path).suffix
+
+            if extension == '.gim':                          # incidence matrix
                 self.graph = IncidentalMatrix(file.read())
-            elif extension == 'gam':    # adjacency matrix
+            elif extension == '.gam':                        # adjacency matrix
                 self.graph = AdjacencyMatrix(file.read())
-            elif extension == 'gal':    # adjacency list
-                self.graph = AdjacencyList(file.read())
+            elif extension == '.gal':                        # adjacency list
+                self.graph = AdjacencyList()
+                self.graph.from_string(file.read())
 
     def toggle_fullscreen(self, event=None):
-        self.screen_state = not self.screen_state  # Just toggling the boolean
+        self.screen_state = not self.screen_state
         if self.screen_state:
             self.state('zoomed')
         else:
