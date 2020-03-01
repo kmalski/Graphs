@@ -25,6 +25,7 @@ class IncidenceMatrix:
 
         self.graph[vertex_1][self.size] = '1'
         self.graph[vertex_2][self.size] = '1'
+        self.size += 1
 
     def get_neighbors(self, vertex):
         neighbors = []
