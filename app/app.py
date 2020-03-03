@@ -53,11 +53,9 @@ class App (tk.Tk):
             extension = pathlib.Path(file_path).suffix
 
             if extension == '.gim':                          # incidence matrix
-                self.graph = IncidenceMatrix()
-                self.graph.from_string(file.read())
+                self.graph = IncidenceMatrix(file_path)
             elif extension == '.gam':                        # adjacency matrix
-                self.graph = AdjacencyMatrix()
-                self.graph.from_string(file.read())
+                self.graph = AdjacencyMatrix(file_path)
             elif extension == '.gal':                        # adjacency list
                 self.graph = AdjacencyList()
                 self.graph.from_string(file.read())
