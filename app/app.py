@@ -54,11 +54,14 @@ class App (tk.Tk):
 
             if extension == '.gim':                          # incidence matrix
                 self.graph = IncidenceMatrix(file_path)
+                print(self.graph)
             elif extension == '.gam':                        # adjacency matrix
                 self.graph = AdjacencyMatrix(file_path)
+                print(self.graph)
             elif extension == '.gal':                        # adjacency list
                 self.graph = AdjacencyList()
                 self.graph.from_string(file.read())
+                print(self.graph)
 
     def toggle_fullscreen(self, event=None):
         self.screen_state = not self.screen_state
