@@ -1,15 +1,17 @@
-import structures.adjacency_list as gal
-import structures.incidence_matrix as gim
+import structures.adjacency_list as adj_list
+import structures.incidence_matrix as inc_matrix
+
 import numpy
+
 
 class AdjacencyMatrix:
     def __init__(self):
         pass
 
-    def load_matrix(self, file_path):
+    def from_file(self, file_path):
         self.matrix = numpy.loadtxt(file_path, int)
 
-    def create_matrix(self, nr_of_vertices):
+    def init_with_zeros(self, nr_of_vertices):
         self.matrix = numpy.zeros((nr_of_vertices, nr_of_vertices), int)
 
     def __str__(self):

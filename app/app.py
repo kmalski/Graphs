@@ -1,13 +1,9 @@
 from exercises.one import ExerciseOneTab
 from exercises.two import ExerciseTwoTab
-from structures.adjacency_list import AdjacencyList
-from structures.adjacency_matrix import AdjacencyMatrix
-from structures.incidence_matrix import IncidenceMatrix
+
 
 import tkinter as tk
-import pathlib
 from tkinter import ttk
-from tkinter import filedialog
 
 
 class App (tk.Tk):
@@ -18,7 +14,6 @@ class App (tk.Tk):
 
         self.screen_state = False
 
-        self.add_menu_bar()
         self.add_tabs()
 
         self.bind('<F11>', self.toggle_fullscreen)
@@ -33,34 +28,6 @@ class App (tk.Tk):
 
         exercise_2 = ExerciseTwoTab(self)
         self.tabs.add(exercise_2, text='Zadanie 2')
-
-    def add_menu_bar(self):
-        self.menu_bar = tk.Menu(self)
-
-        file_menu = tk.Menu(self.menu_bar, tearoff=0)
-        file_menu.add_command(label='Wczytaj graf...', command=self.load_graph)
-        self.menu_bar.add_cascade(label='Plik', menu=file_menu)
-
-        self.config(menu=self.menu_bar)
-
-    def load_graph(self, event=None):
-        self.graph = None
-        file_path = filedialog.askopenfilename(initialdir='.', title='Wybierz plik', filetypes=[('Pliki grafów', '*.*'),
-                                                                                                ('Macierz incydencji', '*.gim'),
-                                                                                                ('Macierz sąsiedztwa', '*.gam'),
-                                                                                                ('Lista sąsiedztwa', '*.gal')])
-
-        extension = pathlib.Path(file_path).suffix
-
-        if extension == '.gim':                          # incidence matrix
-            self.graph = IncidenceMatrix()
-            self.graph.load_matrix(file_path)
-        elif extension == '.gam':                        # adjacency matrix
-            self.graph = AdjacencyMatrix()
-            self.graph.load_matrix(file_path)
-        elif extension == '.gal':                        # adjacency list
-            self.graph = AdjacencyList()
-            self.graph.load_list(file_path)
 
     def toggle_fullscreen(self, event=None):
         self.screen_state = not self.screen_state

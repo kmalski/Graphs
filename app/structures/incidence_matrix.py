@@ -1,15 +1,17 @@
-import structures.adjacency_list as gal
-import structures.adjacency_matrix as gam
+import structures.adjacency_list as adj_list
+import structures.adjacency_matrix as adj_matrix
+
 import numpy
+
 
 class IncidenceMatrix:
     def __init__(self):
         pass
 
-    def load_matrix(self, file_path):
+    def from_file(self, file_path):
         self.matrix = numpy.loadtxt(file_path, int)
 
-    def create_matrix(self, nr_of_vertices):
+    def init_empty(self, nr_of_vertices):
         self.matrix = numpy.empty((nr_of_vertices, 0), int)
 
     def __str__(self):
@@ -20,11 +22,10 @@ class IncidenceMatrix:
 
     def add_edge(self, vertex_1, vertex_2):
         nr_of_vertices = len(self.matrix)
-        self.matrix = numpy.c_[self.matrix, numpy.zeros(nr_of_vertices, int)] # adds column with zeros in it
+        self.matrix = numpy.c_[self.matrix, numpy.zeros(nr_of_vertices, int)]
 
         self.matrix[vertex_1][-1] = 1
         self.matrix[vertex_2][-1] = 1
-        print(self.matrix)
 
     def get_neighbors(self, vertex):
         neighbors = numpy.where(self.matrix[vertex] == 1)
