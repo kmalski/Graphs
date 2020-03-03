@@ -49,19 +49,18 @@ class App (tk.Tk):
                                                                                                 ('Macierz incydencji', '*.gim'),
                                                                                                 ('Macierz sąsiedztwa', '*.gam'),
                                                                                                 ('Lista sąsiedztwa', '*.gal')])
-        with open(file_path) as file:
-            extension = pathlib.Path(file_path).suffix
 
-            if extension == '.gim':                          # incidence matrix
-                self.graph = IncidenceMatrix(file_path)
-                print(self.graph)
-            elif extension == '.gam':                        # adjacency matrix
-                self.graph = AdjacencyMatrix(file_path)
-                print(self.graph)
-            elif extension == '.gal':                        # adjacency list
-                self.graph = AdjacencyList()
-                self.graph.from_string(file.read())
-                print(self.graph)
+        extension = pathlib.Path(file_path).suffix
+
+        if extension == '.gim':                          # incidence matrix
+            self.graph = IncidenceMatrix()
+            self.graph.load_matrix(file_path)
+        elif extension == '.gam':                        # adjacency matrix
+            self.graph = AdjacencyMatrix()
+            self.graph.load_matrix(file_path)
+        elif extension == '.gal':                        # adjacency list
+            self.graph = AdjacencyList()
+            self.graph.load_list(file_path)
 
     def toggle_fullscreen(self, event=None):
         self.screen_state = not self.screen_state
