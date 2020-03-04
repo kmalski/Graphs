@@ -19,9 +19,7 @@ class AdjacencyList:
                 separator_index = line.index(':')
                 neighbors_str = line[separator_index + 1:]
                 neighbors = neighbors_str.split(',')
-                self.graph[int(vertex)] = map(lambda x: int(x), neighbors)
-
-            self.to_incidence_matrix()
+                self.graph[int(vertex)] = list(map(lambda x: int(x), neighbors))
 
     def __str__(self):
         result = ''
@@ -54,13 +52,11 @@ class AdjacencyList:
         return matrix
 
     def to_incidence_matrix(self):
-        pass
-        # inc_matrix = inc_matrix.IncidenceMatrix()
-        # nr_of_vertices = max(self.graph.keys()) + 1
-        # inc_matrix.create_matrix(nr_of_vertices)
+        matrix = inc_matrix.IncidenceMatrix()
+        matrix.init_empty(len(self.graph))
 
-        # for vertex_1, row in self.graph.items():
-        #     for vertex_2 in row:
-        #         inc_matrix.add_edge(vertex_1, vertex_2)
+        for vertex_1, row in self.graph.items():
+            for vertex_2 in row:
+                matrix.add_edge(vertex_1, vertex_2)
 
-        # return inc_matrix
+        return matrix

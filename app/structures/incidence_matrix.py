@@ -21,11 +21,13 @@ class IncidenceMatrix:
         return str(self.matrix)
 
     def add_edge(self, vertex_1, vertex_2):
-        nr_of_vertices = len(self.matrix)
-        self.matrix = numpy.c_[self.matrix, numpy.zeros(nr_of_vertices, int)]
+        new_column = numpy.zeros(len(self.matrix), int)
+        new_column[vertex_1] = 1
+        new_column[vertex_2] = 1
 
-        self.matrix[vertex_1][-1] = 1
-        self.matrix[vertex_2][-1] = 1
+        if not any(numpy.array_equal(column, new_column) for column in numpy.transpose(self.matrix)):
+            self.matrix = numpy.c_[self.matrix, new_column]
+
 
     def get_neighbors(self, vertex):
         neighbors = numpy.where(self.matrix[vertex] == 1)

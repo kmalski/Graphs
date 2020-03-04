@@ -4,6 +4,7 @@ from structures.incidence_matrix import IncidenceMatrix
 
 import tkinter as tk
 import pathlib
+from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
 
@@ -51,10 +52,20 @@ class ExerciseOneTab(ttk.Frame):
             self.graph.from_file(file_path)
 
     def convert_to_adj_list(self):
-        pass
+        try:
+            print(self.graph.to_adjacency_list())
+        except(AttributeError):
+            messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
 
     def convert_to_adj_matrix(self):
-        pass
+        try:
+            print(self.graph.to_adjacency_matrix())
+        except(AttributeError):
+            messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
 
     def convert_to_inc_matrix(self):
-        pass
+        try:
+            print(self.graph.to_incidence_matrix())
+        except(AttributeError):
+            messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
+        
