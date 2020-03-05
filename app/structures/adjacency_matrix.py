@@ -31,4 +31,7 @@ class AdjacencyMatrix:
         pass
 
     def to_adjacency_list(self):
-        pass
+        list = adj_list.AdjacencyList()
+        for i in range(len(self.matrix)):
+            list.graph[i] = self.get_neighbors(i)
+        return list
