@@ -8,10 +8,10 @@ class IncidenceMatrix:
     def __init__(self):
         pass
 
-    def from_file(self, file_path):
+    def from_file(self, file_path: int):
         self.matrix = numpy.loadtxt(file_path, int)
 
-    def init_empty(self, nr_of_vertices):
+    def init_empty(self, nr_of_vertices: int):
         self.matrix = numpy.empty((nr_of_vertices, 0), int)
 
     def __str__(self):
@@ -20,7 +20,7 @@ class IncidenceMatrix:
     def to_string(self):
         return str(self.matrix)
 
-    def add_edge(self, vertex_1, vertex_2):
+    def add_edge(self, vertex_1: int, vertex_2: int):
         new_column = numpy.zeros(len(self.matrix), int)
         new_column[vertex_1] = 1
         new_column[vertex_2] = 1
@@ -28,7 +28,7 @@ class IncidenceMatrix:
         if not any(numpy.array_equal(column, new_column) for column in numpy.transpose(self.matrix)):
             self.matrix = numpy.c_[self.matrix, new_column]
 
-    def get_neighbors(self, vertex):
+    def get_neighbors(self, vertex: int) -> list:
         neighbors = []
         transposed_matrix = numpy.transpose(self.matrix)
 
@@ -37,7 +37,7 @@ class IncidenceMatrix:
                 vertices = numpy.where(transposed_matrix[i] == 1)
                 other_vertex = list(filter(lambda x: x != vertex, vertices[0]))
                 neighbors.append(*other_vertex)
-                
+
         return neighbors
 
     def to_adjacency_matrix(self):

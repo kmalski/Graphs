@@ -9,7 +9,7 @@ class AdjacencyList:
     def __init__(self):
         self.graph = defaultdict(list)
 
-    def from_file(self, file_path):
+    def from_file(self, file_path: str):
         with open(file_path) as file:
             data_string = file.read()
 
@@ -32,13 +32,11 @@ class AdjacencyList:
     def to_string(self):
         return str(self)
 
-    def add_edge(self, vertex_1, vertex_2):
-        vertex_1 = vertex_1
-        vertex_2 = vertex_2
+    def add_edge(self, vertex_1: int, vertex_2: int):
         self.graph[vertex_1].append(vertex_2)
         self.graph[vertex_2].append(vertex_1)
 
-    def get_neighbors(self, vertex):
+    def get_neighbors(self, vertex: int) -> list:
         return self.graph[vertex]
 
     def to_adjacency_matrix(self):
