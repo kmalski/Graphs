@@ -95,6 +95,7 @@ class ExerciseOneTab(ttk.Frame):
 
         # N - wierzcholki 
         # P - prawdopodobienstwo
+        # to write guys - check if we can connect some wierzcholki
     def gen_randgraph_NP(self,N,P):
         temp_matrix = [[0 for q in range(N)]for e in range(N)]
         for i in range(N):
