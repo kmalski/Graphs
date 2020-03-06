@@ -28,13 +28,25 @@ class IncidenceMatrix:
         if not any(numpy.array_equal(column, new_column) for column in numpy.transpose(self.matrix)):
             self.matrix = numpy.c_[self.matrix, new_column]
 
-
     def get_neighbors(self, vertex):
-        neighbors = numpy.where(self.matrix[vertex] == 1)
-        return neighbors[0]
+        neighbors = []
+        transposed_matrix = numpy.transpose(self.matrix)
+
+        for i, elem in enumerate(self.matrix[vertex]):
+            if elem == 1:
+                vertices = numpy.where(transposed_matrix[i] == 1)
+                other_vertex = list(filter(lambda x: x != vertex, vertices[0]))
+                neighbors.append(*other_vertex)
+                
+        return neighbors
 
     def to_adjacency_matrix(self):
         pass
 
     def to_adjacency_list(self):
-        pass
+        list = adj_list.AdjacencyList()
+
+        for i in range(len(self.matrix)):
+            list.graph[i] = self.get_neighbors(i)
+
+        return list
