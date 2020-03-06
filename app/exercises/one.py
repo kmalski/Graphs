@@ -8,6 +8,9 @@ from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
 
+#to generate random graph
+import random 
+
 
 class ExerciseOneTab(ttk.Frame):
     def __init__(self, master=None, **kw):
@@ -68,4 +71,35 @@ class ExerciseOneTab(ttk.Frame):
             print(self.graph.to_incidence_matrix())
         except(AttributeError):
             messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
-        
+
+    # N - wierzcholki
+    # L - krawedzie
+    def gen_randgraph_NL(self,N,L): 
+        temp_matrix = [[0 for q in range(N)]for e in range(N)]
+        if L > (N * N-1) //2:
+            print("L is too large")
+        for i in range(N):
+            for j in range(L):
+                x = random.randint(0,N-1)
+                y = random.randint(0,N-1)
+                if temp_matrix[x][y] == 1 or x == y:
+                    while temp_matrix[x][y] == 1 or x == y:
+                        x = random.randint(0,N-1)
+                        y = random.randint(0,N-1)
+                    temp_matrix[x][y] = 1
+                    temp_matrix[y][x] = 1
+                else:
+                    temp_matrix[x][y] = 1
+                    temp_matrix[y][x] = 1
+        return temp_matrix
+
+        # N - wierzcholki 
+        # P - prawdopodobienstwo
+    def gen_randgraph_NP(self,N,P):
+        temp_matrix = [[0 for q in range(N)]for e in range(N)]
+        for i in range(N):
+            for j in range(i):
+                if random.random() < P:
+                    matrix[i][j] = 1
+                    matrix[j][i] = 1
+        return temp_matrix
