@@ -67,7 +67,7 @@ class ExerciseOneTab(ttk.Frame):
 
     def gen_NP_callback(self, event=None):
         n = int(self.verticles_entry_2.get())
-        p = int(self.prob_entry.get())
+        p = float(self.prob_entry.get())
         self.graph = self.gen_randgraph_NP(n, p)
 
     def load_graph(self, event=None):
@@ -107,28 +107,34 @@ class ExerciseOneTab(ttk.Frame):
             messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
 
     def gen_randgraph_NL(self, N: int, L: int) -> AdjacencyMatrix:
-        adj_matrix = np.zeros((N, N), int)
+        matrix = np.zeros((N, N), int)
 
         if L > (N * N - 1) // 2:
             messagebox.showinfo(title='Wykrzyknik!', message='Ilość krawędzi jest zbyt duża!')
-            return adj_matrix
+            return matrix
 
         tmp = 0
         while tmp < L:
             x = random.randint(0, N - 1)
             y = random.randint(0, N - 1)
-            if x != y and adj_matrix[x][y] != 1:
-                adj_matrix[x][y] = 1
-                adj_matrix[y][x] = 1
+            if x != y and matrix[x][y] != 1:
+                matrix[x][y] = 1
+                matrix[y][x] = 1
                 tmp += 1
+
+        adj_matrix = AdjacencyMatrix()
+        adj_matrix.from_matrix(matrix)
         return adj_matrix
 
         # TODO: sprawdzic czy wygenerowany graf może zostać poprawnie stworzony
     def gen_randgraph_NP(self, N: int, P: float) -> AdjacencyMatrix:
-        adj_matrix = np.zeros((N, N))
+        matrix = np.zeros((N, N))
         for i in range(N):
             for j in range(i):
                 if random.random() < P:
-                    adj_matrix[i][j] = 1
-                    adj_matrix[j][i] = 1
+                    matrix[i][j] = 1
+                    matrix[j][i] = 1
+
+        adj_matrix = AdjacencyMatrix()
+        adj_matrix.from_matrix(matrix)
         return adj_matrix

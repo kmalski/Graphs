@@ -1,7 +1,7 @@
 import structures.adjacency_list as adj_list
 import structures.incidence_matrix as inc_matrix
 
-import numpy
+import numpy as np
 
 
 class AdjacencyMatrix:
@@ -9,10 +9,13 @@ class AdjacencyMatrix:
         pass
 
     def from_file(self, file_path: str):
-        self.matrix = numpy.loadtxt(file_path, int)
+        self.matrix = np.loadtxt(file_path, int)
+
+    def from_matrix(self, matrix):
+         self.matrix = matrix
 
     def init_with_zeros(self, nr_of_vertices: int):
-        self.matrix = numpy.zeros((nr_of_vertices, nr_of_vertices), int)
+        self.matrix = np.zeros((nr_of_vertices, nr_of_vertices), int)
 
     def __str__(self):
         return str(self.matrix)
