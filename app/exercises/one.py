@@ -1,3 +1,4 @@
+import utils.draw
 from structures.adjacency_list import AdjacencyList
 from structures.adjacency_matrix import AdjacencyMatrix
 from structures.incidence_matrix import IncidenceMatrix
@@ -9,7 +10,6 @@ import random
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
-from math import cos, sin, pi
 
 
 class ExerciseOneTab(ttk.Frame):
@@ -76,14 +76,15 @@ class ExerciseOneTab(ttk.Frame):
         n = int(self.verticles_entry_1.get())
         l = int(self.edges_entry.get())
         self.graph = self.gen_randgraph_NL(n, l)
+        self.draw_graph()
+        self.print_graph()
 
     def gen_NP_callback(self, event=None):
         n = int(self.verticles_entry_2.get())
         p = float(self.prob_entry.get())
         self.graph = self.gen_randgraph_NP(n, p)
-
-        draw_graph_btn = ttk.Button(btn_frame, text='Rysuj graf', command=self.draw_graph)
-        draw_graph_btn.grid(row=1, column=3)
+        self.draw_graph()
+        self.print_graph()
 
     def load_graph(self, event=None):
         self.graph = None
@@ -96,36 +97,43 @@ class ExerciseOneTab(ttk.Frame):
         if extension == '.gim':                          # incidence matrix
             self.graph = IncidenceMatrix()
             self.graph.from_file(file_path)
-            self.graph_representation['text'] = str(self.graph).replace('[', ' ').replace(']', ' ')
         elif extension == '.gam':                        # adjacency matrix
             self.graph = AdjacencyMatrix()
             self.graph.from_file(file_path)
-            self.graph_representation['text'] = str(self.graph).replace('[', ' ').replace(']', ' ')
         elif extension == '.gal':                        # adjacency list
             self.graph = AdjacencyList()
             self.graph.from_file(file_path)
-            self.graph_representation['text'] = str(self.graph)
         else:
             return
+
         self.draw_graph()
+        self.print_graph()
+
+    def print_graph(self):
+        if self.graph is not None:
+            self.graph_representation['text'] = str(self.graph)
+
+    def draw_graph(self):
+        if self.graph is not None:
+            utils.draw.draw_graph(self.canvas, self.graph)
 
     def convert_to_adj_list(self):
         if hasattr(self.graph, 'to_adjacency_list'):
-            self.graph_representation['text'] = str(self.graph.to_adjacency_list())
-        else:
-            self.graph_representation['text'] = str(self.graph)
+            self.graph = self.graph.to_adjacency_list()
+            self.draw_graph()
+            self.print_graph()
 
     def convert_to_adj_matrix(self):
         if hasattr(self.graph, 'to_adjacency_matrix'):
-            self.graph_representation['text'] = str(self.graph.to_adjacency_matrix()).replace('[', ' ').replace(']', ' ')
-        else:
-            self.graph_representation['text'] = str(self.graph).replace('[', ' ').replace(']', ' ')
+            self.graph = self.graph.to_adjacency_matrix()
+            self.draw_graph()
+            self.print_graph()
 
     def convert_to_inc_matrix(self):
         if hasattr(self.graph, 'to_incidence_matrix'):
-            self.graph_representation['text'] = str(self.graph.to_incidence_matrix()).replace('[', ' ').replace(']', ' ')
-        else:
-            self.graph_representation['text'] = str(self.graph).replace('[', ' ').replace(']', ' ')
+            self.graph = self.graph.to_incidence_matrix()
+            self.draw_graph()
+            self.print_graph()
 
     def gen_randgraph_NL(self, N: int, L: int) -> AdjacencyMatrix:
         matrix = np.zeros((N, N), int)
@@ -159,40 +167,3 @@ class ExerciseOneTab(ttk.Frame):
         adj_matrix = AdjacencyMatrix()
         adj_matrix.from_matrix(matrix)
         return adj_matrix
-
-    def create_circle(self, canvasName, x, y, r):
-        x0 = x - r
-        y0 = y - r
-        x1 = x + r
-        y1 = y + r
-        return canvasName.create_oval(x0, y0, x1, y1, fill="white")
-
-    def draw_graph(self):
-        self.canvas.delete("all")
-
-        graph_to_draw = self.graph
-        if not isinstance(self.graph, AdjacencyList):
-            graph_to_draw = self.graph.to_adjacency_list()
-
-        n = len(graph_to_draw.graph)
-        center = (self.canvas.winfo_width() / 2, self.canvas.winfo_height() / 2) #needed to convert from cartesian to screen coordinates
-        r = min(center) / 1.5
-
-        diff_angle = 2 * pi / n
-        for i in range(n):
-            #calculate node coordinates
-            angle = diff_angle * i
-            x = center[0] + r * cos(angle)
-            y = center[1] - r * sin(angle)
-
-            #drawing edges
-            for neighbour in graph_to_draw.graph[i]:
-                if neighbour <= i:
-                    continue
-                neighbour_angle = diff_angle * neighbour
-                neighbour_x = center[0] + r * cos(neighbour_angle)
-                neighbour_y = center[1] - r * sin(neighbour_angle)
-                self.canvas.create_line(x, y, neighbour_x, neighbour_y)
-
-            self.create_circle(self.canvas, x, y, r * 0.2)
-            self.canvas.create_text(x, y, text=str(i))

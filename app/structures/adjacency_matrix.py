@@ -18,10 +18,10 @@ class AdjacencyMatrix:
         self.matrix = np.zeros((nr_of_vertices, nr_of_vertices), int)
 
     def __str__(self):
-        return str(self.matrix)
+        return self.to_string()
 
     def to_string(self):
-        return str(self.matrix)
+        return str(self.matrix).replace('[', ' ').replace(']', ' ')
 
     def add_edge(self, vertex_1: int, vertex_2: int):
         self.matrix[vertex_1][vertex_2] = 1
