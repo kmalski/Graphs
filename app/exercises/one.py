@@ -157,7 +157,7 @@ class ExerciseOneTab(ttk.Frame):
 
         # TODO: sprawdzic czy wygenerowany graf może zostać poprawnie stworzony
     def gen_randgraph_NP(self, N: int, P: float) -> AdjacencyMatrix:
-        matrix = np.zeros((N, N))
+        matrix = np.zeros((N, N), int)
         for i in range(N):
             for j in range(i):
                 if random.random() < P:
