@@ -105,6 +105,8 @@ class ExerciseOneTab(ttk.Frame):
             self.graph = AdjacencyList()
             self.graph.from_file(file_path)
             self.graph_representation['text'] = str(self.graph)
+        else:
+            return
         self.draw_graph()
 
     def convert_to_adj_list(self):
@@ -166,9 +168,6 @@ class ExerciseOneTab(ttk.Frame):
         return canvasName.create_oval(x0, y0, x1, y1, fill="white")
 
     def draw_graph(self):
-        if not self.graph:
-            messagebox.showinfo(title='Wykrzyknik!', message='Musisz najpierw wczytać jakiś graf!')
-        
         self.canvas.delete("all")
 
         graph_to_draw = self.graph
