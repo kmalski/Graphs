@@ -60,6 +60,12 @@ class ExerciseOneTab(ttk.Frame):
         ttk.Button(menu_frame, text='Generuj', command=self.gen_NP_callback)\
             .grid(row=12, column=0, columnspan=2, pady=2)
 
+        ttk.Separator(menu_frame, orient='vertical')\
+            .grid(row=0, column=2, rowspan=13, sticky='NS', pady=5, padx=5)
+
+        self.graph_representation = ttk.Label(menu_frame, font=("Helvetica", 16))
+        self.graph_representation.grid(row=0, column=3, rowspan=13)
+
     def gen_NL_callback(self, event=None):
         n = int(self.verticles_entry_1.get())
         l = int(self.edges_entry.get())
@@ -90,19 +96,19 @@ class ExerciseOneTab(ttk.Frame):
 
     def convert_to_adj_list(self):
         try:
-            print(self.graph.to_adjacency_list())
+            self.graph_representation['text'] = self.graph.to_adjacency_list()
         except AttributeError:
             messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
 
     def convert_to_adj_matrix(self):
         try:
-            print(self.graph.to_adjacency_matrix())
+            self.graph_representation['text'] = str(self.graph.to_adjacency_matrix()).replace('[', ' ').replace(']', ' ')
         except AttributeError:
             messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
 
     def convert_to_inc_matrix(self):
         try:
-            print(self.graph.to_incidence_matrix())
+            self.graph_representation['text'] = str(self.graph.to_incidence_matrix()).replace('[', ' ').replace(']', ' ')
         except AttributeError:
             messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
 
