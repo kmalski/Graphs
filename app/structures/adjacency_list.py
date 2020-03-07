@@ -32,6 +32,9 @@ class AdjacencyList:
     def to_string(self):
         return str(self)
 
+    def set_neighbors(self, vertex: int, neighbors: list):
+        self.graph[vertex] = neighbors
+
     def add_edge(self, vertex_1: int, vertex_2: int):
         self.graph[vertex_1].append(vertex_2)
         self.graph[vertex_2].append(vertex_1)

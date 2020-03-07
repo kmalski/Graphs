@@ -41,12 +41,20 @@ class IncidenceMatrix:
         return neighbors
 
     def to_adjacency_matrix(self):
-        pass
+        matrix = adj_matrix.AdjacencyMatrix()
+        size = len(self.matrix)
+        matrix.init_with_zeros(size)
+
+        for vertex_1 in range(size):
+            for vertex_2 in self.get_neighbors(vertex_1):
+                matrix.add_edge(vertex_1, vertex_2)
+
+        return matrix
 
     def to_adjacency_list(self):
-        list = adj_list.AdjacencyList()
+        adjacency_list = adj_list.AdjacencyList()
 
-        for i in range(len(self.matrix)):
-            list.graph[i] = self.get_neighbors(i)
+        for vertex in range(len(self.matrix)):
+            adjacency_list.set_neighbors(vertex, self.get_neighbors(vertex))
 
-        return list
+        return adjacency_list
