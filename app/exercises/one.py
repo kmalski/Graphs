@@ -27,40 +27,42 @@ class ExerciseOneTab(ttk.Frame):
 
         ttk.Button(menu_frame, text='Wczytaj graf...', command=self.load_graph)\
             .grid(row=0, column=0, pady=2, columnspan=2)
+        ttk.Button(menu_frame, text='Zapisz graf...', command=self.save_graph)\
+            .grid(row=1, column=0, pady=2, columnspan=2)
 
         ttk.Separator(menu_frame, orient='horizontal')\
-            .grid(row=1, column=0, columnspan=2, sticky='EW', pady=5, padx=5)
+            .grid(row=2, column=0, columnspan=2, sticky='EW', pady=5, padx=5)
 
         ttk.Button(menu_frame, text='Konwertuj na listę sąsiedztwa', command=self.convert_to_adj_list)\
-            .grid(row=2, column=0, pady=2, columnspan=2)
-        ttk.Button(menu_frame, text='Konwertuj na macierz sąsiedztwa', command=self.convert_to_adj_matrix)\
             .grid(row=3, column=0, pady=2, columnspan=2)
-        ttk.Button(menu_frame, text='Konwertuj na macierz incydencji', command=self.convert_to_inc_matrix)\
+        ttk.Button(menu_frame, text='Konwertuj na macierz sąsiedztwa', command=self.convert_to_adj_matrix)\
             .grid(row=4, column=0, pady=2, columnspan=2)
+        ttk.Button(menu_frame, text='Konwertuj na macierz incydencji', command=self.convert_to_inc_matrix)\
+            .grid(row=5, column=0, pady=2, columnspan=2)
 
         ttk.Separator(menu_frame, orient='horizontal')\
-            .grid(row=5, column=0, columnspan=2, sticky='EW', pady=5, padx=5)
+            .grid(row=6, column=0, columnspan=2, sticky='EW', pady=5, padx=5)
 
-        ttk.Label(menu_frame, text='N').grid(row=6, column=0)
+        ttk.Label(menu_frame, text='N').grid(row=7, column=0)
         self.verticles_entry_1 = ttk.Entry(menu_frame, width=10)
-        self.verticles_entry_1.grid(row=7, column=0, pady=2)
-        ttk.Label(menu_frame, text='L').grid(row=6, column=1)
+        self.verticles_entry_1.grid(row=8, column=0, pady=2)
+        ttk.Label(menu_frame, text='L').grid(row=7, column=1)
         self.edges_entry = ttk.Entry(menu_frame, width=10)
-        self.edges_entry.grid(row=7, column=1, pady=2)
+        self.edges_entry.grid(row=8, column=1, pady=2)
         ttk.Button(menu_frame, text='Generuj', command=self.gen_NL_callback)\
-            .grid(row=8, column=0, columnspan=2, pady=2)
+            .grid(row=9, column=0, columnspan=2, pady=2)
 
         ttk.Separator(menu_frame, orient='horizontal')\
-            .grid(row=9, column=0, columnspan=2, sticky='EW', pady=5, padx=5)
+            .grid(row=10, column=0, columnspan=2, sticky='EW', pady=5, padx=5)
 
-        ttk.Label(menu_frame, text='N').grid(row=10, column=0)
+        ttk.Label(menu_frame, text='N').grid(row=11, column=0)
         self.verticles_entry_2 = ttk.Entry(menu_frame, width=10)
-        self.verticles_entry_2.grid(row=11, column=0, pady=2)
-        ttk.Label(menu_frame, text='P').grid(row=10, column=1)
+        self.verticles_entry_2.grid(row=12, column=0, pady=2)
+        ttk.Label(menu_frame, text='P').grid(row=11, column=1)
         self.prob_entry = ttk.Entry(menu_frame, width=10)
-        self.prob_entry.grid(row=11, column=1, pady=2)
+        self.prob_entry.grid(row=12, column=1, pady=2)
         ttk.Button(menu_frame, text='Generuj', command=self.gen_NP_callback)\
-            .grid(row=12, column=0, columnspan=2, pady=2)
+            .grid(row=13, column=0, columnspan=2, pady=2)
 
         ttk.Separator(menu_frame, orient='vertical')\
             .grid(row=0, column=2, rowspan=13, sticky='NS', pady=5, padx=5)
@@ -92,6 +94,8 @@ class ExerciseOneTab(ttk.Frame):
                                                                                                 ('Macierz incydencji', '*.gim'),
                                                                                                 ('Macierz sąsiedztwa', '*.gam'),
                                                                                                 ('Lista sąsiedztwa', '*.gal')])
+        if file_path is None:
+            return
         extension = pathlib.Path(file_path).suffix
 
         if extension == '.gim':                          # incidence matrix
@@ -108,6 +112,25 @@ class ExerciseOneTab(ttk.Frame):
 
         self.draw_graph()
         self.print_graph()
+
+    def save_graph(self, event=None):
+        file_path = filedialog.asksaveasfilename(initialdir=".", title="Wybierz plik", filetypes=[('Pliki grafów', '*.*'),
+                                                                                                  ('Macierz incydencji', '*.gim'),
+                                                                                                  ('Macierz sąsiedztwa', '*.gam'),
+                                                                                                  ('Lista sąsiedztwa', '*.gal')])
+
+        if file_path is None:
+            return
+        extension = pathlib.Path(file_path).suffix
+
+        if extension == '.gim' and hasattr(self.graph, 'to_incidence_matrix'):
+            self.graph.to_incidence_matrix().to_file(file_path)
+        elif extension == '.gam' and hasattr(self.graph, 'to_adjacency_matrix'):
+            self.graph.to_adjacency_matrix().to_file(file_path)
+        elif extension == '.gal' and hasattr(self.graph, 'to_adjacency_list'):
+            self.graph.to_adjacency_list().to_file(file_path)
+        else:
+            self.graph.to_file(file_path, add_extension=True)
 
     def print_graph(self):
         if self.graph is not None:

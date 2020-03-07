@@ -21,6 +21,14 @@ class AdjacencyList:
                 neighbors = neighbors_str.split(',')
                 self.graph[int(vertex)] = list(map(lambda x: int(x), neighbors))
 
+    def to_file(self, file_path: str, add_extension=False):
+        if add_extension:
+            file_path += '.gal'
+
+        with open(file_path, 'w') as file:
+            if self.graph is not None:
+                file.write(self.to_string())
+
     def __str__(self):
         result = ''
         for vertex, neighbors in self.graph.items():

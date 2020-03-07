@@ -11,6 +11,14 @@ class AdjacencyMatrix:
     def from_file(self, file_path: str):
         self.matrix = np.loadtxt(file_path, int)
 
+    def to_file(self, file_path: str, add_extension=False):
+        if add_extension:
+            file_path += '.gam'
+
+        with open(file_path, 'w') as file:
+            if self.matrix is not None:
+                file.write(self.to_string())
+
     def from_matrix(self, matrix):
          self.matrix = matrix
 
