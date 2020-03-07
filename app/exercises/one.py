@@ -87,30 +87,33 @@ class ExerciseOneTab(ttk.Frame):
         if extension == '.gim':                          # incidence matrix
             self.graph = IncidenceMatrix()
             self.graph.from_file(file_path)
+            self.graph_representation['text'] = str(self.graph).replace('[', ' ').replace(']', ' ')
         elif extension == '.gam':                        # adjacency matrix
             self.graph = AdjacencyMatrix()
             self.graph.from_file(file_path)
+            self.graph_representation['text'] = str(self.graph).replace('[', ' ').replace(']', ' ')
         elif extension == '.gal':                        # adjacency list
             self.graph = AdjacencyList()
             self.graph.from_file(file_path)
+            self.graph_representation['text'] = str(self.graph)
 
     def convert_to_adj_list(self):
-        try:
-            self.graph_representation['text'] = self.graph.to_adjacency_list()
-        except AttributeError:
-            messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
+        if hasattr(self.graph, 'to_adjacency_list'):
+            self.graph_representation['text'] = str(self.graph.to_adjacency_list())
+        else:
+            self.graph_representation['text'] = str(self.graph)
 
     def convert_to_adj_matrix(self):
-        try:
+        if hasattr(self.graph, 'to_adjacency_matrix'):
             self.graph_representation['text'] = str(self.graph.to_adjacency_matrix()).replace('[', ' ').replace(']', ' ')
-        except AttributeError:
-            messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
+        else:
+            self.graph_representation['text'] = str(self.graph).replace('[', ' ').replace(']', ' ')
 
     def convert_to_inc_matrix(self):
-        try:
+        if hasattr(self.graph, 'to_incidence_matrix'):
             self.graph_representation['text'] = str(self.graph.to_incidence_matrix()).replace('[', ' ').replace(']', ' ')
-        except AttributeError:
-            messagebox.showinfo(title='Wykrzyknik!', message='Graf w tej formie został wczytany z pliku!')
+        else:
+            self.graph_representation['text'] = str(self.graph).replace('[', ' ').replace(']', ' ')
 
     def gen_randgraph_NL(self, N: int, L: int) -> AdjacencyMatrix:
         matrix = np.zeros((N, N), int)
