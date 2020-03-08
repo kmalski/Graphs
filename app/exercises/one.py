@@ -159,11 +159,11 @@ class ExerciseOneTab(ttk.Frame):
             self.print_graph()
 
     def gen_randgraph_NL(self, N: int, L: int) -> AdjacencyMatrix:
-        matrix = np.zeros((N, N), int)
-
-        if L > (N * N - 1) // 2:
+        if L >= (N * N - 1) // 2:
             messagebox.showinfo(title='Wykrzyknik!', message='Ilość krawędzi jest zbyt duża!')
-            return matrix
+            return self.graph
+
+        matrix = np.zeros((N, N), int)
 
         tmp = 0
         while tmp < L:
@@ -180,6 +180,10 @@ class ExerciseOneTab(ttk.Frame):
 
         # TODO: sprawdzic czy wygenerowany graf może zostać poprawnie stworzony
     def gen_randgraph_NP(self, N: int, P: float) -> AdjacencyMatrix:
+        if not 0 <= P <= 1:
+            messagebox.showinfo(title='Wykrzyknik!', message='Prawdopodobieństwo musi być z przedziału [0, 1]!')
+            return self.graph
+
         matrix = np.zeros((N, N), int)
         for i in range(N):
             for j in range(i):
