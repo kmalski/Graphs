@@ -119,7 +119,7 @@ class ExerciseOneTab(ttk.Frame):
                                                                                                   ('Macierz sąsiedztwa', '*.gam'),
                                                                                                   ('Lista sąsiedztwa', '*.gal')])
 
-        if file_path is None:
+        if not file_path:
             return
         extension = pathlib.Path(file_path).suffix
 

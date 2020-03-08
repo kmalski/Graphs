@@ -28,16 +28,16 @@ def draw_graph(canvas, graph):
     for i in range(n):
         # calculate node coordinates
         angle = diff_angle * i
-        x = center[0] + r * cos(angle)
-        y = center[1] - r * sin(angle)
+        x = center[0] + r * sin(angle)
+        y = center[1] - r * cos(angle)
 
         # drawing edges
         for neighbour in graph_to_draw.graph[i]:
             if neighbour <= i:
                 continue
             neighbour_angle = diff_angle * neighbour
-            neighbour_x = center[0] + r * cos(neighbour_angle)
-            neighbour_y = center[1] - r * sin(neighbour_angle)
+            neighbour_x = center[0] + r * sin(neighbour_angle)
+            neighbour_y = center[1] - r * cos(neighbour_angle)
 
             canvas.create_line(x, y, neighbour_x, neighbour_y)
 
