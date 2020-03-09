@@ -1,7 +1,9 @@
+import utils.tkinter
 import utils.draw
 from structures.adjacency_list import AdjacencyList
 from structures.adjacency_matrix import AdjacencyMatrix
 from structures.incidence_matrix import IncidenceMatrix
+from utils.tkinter import ResizingCanvas
 
 import tkinter as tk
 import numpy as np
@@ -18,42 +20,55 @@ class ExerciseOneTab(ttk.Frame):
 
         self.graph = None
 
-        self.add_canvas()
+        self.grid_columnconfigure(0, weight=0)  # menu
+        self.grid_columnconfigure(1, weight=0)  # separator
+        self.grid_columnconfigure(2, weight=2)  # graph text representation
+        self.grid_columnconfigure(3, weight=0)  # separator
+        self.grid_columnconfigure(4, weight=2)  # canvas
+
+        self.grid_rowconfigure(0, weight=1)
+
         self.add_menu()
+        self.add_vertical_separator(column=1)
+        self.add_graph_text_representation()
+        self.add_vertical_separator(column=3)
+        self.add_canvas()
 
     def add_menu(self):
         menu_frame = ttk.Frame(self)
-        menu_frame.grid(row=0, column=0, sticky='NSWE')
+        menu_frame.grid(row=0, column=0, sticky='N', padx=10, pady=10)
 
-        ttk.Button(menu_frame, text='Wczytaj graf...', command=self.load_graph)\
-            .grid(row=0, column=0, pady=2, columnspan=2)
-        ttk.Button(menu_frame, text='Zapisz graf...', command=self.save_graph)\
-            .grid(row=1, column=0, pady=2, columnspan=2)
-
-        ttk.Separator(menu_frame, orient='horizontal')\
-            .grid(row=2, column=0, columnspan=2, sticky='EW', pady=5, padx=5)
-
-        ttk.Button(menu_frame, text='Konwertuj na listę sąsiedztwa', command=self.convert_to_adj_list)\
-            .grid(row=3, column=0, pady=2, columnspan=2)
-        ttk.Button(menu_frame, text='Konwertuj na macierz sąsiedztwa', command=self.convert_to_adj_matrix)\
-            .grid(row=4, column=0, pady=2, columnspan=2)
-        ttk.Button(menu_frame, text='Konwertuj na macierz incydencji', command=self.convert_to_inc_matrix)\
-            .grid(row=5, column=0, pady=2, columnspan=2)
+        ttk.Button(menu_frame, text='Wczytaj graf...', width=30, command=self.load_graph)\
+            .grid(row=0, column=0, pady=3, columnspan=2)
+        ttk.Button(menu_frame, text='Zapisz graf...', width=30, command=self.save_graph)\
+            .grid(row=1, column=0, pady=3, columnspan=2)
 
         ttk.Separator(menu_frame, orient='horizontal')\
-            .grid(row=6, column=0, columnspan=2, sticky='EW', pady=5, padx=5)
+            .grid(row=2, column=0, columnspan=2, sticky='EW', pady=15)
+
+        ttk.Button(menu_frame, text='Konwertuj na listę sąsiedztwa', width=30, command=self.convert_to_adj_list)\
+            .grid(row=3, column=0, pady=3, columnspan=2)
+        ttk.Button(menu_frame, text='Konwertuj na macierz sąsiedztwa', width=30, command=self.convert_to_adj_matrix)\
+            .grid(row=4, column=0, pady=3, columnspan=2)
+        ttk.Button(menu_frame, text='Konwertuj na macierz incydencji', width=30, command=self.convert_to_inc_matrix)\
+            .grid(row=5, column=0, pady=3, columnspan=2)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=6, column=0, columnspan=2, sticky='EW', pady=15)
 
         ttk.Label(menu_frame, text='N').grid(row=7, column=0)
         self.verticles_entry_1 = ttk.Entry(menu_frame, width=10)
         self.verticles_entry_1.grid(row=8, column=0, pady=2)
+
         ttk.Label(menu_frame, text='L').grid(row=7, column=1)
         self.edges_entry = ttk.Entry(menu_frame, width=10)
         self.edges_entry.grid(row=8, column=1, pady=2)
-        ttk.Button(menu_frame, text='Generuj', command=self.gen_NL_callback)\
-            .grid(row=9, column=0, columnspan=2, pady=2)
+
+        ttk.Button(menu_frame, text='Generuj', width=15, command=self.gen_NL_callback)\
+            .grid(row=9, column=0, columnspan=2, pady=10)
 
         ttk.Separator(menu_frame, orient='horizontal')\
-            .grid(row=10, column=0, columnspan=2, sticky='EW', pady=5, padx=5)
+            .grid(row=10, column=0, columnspan=2, sticky='EW', pady=15)
 
         ttk.Label(menu_frame, text='N').grid(row=11, column=0)
         self.verticles_entry_2 = ttk.Entry(menu_frame, width=10)
@@ -61,32 +76,34 @@ class ExerciseOneTab(ttk.Frame):
         ttk.Label(menu_frame, text='P').grid(row=11, column=1)
         self.prob_entry = ttk.Entry(menu_frame, width=10)
         self.prob_entry.grid(row=12, column=1, pady=2)
-        ttk.Button(menu_frame, text='Generuj', command=self.gen_NP_callback)\
-            .grid(row=13, column=0, columnspan=2, pady=2)
+        ttk.Button(menu_frame, text='Generuj', width=15, command=self.gen_NP_callback)\
+            .grid(row=13, column=0, columnspan=2, pady=10)
 
-        ttk.Separator(menu_frame, orient='vertical')\
-            .grid(row=0, column=2, rowspan=13, sticky='NS', pady=5, padx=5)
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=14, column=0, columnspan=2, sticky='EW', pady=15)
 
-        self.graph_representation = ttk.Label(menu_frame, font=("Helvetica", 16))
-        self.graph_representation.grid(row=0, column=3, rowspan=13)
+    def add_graph_text_representation(self):
+        frame = ttk.Frame(self)
+        frame.grid(row=0, column=2, sticky='NSWE')
+        frame.grid_propagate(False)
+
+        self.graph_representation = ttk.Label(frame, font=("Helvetica", 16))
+        self.graph_representation.grid(row=0, column=0)
+
+        frame.grid_columnconfigure(0, weight=1)
+        frame.grid_rowconfigure(0, weight=1)
 
     def add_canvas(self):
-        self.canvas = tk.Canvas(self, width=350, height=350)
-        self.canvas.grid(row=0, column=4)
+        frame = ttk.Frame(self)
+        frame.grid(row=0, column=4, sticky='NSWE')
+        frame.grid_propagate(False)
 
-    def gen_NL_callback(self, event=None):
-        n = int(self.verticles_entry_1.get())
-        l = int(self.edges_entry.get())
-        self.graph = self.gen_randgraph_NL(n, l)
-        self.draw_graph()
-        self.print_graph()
+        self.canvas = ResizingCanvas(frame, width=1, height=1)
+        self.canvas.grid(row=0, column=0)
 
-    def gen_NP_callback(self, event=None):
-        n = int(self.verticles_entry_2.get())
-        p = float(self.prob_entry.get())
-        self.graph = self.gen_randgraph_NP(n, p)
-        self.draw_graph()
-        self.print_graph()
+    def add_vertical_separator(self, column):
+        ttk.Separator(self, orient='vertical')\
+            .grid(row=0, column=column, pady=5, sticky='NS')
 
     def load_graph(self, event=None):
         self.graph = None
@@ -158,8 +175,15 @@ class ExerciseOneTab(ttk.Frame):
             self.draw_graph()
             self.print_graph()
 
+    def gen_NL_callback(self, event=None):
+        n = int(self.verticles_entry_1.get())
+        l = int(self.edges_entry.get())
+        self.graph = self.gen_randgraph_NL(n, l)
+        self.draw_graph()
+        self.print_graph()
+
     def gen_randgraph_NL(self, N: int, L: int) -> AdjacencyMatrix:
-        if L >= (N * N - 1) // 2:
+        if L > N * (N - 1) // 2:
             messagebox.showinfo(title='Wykrzyknik!', message='Ilość krawędzi jest zbyt duża!')
             return self.graph
 
@@ -178,7 +202,13 @@ class ExerciseOneTab(ttk.Frame):
         adj_matrix.from_matrix(matrix)
         return adj_matrix
 
-        # TODO: sprawdzic czy wygenerowany graf może zostać poprawnie stworzony
+    def gen_NP_callback(self, event=None):
+        n = int(self.verticles_entry_2.get())
+        p = float(self.prob_entry.get())
+        self.graph = self.gen_randgraph_NP(n, p)
+        self.draw_graph()
+        self.print_graph()
+
     def gen_randgraph_NP(self, N: int, P: float) -> AdjacencyMatrix:
         if not 0 <= P <= 1:
             messagebox.showinfo(title='Wykrzyknik!', message='Prawdopodobieństwo musi być z przedziału [0, 1]!')

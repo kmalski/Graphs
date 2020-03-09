@@ -20,7 +20,7 @@ class AdjacencyMatrix:
                 file.write(self.to_string())
 
     def from_matrix(self, matrix):
-         self.matrix = matrix
+        self.matrix = matrix
 
     def init_with_zeros(self, nr_of_vertices: int):
         self.matrix = np.zeros((nr_of_vertices, nr_of_vertices), int)
