@@ -14,10 +14,11 @@ class App (tk.Tk):
 
         self.screen_state = False
 
-        self.add_tabs()
-
         self.bind('<F11>', self.toggle_fullscreen)
         self.bind('<Escape>', self.end_fullscreen)
+
+        self.add_tabs()
+
 
     def add_tabs(self):
         self.tabs = ttk.Notebook(self)
