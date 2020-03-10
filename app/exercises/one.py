@@ -3,7 +3,7 @@ import utils.draw
 from structures.adjacency_list import AdjacencyList
 from structures.adjacency_matrix import AdjacencyMatrix
 from structures.incidence_matrix import IncidenceMatrix
-from utils.tkinter import ResizingCanvas
+from utils.tkinter import ResizingSquareCanvas
 
 import tkinter as tk
 import numpy as np
@@ -98,8 +98,11 @@ class ExerciseOneTab(ttk.Frame):
         frame.grid(row=0, column=4, sticky='NSWE')
         frame.grid_propagate(False)
 
-        self.canvas = ResizingCanvas(frame, width=1, height=1)
+        self.canvas = ResizingSquareCanvas(frame, width=1, height=1)
         self.canvas.grid(row=0, column=0)
+
+        frame.grid_columnconfigure(0, weight=1)
+        frame.grid_rowconfigure(0, weight=1)
 
     def add_vertical_separator(self, column):
         ttk.Separator(self, orient='vertical')\
