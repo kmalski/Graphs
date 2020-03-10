@@ -142,13 +142,15 @@ class ExerciseOneTab(ttk.Frame):
         if not file_path or self.graph is None:
             return
         extension = pathlib.Path(file_path).suffix
-
+        
         if extension == '.gim' and hasattr(self.graph, 'to_incidence_matrix'):
             self.graph.to_incidence_matrix().to_file(file_path)
         elif extension == '.gam' and hasattr(self.graph, 'to_adjacency_matrix'):
             self.graph.to_adjacency_matrix().to_file(file_path)
         elif extension == '.gal' and hasattr(self.graph, 'to_adjacency_list'):
             self.graph.to_adjacency_list().to_file(file_path)
+        elif extension in ['.gim', '.gam', '.gal']:
+            self.graph.to_file(file_path)
         else:
             self.graph.to_file(file_path, add_extension=True)
 
