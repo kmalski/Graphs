@@ -87,11 +87,36 @@ class ExerciseOneTab(ttk.Frame):
         frame.grid(row=0, column=2, sticky='NSWE')
         frame.grid_propagate(False)
 
-        self.graph_representation = ttk.Label(frame, font=("Helvetica", 16))
+        frame.grid_columnconfigure(0, weight=1) # canvas
+        frame.grid_columnconfigure(1, weight=0) # right scrollbar
+        frame.grid_rowconfigure(0, weight=1) # canvas
+        frame.grid_rowconfigure(1, weight=0) # bottom scrollbar
+
+        canvas = tk.Canvas(frame)
+        scrollbar_x = ttk.Scrollbar(frame, orient="horizontal", command=canvas.xview)
+        scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(xscrollcommand=scrollbar_x.set)
+        canvas.configure(yscrollcommand=scrollbar_y.set)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda event: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.grid(row=0, column=0, sticky="NSEW")
+        scrollbar_x.grid(row=1, column=0, sticky="WE")
+        scrollbar_y.grid(row=0, column=1, sticky="NS")
+
+        self.graph_representation = ttk.Label(scrollable_frame, font=("Helvetica", 16))
         self.graph_representation.grid(row=0, column=0)
 
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_rowconfigure(0, weight=1)
+        # scrollable_frame.grid_columnconfigure(0, weight=1)
+        # scrollable_frame.grid_rowconfigure(0, weight=1)
 
     def add_canvas(self):
         frame = ttk.Frame(self)
