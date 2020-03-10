@@ -2,7 +2,7 @@ import structures.adjacency_list as adj_list
 import structures.incidence_matrix as inc_matrix
 
 import numpy as np
-
+import sys
 
 class AdjacencyMatrix:
     def __init__(self):
@@ -15,7 +15,7 @@ class AdjacencyMatrix:
         if add_extension:
             file_path += '.gam'
 
-        with open(file_path, 'w') as file:
+        with open(file_path, 'w') as file, np.printoptions(threshold=sys.maxsize, linewidth=np.inf):
             if self.matrix is not None:
                 file.write(self.to_string())
 

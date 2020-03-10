@@ -1,9 +1,7 @@
 import structures.adjacency_matrix as adj_matrix
 import structures.incidence_matrix as inc_matrix
 
-import numpy
 from collections import defaultdict
-
 
 class AdjacencyList:
     def __init__(self):
