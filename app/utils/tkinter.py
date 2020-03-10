@@ -1,25 +1,22 @@
 import tkinter
 
 
-class ResizingCanvas(tkinter.Canvas):
+class ResizingSquareCanvas(tkinter.Canvas):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.height = kwargs['height']
-        self.width = kwargs['width']
+        self.size = min(kwargs['height'], kwargs['width'])
+
         self.master.bind('<Configure>', self.on_resize)
 
     def on_resize(self, event):
-        new_width = event.width
-        new_height = event.height
-        wscale = new_width / self.width
-        hscale = new_height / self.height
-        
-        self.width = new_width
-        self.height = new_height
+        new_size = min(event.width, event.height)
 
-        self.config(width=self.width, height=self.height)
-        self.scale("all", 0, 0, wscale, hscale)
+        scale = new_size / self.size
+        self.size = new_size
+
+        self.config(width=new_size, height=new_size)
+        self.scale("all", 0, 0, scale, scale)
 
 
 def get_root_size(widget):
