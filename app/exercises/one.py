@@ -190,19 +190,16 @@ class ExerciseOneTab(ttk.Frame):
     def convert_to_adj_list(self):
         if hasattr(self.graph, 'to_adjacency_list'):
             self.graph = self.graph.to_adjacency_list()
-            self.draw_graph()
             self.print_graph()
 
     def convert_to_adj_matrix(self):
         if hasattr(self.graph, 'to_adjacency_matrix'):
             self.graph = self.graph.to_adjacency_matrix()
-            self.draw_graph()
             self.print_graph()
 
     def convert_to_inc_matrix(self):
         if hasattr(self.graph, 'to_incidence_matrix'):
             self.graph = self.graph.to_incidence_matrix()
-            self.draw_graph()
             self.print_graph()
 
     def gen_NL_callback(self, event=None):
