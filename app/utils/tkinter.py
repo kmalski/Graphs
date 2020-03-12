@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+
 class ResizingSquareCanvas(tk.Canvas):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -16,39 +17,59 @@ class ResizingSquareCanvas(tk.Canvas):
         self.size = new_size
 
         self.config(width=new_size, height=new_size)
-        self.scale("all", 0, 0, scale, scale)
+        self.scale('all', 0, 0, scale, scale)
 
 
-# ScrollableFrame's object itself is the outer frame containing canvas and scrollbars
-# If you wanted to use this class, remember to place things inside self.scrollable_frame, and not directly into an object of this class
 class ScrollableFrame(tk.Frame):
+    '''
+    Object itself is the outer frame containing canvas and scrollbars.
+    If you wanted to use this class, remember to place things inside 
+    self.scrollable_frame, and not directly into an object of this class.
+    '''
+
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
-        self.grid_columnconfigure(0, weight=1) # canvas
-        self.grid_columnconfigure(1, weight=0) # right scrollbar
-        self.grid_rowconfigure(0, weight=1) # canvas
-        self.grid_rowconfigure(1, weight=0) # bottom scrollbar
+        self.grid_columnconfigure(0, weight=1)  # canvas
+        self.grid_columnconfigure(1, weight=0)  # right scrollbar
+        self.grid_rowconfigure(0, weight=1)     # canvas
+        self.grid_rowconfigure(1, weight=0)     # bottom scrollbar
 
-        canvas = tk.Canvas(self)
-        scrollbar_x = ttk.Scrollbar(self, orient="horizontal", command=canvas.xview)
-        scrollbar_y = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
-        self.scrollable_frame = ttk.Frame(canvas)
+        self.canvas = tk.Canvas(self)
+        self.scrollbar_x = ttk.Scrollbar(self, orient='horizontal', command=self.canvas.xview)
+        self.scrollbar_y = ttk.Scrollbar(self, orient='vertical', command=self.canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.canvas)
 
-        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        canvas.configure(xscrollcommand=scrollbar_x.set)
-        canvas.configure(yscrollcommand=scrollbar_y.set)
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor='nw')
+        self.canvas.configure(xscrollcommand=self.scrollbar_x.set)
+        self.canvas.configure(yscrollcommand=self.scrollbar_y.set)
 
-        self.scrollable_frame.bind(  
-            "<Configure>",
-            lambda event: canvas.configure(
-                scrollregion=canvas.bbox("all")
+        self.scrollable_frame.bind(
+            '<Configure>',
+            lambda event: self.canvas.configure(
+                scrollregion=self.canvas.bbox('all')
             )
         )
 
-        canvas.grid(row=0, column=0, sticky="NSEW")
-        scrollbar_x.grid(row=1, column=0, sticky="WE")
-        scrollbar_y.grid(row=0, column=1, sticky="NS")
+        self.canvas.grid(row=0, column=0, sticky="NSEW")
+        self.scrollbar_x.grid(row=1, column=0, sticky="WE")
+        self.scrollbar_y.grid(row=0, column=1, sticky="NS")
+
+        self.scrollbar_x.bind('<MouseWheel>', self.on_horizontal_mousewheel)
+
+    def on_vertical_mousewheel(self, event):
+        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), 'units')
+
+    def on_horizontal_mousewheel(self, event):
+        self.canvas.xview_scroll(int(-1 * (event.delta / 120)), 'units')
+
+    def bind_vertical_scroll(self, key, widget):
+        widget.bind_all(key, self.on_vertical_mousewheel)
+        self.scrollbar_x.bindtags(self.scrollbar_x.bindtags()[:-1])
+
+    def bind_horizontal_scroll(self, key, widget):
+        widget.bind(key, self.on_horizontal_mousewheel)
+
 
 def get_root_size(widget):
     root = widget.winfo_toplevel()

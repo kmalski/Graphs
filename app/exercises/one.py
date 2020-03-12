@@ -93,6 +93,9 @@ class ExerciseOneTab(ttk.Frame):
         self.graph_representation = ttk.Label(frame.scrollable_frame, font=("Helvetica", 16))
         self.graph_representation.grid(row=0, column=0)
 
+        frame.bind_vertical_scroll('<MouseWheel>', self)
+        frame.bind_horizontal_scroll('<MouseWheel>', frame.scrollbar_x)
+
     def add_canvas(self):
         frame = ttk.Frame(self)
         frame.grid(row=0, column=4, sticky='NSWE')
