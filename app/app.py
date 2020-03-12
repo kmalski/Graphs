@@ -19,7 +19,6 @@ class App (tk.Tk):
 
         self.add_tabs()
 
-
     def add_tabs(self):
         self.tabs = ttk.Notebook(self)
         self.tabs.pack(expand=1, fill='both')

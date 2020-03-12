@@ -4,6 +4,7 @@ from structures.adjacency_list import AdjacencyList
 from structures.adjacency_matrix import AdjacencyMatrix
 from structures.incidence_matrix import IncidenceMatrix
 from utils.tkinter import ResizingSquareCanvas
+from utils.tkinter import ScrollableFrame
 
 import tkinter as tk
 import numpy as np
@@ -17,6 +18,8 @@ from tkinter import ttk
 class ExerciseOneTab(ttk.Frame):
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
+
+        np.set_printoptions(threshold=2500, linewidth=np.inf)
 
         self.graph = None
 
@@ -83,40 +86,12 @@ class ExerciseOneTab(ttk.Frame):
             .grid(row=14, column=0, columnspan=2, sticky='EW', pady=15)
 
     def add_graph_text_representation(self):
-        frame = ttk.Frame(self)
+        frame = ScrollableFrame(self)
         frame.grid(row=0, column=2, sticky='NSWE')
         frame.grid_propagate(False)
 
-        frame.grid_columnconfigure(0, weight=1) # canvas
-        frame.grid_columnconfigure(1, weight=0) # right scrollbar
-        frame.grid_rowconfigure(0, weight=1) # canvas
-        frame.grid_rowconfigure(1, weight=0) # bottom scrollbar
-
-        canvas = tk.Canvas(frame)
-        scrollbar_x = ttk.Scrollbar(frame, orient="horizontal", command=canvas.xview)
-        scrollbar_y = ttk.Scrollbar(frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)
-
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(xscrollcommand=scrollbar_x.set)
-        canvas.configure(yscrollcommand=scrollbar_y.set)
-
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda event: canvas.configure(
-                scrollregion=canvas.bbox("all")
-            )
-        )
-
-        canvas.grid(row=0, column=0, sticky="NSEW")
-        scrollbar_x.grid(row=1, column=0, sticky="WE")
-        scrollbar_y.grid(row=0, column=1, sticky="NS")
-
-        self.graph_representation = ttk.Label(scrollable_frame, font=("Helvetica", 16))
+        self.graph_representation = ttk.Label(frame.scrollable_frame, font=("Helvetica", 16))
         self.graph_representation.grid(row=0, column=0)
-
-        # scrollable_frame.grid_columnconfigure(0, weight=1)
-        # scrollable_frame.grid_rowconfigure(0, weight=1)
 
     def add_canvas(self):
         frame = ttk.Frame(self)
