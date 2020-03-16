@@ -3,11 +3,15 @@ import structures.incidence_matrix as inc_matrix
 
 from collections import defaultdict
 
-class AdjacencyList:
-    def __init__(self):
-        self.graph = defaultdict(list)
 
-    def from_file(self, file_path: str):
+class AdjacencyList:
+    def __init__(self, graph):
+        self.graph = graph
+
+    @classmethod
+    def from_file(cls, file_path: str):
+        graph = defaultdict(list)
+
         with open(file_path) as file:
             data_string = file.read()
 
@@ -17,7 +21,13 @@ class AdjacencyList:
                 separator_index = line.index(':')
                 neighbors_str = line[separator_index + 1:]
                 neighbors = neighbors_str.split(',')
-                self.graph[int(vertex)] = list(map(lambda x: int(x), neighbors))
+                graph[int(vertex)] = list(map(lambda x: int(x), neighbors))
+
+        return cls(graph)
+
+    @classmethod
+    def init_empty(cls):
+        return cls(defaultdict(list))
 
     def to_file(self, file_path: str, add_extension=False):
         if add_extension:
@@ -49,8 +59,7 @@ class AdjacencyList:
         return self.graph[vertex]
 
     def to_adjacency_matrix(self):
-        matrix = adj_matrix.AdjacencyMatrix()
-        matrix.init_with_zeros(len(self.graph))
+        matrix = adj_matrix.AdjacencyMatrix.init_with_zeros(len(self.graph))
 
         for vertex_1, row in self.graph.items():
             for vertex_2 in row:
@@ -59,8 +68,7 @@ class AdjacencyList:
         return matrix
 
     def to_incidence_matrix(self):
-        matrix = inc_matrix.IncidenceMatrix()
-        matrix.init_empty(len(self.graph))
+        matrix = inc_matrix.IncidenceMatrix.init_empty(len(self.graph))
 
         for vertex_1, row in self.graph.items():
             for vertex_2 in row:

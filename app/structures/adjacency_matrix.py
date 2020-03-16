@@ -4,12 +4,22 @@ import structures.incidence_matrix as inc_matrix
 import numpy as np
 import sys
 
-class AdjacencyMatrix:
-    def __init__(self):
-        pass
 
-    def from_file(self, file_path: str):
-        self.matrix = np.loadtxt(file_path, int)
+class AdjacencyMatrix:
+    def __init__(self, matrix):
+        self.matrix = matrix
+
+    @classmethod
+    def from_file(cls, file_path: str):
+        return cls(np.loadtxt(file_path, int))
+
+    @classmethod
+    def from_matrix(cls, matrix):
+        return cls(matrix)
+
+    @classmethod
+    def init_with_zeros(cls, nr_of_vertices: int):
+        return cls(np.zeros((nr_of_vertices, nr_of_vertices), int))
 
     def to_file(self, file_path: str, add_extension=False):
         if add_extension:
@@ -18,12 +28,6 @@ class AdjacencyMatrix:
         with open(file_path, 'w') as file, np.printoptions(threshold=sys.maxsize, linewidth=np.inf):
             if self.matrix is not None:
                 file.write(self.to_string())
-
-    def from_matrix(self, matrix):
-        self.matrix = matrix
-
-    def init_with_zeros(self, nr_of_vertices: int):
-        self.matrix = np.zeros((nr_of_vertices, nr_of_vertices), int)
 
     def __str__(self):
         return self.to_string()
@@ -39,9 +43,8 @@ class AdjacencyMatrix:
         return [i for i, elem in enumerate(self.matrix[vertex]) if elem == 1]
 
     def to_incidence_matrix(self):
-        matrix = inc_matrix.IncidenceMatrix()
         size = len(self.matrix)
-        matrix.init_empty(size)
+        matrix = inc_matrix.IncidenceMatrix.init_empty(size)
 
         for vertex_1 in range(size):
             for vertex_2 in self.get_neighbors(vertex_1):
@@ -50,7 +53,7 @@ class AdjacencyMatrix:
         return matrix
 
     def to_adjacency_list(self):
-        adjacency_list = adj_list.AdjacencyList()
+        adjacency_list = adj_list.AdjacencyList.init_empty()
 
         for vertex in range(len(self.matrix)):
             adjacency_list.set_neighbors(vertex, self.get_neighbors(vertex))
