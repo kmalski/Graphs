@@ -5,11 +5,16 @@ import numpy as np
 import sys
 
 class IncidenceMatrix:
-    def __init__(self):
-        pass
+    def __init__(self, matrix):
+        self.matrix = matrix
 
-    def from_file(self, file_path: int):
-        self.matrix = np.loadtxt(file_path, int)
+    @classmethod
+    def from_file(cls, file_path: int):
+        return cls(np.loadtxt(file_path, int))
+
+    @classmethod
+    def init_empty(cls, nr_of_vertices: int):
+        return cls(np.empty((nr_of_vertices, 0), int))
 
     def to_file(self, file_path: str, add_extension=False):
         if add_extension:
@@ -18,9 +23,6 @@ class IncidenceMatrix:
         with open(file_path, 'w') as file, np.printoptions(threshold=sys.maxsize, linewidth=np.inf):
             if self.matrix is not None:
                 file.write(self.to_string())
-
-    def init_empty(self, nr_of_vertices: int):
-        self.matrix = np.empty((nr_of_vertices, 0), int)
 
     def __str__(self):
         return self.to_string()
@@ -49,9 +51,8 @@ class IncidenceMatrix:
         return neighbors
 
     def to_adjacency_matrix(self):
-        matrix = adj_matrix.AdjacencyMatrix()
         size = len(self.matrix)
-        matrix.init_with_zeros(size)
+        matrix = adj_matrix.AdjacencyMatrix.init_with_zeros(size)
 
         for vertex_1 in range(size):
             for vertex_2 in self.get_neighbors(vertex_1):
@@ -60,7 +61,7 @@ class IncidenceMatrix:
         return matrix
 
     def to_adjacency_list(self):
-        adjacency_list = adj_list.AdjacencyList()
+        adjacency_list = adj_list.AdjacencyList.init_empty()
 
         for vertex in range(len(self.matrix)):
             adjacency_list.set_neighbors(vertex, self.get_neighbors(vertex))

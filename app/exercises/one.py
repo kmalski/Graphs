@@ -121,15 +121,12 @@ class ExerciseOneTab(ttk.Frame):
             return
         extension = pathlib.Path(file_path).suffix
 
-        if extension == '.gim':                          # incidence matrix
-            self.graph = IncidenceMatrix()
-            self.graph.from_file(file_path)
-        elif extension == '.gam':                        # adjacency matrix
-            self.graph = AdjacencyMatrix()
-            self.graph.from_file(file_path)
-        elif extension == '.gal':                        # adjacency list
-            self.graph = AdjacencyList()
-            self.graph.from_file(file_path)
+        if extension == '.gim':
+            self.graph = IncidenceMatrix.from_file(file_path)
+        elif extension == '.gam':
+            self.graph = AdjacencyMatrix.from_file(file_path)
+        elif extension == '.gal':
+            self.graph = AdjacencyList.from_file(file_path)
         else:
             return
 
@@ -145,7 +142,7 @@ class ExerciseOneTab(ttk.Frame):
         if not file_path or self.graph is None:
             return
         extension = pathlib.Path(file_path).suffix
-        
+
         if extension == '.gim' and hasattr(self.graph, 'to_incidence_matrix'):
             self.graph.to_incidence_matrix().to_file(file_path)
         elif extension == '.gam' and hasattr(self.graph, 'to_adjacency_matrix'):
@@ -203,9 +200,7 @@ class ExerciseOneTab(ttk.Frame):
                 matrix[y][x] = 1
                 tmp += 1
 
-        adj_matrix = AdjacencyMatrix()
-        adj_matrix.from_matrix(matrix)
-        return adj_matrix
+        return AdjacencyMatrix.from_matrix(matrix)
 
     def gen_NP_callback(self, event=None):
         n = int(self.verticles_entry_2.get())
@@ -226,6 +221,4 @@ class ExerciseOneTab(ttk.Frame):
                     matrix[i][j] = 1
                     matrix[j][i] = 1
 
-        adj_matrix = AdjacencyMatrix()
-        adj_matrix.from_matrix(matrix)
-        return adj_matrix
+        return AdjacencyMatrix.from_matrix(matrix)
