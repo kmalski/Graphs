@@ -29,6 +29,28 @@ class AdjacencyList:
     def init_empty(cls):
         return cls(defaultdict(list))
 
+    @classmethod
+    def from_graphic_sequence(cls, sequence : list):
+        graph = defaultdict(list)
+        sequence.sort(reverse=True)
+
+        for i in range(len(sequence)):
+            edges = sequence[i] - len(graph[i])
+
+            for j in range (i + 1, len(sequence)):
+                if edges == 0:
+                    break
+
+                if i == j or j in graph[i]:
+                    continue
+
+                if len(graph[j]) < sequence[j]:
+                    graph[j].append(i)
+                    graph[i].append(j)
+                    edges -= 1
+            
+        return cls(graph)
+
     def to_file(self, file_path: str, add_extension=False):
         if add_extension:
             file_path += '.gal'
