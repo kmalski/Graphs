@@ -36,21 +36,19 @@ class AdjacencyList:
         graph = defaultdict(list)
         sequence = deepcopy(sequence_par)
         sequence.sort(reverse=True)
+        sequence = [[sequence[i], i] for i in range(len(sequence))] # create pairs [degree, index]
 
         for i in range(len(sequence)):
-            degree = sequence[i]
-            sequence[i] = 0
+            left_index = sequence[0][1]
+            for j in range(sequence[0][0] + 1):
+                right_index = sequence[j][1]
+                graph[left_index].append(right_index)
+                graph[right_index].append(left_index)
+                sequence[j][0] -= 1
 
-            for j in range(i + 1, len(sequence)):
-                if not degree:
-                    break
-                if not sequence[j]:
-                    continue
-                graph[i].append(j)
-                graph[j].append(i)
-                sequence[j] -= 1
-                degree -= 1
-
+            sequence[0][0] = 0
+            sequence.sort(reverse=True, key=lambda x: x[0])
+                
         return cls(graph)
 
     def to_file(self, file_path: str, add_extension=False):
