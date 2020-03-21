@@ -40,8 +40,8 @@ class ExerciseTwoTab(ttk.Frame):
         sequence_button = ttk.Button(menu_frame, width=30, text='Sprawdź, czy to ciąg graficzny', command=self.check_sequence)
         sequence_button.grid(row=2, column=0, pady=3)
 
-        self.result = ttk.Label(menu_frame)
-        self.result.grid(row=3, column=0)
+        self.load_result = ttk.Label(menu_frame)
+        self.load_result.grid(row=3, column=0)
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=4, column=0, columnspan=2, sticky='EW', pady=15)
@@ -54,8 +54,11 @@ class ExerciseTwoTab(ttk.Frame):
         randomize_button = ttk.Button(menu_frame, width=30, text='Randomizuj graf', command=self.randomize_graph)
         randomize_button.grid(row=7, column=0, pady=3)
 
+        self.randomize_result = ttk.Label(menu_frame)
+        self.randomize_result.grid(row=8, column=0)
+
         ttk.Separator(menu_frame, orient='horizontal')\
-            .grid(row=8, column=0, columnspan=2, sticky='EW', pady=15)
+            .grid(row=9, column=0, columnspan=2, sticky='EW', pady=15)
 
     def check_sequence(self):
         sequence = self.sequence_entry.get()
@@ -70,13 +73,13 @@ class ExerciseTwoTab(ttk.Frame):
             return
 
         if is_graphic_sequence(sequence):
-            self.result['text'] = 'Z podanej sekwencji MOŻNA utworzyć ciąg graficzny!'
-            self.result['foreground'] = '#006400'
+            self.load_result['text'] = 'Z podanej sekwencji MOŻNA utworzyć ciąg graficzny!'
+            self.load_result['foreground'] = '#006400'
             self.graph = AdjacencyList.from_graphic_sequence(sequence)
             self.draw_graph()
         else:
-            self.result['text'] = 'Z podanej sekwencji NIE MOŻNA utworzyć ciągu graficznego!'
-            self.result['foreground'] = '#FF0000'
+            self.load_result['text'] = 'Z podanej sekwencji NIE MOŻNA utworzyć ciągu graficznego!'
+            self.load_result['foreground'] = '#FF0000'
             self.clear_graph()
         
     def randomize_graph(self):
@@ -100,8 +103,16 @@ class ExerciseTwoTab(ttk.Frame):
             messagebox.showinfo(title='Wykrzyknik!', message='Liczba randomizacji nie może być mniejsza od 0!')
             return
 
+        success_count = 0
         for _ in range(randomize_amount):
-            randomize(self.graph)
+            if randomize(self.graph, max_it=1000):
+                success_count += 1
+
+        if success_count > 0:
+            self.randomize_result['text'] = f'Randomizację udało się wykonać {success_count} razy'
+            self.randomize_result['foreground'] = '#006400'
+        else:
+            messagebox.showinfo(title='Wykrzyknik!', message='Nie udało się zrandomizować grafu :(')
 
         self.draw_graph()
 
