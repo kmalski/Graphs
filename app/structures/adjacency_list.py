@@ -2,7 +2,7 @@ import structures.adjacency_matrix as adj_matrix
 import structures.incidence_matrix as inc_matrix
 
 from collections import defaultdict
-
+import random
 
 class AdjacencyList:
     def __init__(self, graph):
@@ -77,8 +77,26 @@ class AdjacencyList:
         self.graph[vertex_1].append(vertex_2)
         self.graph[vertex_2].append(vertex_1)
 
+    def does_edge_exist(self, vertex_1: int, vertex_2: int) -> bool:
+        return vertex_1 in self.graph[vertex_2]
+
     def get_neighbors(self, vertex: int) -> list:
         return self.graph[vertex]
+
+    def get_amount_of_edges(self) -> int:
+        amount_of_edges = sum(map(lambda neighbors: len(neighbors), self.graph.values()))
+        return amount_of_edges / 2
+
+    def get_random_edge(self) -> list:
+        if self.get_amount_of_edges() == 0:
+            return None
+
+        while True:
+            vertex_1, neighbors = random.choice(list(self.graph.items()))
+            
+            if len(neighbors) != 0:
+                vertex_2 = random.choice(neighbors)
+                return [vertex_1, vertex_2]
 
     def to_adjacency_matrix(self):
         matrix = adj_matrix.AdjacencyMatrix.init_with_zeros(len(self.graph))
