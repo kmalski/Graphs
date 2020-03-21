@@ -2,6 +2,7 @@ import structures.adjacency_matrix as adj_matrix
 import structures.incidence_matrix as inc_matrix
 
 from collections import defaultdict
+from copy import deepcopy
 import random
 
 class AdjacencyList:
@@ -30,25 +31,25 @@ class AdjacencyList:
         return cls(defaultdict(list))
 
     @classmethod
-    def from_graphic_sequence(cls, sequence : list):
+    def from_graphic_sequence(cls, sequence_par : list):
         graph = defaultdict(list)
+        sequence = deepcopy(sequence_par)
         sequence.sort(reverse=True)
 
         for i in range(len(sequence)):
-            edges = sequence[i] - len(graph[i])
+            degree = sequence[i]
+            sequence[i] = 0
 
             for j in range (i + 1, len(sequence)):
-                if edges == 0:
+                if not degree:
                     break
-
-                if i == j or j in graph[i]:
+                if not sequence[j]:
                     continue
-
-                if len(graph[j]) < sequence[j]:
-                    graph[j].append(i)
-                    graph[i].append(j)
-                    edges -= 1
-            
+                graph[i].append(j)
+                graph[j].append(i)
+                sequence[j] -= 1
+                degree -= 1
+                
         return cls(graph)
 
     def to_file(self, file_path: str, add_extension=False):
