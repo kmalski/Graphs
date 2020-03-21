@@ -9,6 +9,9 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
+max_rand_it = 1000
+
+
 class ExerciseTwoTab(ttk.Frame):
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
@@ -60,12 +63,23 @@ class ExerciseTwoTab(ttk.Frame):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=9, column=0, columnspan=2, sticky='EW', pady=15)
 
+    def add_canvas(self):
+        frame = ttk.Frame(self)
+        frame.grid(row=0, column=2, sticky='NSWE')
+        frame.grid_propagate(False)
+
+        self.canvas = ResizingSquareCanvas(frame, width=1, height=1)
+        self.canvas.grid(row=0, column=0)
+
+        frame.grid_columnconfigure(0, weight=1)
+        frame.grid_rowconfigure(0, weight=1)
+
     def check_sequence(self):
         sequence = self.sequence_entry.get()
         if not sequence:
             messagebox.showinfo(title='Wykrzyknik!', message='Musisz wprowadzić jakąś sekwencję!')
             return
-        
+
         try:
             sequence = list(map(lambda x: int(x), sequence.split()))
         except ValueError:
@@ -81,7 +95,7 @@ class ExerciseTwoTab(ttk.Frame):
             self.load_result['text'] = 'Z podanej sekwencji NIE MOŻNA utworzyć ciągu graficznego!'
             self.load_result['foreground'] = '#FF0000'
             self.clear_graph()
-        
+
     def randomize_graph(self):
         if self.graph is None:
             messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
@@ -92,7 +106,7 @@ class ExerciseTwoTab(ttk.Frame):
         if not randomize_amount:
             messagebox.showinfo(title='Wykrzyknik!', message='Musisz wprowadzić liczbę żądanych randomizacji!')
             return
-        
+
         try:
             randomize_amount = int(randomize_amount)
         except ValueError:
@@ -105,33 +119,25 @@ class ExerciseTwoTab(ttk.Frame):
 
         success_count = 0
         for _ in range(randomize_amount):
-            if randomize(self.graph, max_it=1000):
+            if randomize(self.graph, max_it=max_rand_it):  # infinite loop break condition
                 success_count += 1
 
         if success_count > 0:
             self.randomize_result['text'] = f'Randomizację udało się wykonać {success_count} razy'
             self.randomize_result['foreground'] = '#006400'
         else:
-            messagebox.showinfo(title='Wykrzyknik!', message='Nie udało się zrandomizować grafu :(')
+            attempts = max_rand_it * self.graph.get_amount_of_vertices()
+            messagebox.showinfo(title='Wykrzyknik!',
+message=f'''Nie udało się zrandomizować grafu :(
+Wykonano {attempts} prób losowania krawędzi.
+Zastanów się czy zamiana krawędzi jest możliwa.''')
 
         self.draw_graph()
-
-    def add_canvas(self):
-        frame = ttk.Frame(self)
-        frame.grid(row=0, column=2, sticky='NSWE')
-        frame.grid_propagate(False)
-
-        self.canvas = ResizingSquareCanvas(frame, width=1, height=1)
-        self.canvas.grid(row=0, column=0)
-
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_rowconfigure(0, weight=1)
 
     def draw_graph(self):
         if self.graph is not None:
             utils.draw.draw_graph(self.canvas, self.graph)
-    
+
     def clear_graph(self):
         self.graph = None
         self.canvas.delete('all')
-        

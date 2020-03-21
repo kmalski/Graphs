@@ -93,7 +93,7 @@ class AdjacencyList:
         amount_of_edges = sum(map(lambda neighbors: len(neighbors), self.graph.values()))
         return amount_of_edges // 2
 
-    def get_amount_of_vertexes(self) -> int:
+    def get_amount_of_vertices(self) -> int:
         return len(self.graph)
 
     def get_random_edge(self) -> tuple:
@@ -110,20 +110,12 @@ class AdjacencyList:
     def get_two_random_separated_edges(self):
         a, b = self.get_random_edge()
 
-        for _ in range(self.get_amount_of_edges()):
+        for _ in range(self.get_amount_of_edges()):  # infinite loop break condition
             edge = self.get_random_edge()
             if a not in edge and b not in edge:
                 return ((a, b), edge)
 
         return None
-
-    def are_vertex_not_connected(self, vertex_1: int, vertex_2: int):
-        if vertex_1 in self.get_neighbors(vertex_2):
-            return False
-        if vertex_2 in self.get_neighbors(vertex_1):
-            return False
-
-        return True
 
     def to_adjacency_matrix(self):
         matrix = adj_matrix.AdjacencyMatrix.init_with_zeros(len(self.graph))

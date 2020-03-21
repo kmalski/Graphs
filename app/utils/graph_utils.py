@@ -26,7 +26,7 @@ def randomize(graph, max_it):
     if not isinstance(graph, AdjacencyList):
         graph = graph.to_adjacency_list()
 
-    if graph.get_amount_of_edges() < 2 or graph.get_amount_of_vertexes() < 4:
+    if graph.get_amount_of_edges() < 2 or graph.get_amount_of_vertices() < 4:
         return False
 
     for _ in range(max_it):
@@ -36,13 +36,13 @@ def randomize(graph, max_it):
             a, b = edge_1
             c, d = edge_2
 
-            if graph.are_vertex_not_connected(a, d) and graph.are_vertex_not_connected(b, c):
+            if not graph.is_edge(a, d) and not graph.is_edge(b, c):
                 graph.remove_edge(a, b)
                 graph.remove_edge(c, d)
                 graph.add_edge(a, d)
-                graph.add_edge(b, c)
+                graph.add_edge(b, c) 
                 return True
-            elif graph.are_vertex_not_connected(a, c) and graph.are_vertex_not_connected(b, d):
+            elif not graph.is_edge(a, c) and not graph.is_edge(b, d):
                 graph.remove_edge(a, b)
                 graph.remove_edge(c, d)
                 graph.add_edge(a, c)
