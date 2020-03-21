@@ -21,9 +21,11 @@ def is_graphic_sequence(sequence_par: list):
         sequence.sort(reverse=True)
 
 
-def randomize(adj_list: AdjacencyList):
-    if not isinstance(adj_list, AdjacencyList):
-        raise TypeError
+def randomize(graph):
+    if not isinstance(graph, AdjacencyList):
+        adj_list = graph.to_adjacency_list()
+    else:
+        adj_list = graph
 
     if adj_list.get_amount_of_edges() < 2:
         return 
@@ -45,25 +47,25 @@ def randomize(adj_list: AdjacencyList):
 
     if any(vertex in edge_1 for vertex in edge_2): 
         if a == c:
-            if adj_list.does_edge_exist(b, d) == True:
+            if adj_list.does_edge_exist(b, d):
                 randomize(adj_list)
                 return
             adj_list.add_edge(b, d)
 
         elif a == d:
-            if adj_list.does_edge_exist(b, c) == True:
+            if adj_list.does_edge_exist(b, c):
                 randomize(adj_list)
                 return
             adj_list.add_edge(b, c)
 
         elif b == c:
-            if adj_list.does_edge_exist(a, d) == True:
+            if adj_list.does_edge_exist(a, d):
                 randomize(adj_list)
                 return
             adj_list.add_edge(a, d)
             
         elif b == d:
-            if adj_list.does_edge_exist(a, c) == True:
+            if adj_list.does_edge_exist(a, c):
                 randomize(adj_list)
                 return
             adj_list.add_edge(a, c)
@@ -76,7 +78,7 @@ def randomize(adj_list: AdjacencyList):
             adj_list.graph[d].remove(c)
             
     else: 
-        if adj_list.does_edge_exist(a, d) == True or adj_list.does_edge_exist(b, c) == True:
+        if adj_list.does_edge_exist(a, d) or adj_list.does_edge_exist(b, c):
             randomize(adj_list)
             return
             
