@@ -121,5 +121,6 @@ class ExerciseTwoTab(ttk.Frame):
             utils.draw.draw_graph(self.canvas, self.graph)
     
     def clear_graph(self):
+        self.graph = None
         self.canvas.delete('all')
         
