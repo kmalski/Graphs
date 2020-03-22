@@ -39,6 +39,7 @@ class AdjacencyList:
         sequence = [[sequence[i], i] for i in range(len(sequence))] # create pairs [degree, index]
 
         for i in range(len(sequence)):
+            graph[i] #creating isolated nodes
             left_index = sequence[0][1]
             for j in range(sequence[0][0] + 1):
                 right_index = sequence[j][1]
