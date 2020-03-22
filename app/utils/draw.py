@@ -4,12 +4,12 @@ import tkinter as tk
 from math import cos, sin, pi
 import randomcolor
 
-def create_circle(canvas, x, y, r, outline = "black", fill = "white"):
+def create_circle(canvas, x, y, r, outline = "black", fill = "white", width = 1):
     x0 = x - r
     y0 = y - r
     x1 = x + r
     y1 = y + r
-    return canvas.create_oval(x0, y0, x1, y1, outline=outline, fill=fill)
+    return canvas.create_oval(x0, y0, x1, y1, outline=outline, fill=fill, width=width)
 
 
 def draw_graph(canvas, graph, components = None):
@@ -44,12 +44,12 @@ def draw_graph(canvas, graph, components = None):
             neighbour_y = center[1] - r * cos(neighbour_angle)
 
             if components:
-                canvas.create_line(x, y, neighbour_x, neighbour_y, fill = colors[components[i] - 1])
+                canvas.create_line(x, y, neighbour_x, neighbour_y, fill = colors[components[i] - 1], width=2)
             else:
                 canvas.create_line(x, y, neighbour_x, neighbour_y)
 
         if components:
-            create_circle(canvas, x, y, r * 0.2, colors[components[i] - 1])
+            create_circle(canvas, x, y, r * 0.2, colors[components[i] - 1], width=2)
         else:
             create_circle(canvas, x, y, r * 0.2)
 
