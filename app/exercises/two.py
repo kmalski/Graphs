@@ -157,5 +157,5 @@ Zastanów się czy zamiana krawędzi jest możliwa.''')
         if not isinstance(self.graph, AdjacencyList):
             graph = self.graph.to_adjacency_list()
 
-        comp = graph.find_components()
-        self.draw_graph(comp)
+        components = graph.find_components()
+        self.draw_graph(components)

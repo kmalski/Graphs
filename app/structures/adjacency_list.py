@@ -135,19 +135,19 @@ class AdjacencyList:
 
         return matrix
 
-    def find_components_recursive(self, nr, v, comp):
+    def find_components_recursive(self, nr, v, components):
         for u in self.get_neighbors(v):
-            if comp[u] == -1:
-                comp[u] = nr
-                self.find_components_recursive(nr, u, comp)
+            if components[u] == -1:
+                components[u] = nr
+                self.find_components_recursive(nr, u, components)
 
     def find_components(self):
         nr = 0
-        comp = [ -1 for _ in self.graph]
+        components = [-1 for _ in self.graph]
 
         for v in self.graph:
-            if comp[v] == -1:
+            if components[v] == -1:
                 nr += 1
-                comp[v] = nr
-                self.find_components_recursive(nr, v, comp)
-        return comp
+                components[v] = nr
+                self.find_components_recursive(nr, v, components)
+        return components

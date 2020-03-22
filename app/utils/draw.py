@@ -18,6 +18,7 @@ def draw_graph(canvas, graph, components = None):
     if components:
         rand_color = randomcolor.RandomColor()
         colors = rand_color.generate(count=max(components), luminosity='dark')
+
     graph_to_draw = graph
     if not isinstance(graph, AdjacencyList):
         graph_to_draw = graph.to_adjacency_list()
