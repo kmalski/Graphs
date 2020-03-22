@@ -77,6 +77,7 @@ class InfoLabel(ttk.Label):
 
         self.fail_color = '#FF0000'
         self.success_color = '#006400'
+        self.warning_color = '#EBC52D'
 
     def set_fail_color(self, color):
         self.fail_color = color
@@ -93,6 +94,16 @@ class InfoLabel(ttk.Label):
         super().grid()
         self['text'] = text
         self['foreground'] = self.success_color
+
+    def show_warning(self, text):
+        super().grid()
+        self['text'] = text
+        self['foreground'] = self.warning_color
+
+    def show_normal(self, text):
+        super().grid()
+        self['text'] = text
+        self['foreground'] = 'black'
 
     def grid_quietly(self, row, column):
         super().grid(row=row, column=column)

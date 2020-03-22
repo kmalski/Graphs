@@ -1,6 +1,6 @@
 import utils.draw
 from structures.adjacency_list import AdjacencyList
-from utils.graph_utils import is_graphic_sequence, randomize
+from utils.graph_utils import is_graphic_sequence, randomize, find_biggest_component
 from utils.tkinter import ResizingSquareCanvas, ScrollableFrame, InfoLabel
 
 import tkinter as tk
@@ -75,6 +75,11 @@ class ExerciseTwoTab(ttk.Frame):
         self.canvas = ResizingSquareCanvas(frame, width=1, height=1)
         self.canvas.grid(row=0, column=0)
 
+        results_frame = ttk.Frame(frame)
+        results_frame.grid(row=1, column=0, padx=20, pady=20, sticky='W')
+        self.results = InfoLabel(results_frame, font=('Roboto', 14), anchor='w', justify='left')
+        self.results.grid(row=0, column=0)
+
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(0, weight=1)
 
@@ -90,6 +95,7 @@ class ExerciseTwoTab(ttk.Frame):
             messagebox.showinfo(title='Wykrzyknik!', message='Sekwencja musi składać się wyłącznie z liczb!')
             return
 
+        self.clear_info_labels()
         if is_graphic_sequence(sequence):
             self.load_result.show_success('Z podanej sekwencji MOŻNA utworzyć ciąg graficzny!')
             self.graph = AdjacencyList.from_graphic_sequence(sequence)
@@ -124,16 +130,19 @@ class ExerciseTwoTab(ttk.Frame):
             if randomize(self.graph, max_it=max_rand_it):  # infinite loop break condition
                 success_count += 1
 
-        if success_count > 0:
-            self.randomize_result.show_success(f'Randomizację udało się wykonać {success_count} razy')
+        if success_count == randomize_amount:
+            self.randomize_result.show_success(f'Randomizację udało się wykonać {success_count}/{randomize_amount} razy')
+            self.results.clear()
+            self.draw_graph()
+        elif success_count > 0:
+            self.randomize_result.show_warning(f'Randomizację udało się wykonać {success_count}/{randomize_amount} razy')
+            self.results.clear()
+            self.draw_graph()
         else:
             attempts = max_rand_it * self.graph.get_amount_of_vertices()
-            messagebox.showinfo(title='Wykrzyknik!',
-                                message=f'''Nie udało się zrandomizować grafu :(
+            self.randomize_result.show_fail(f'''Nie udało się zrandomizować grafu :(
 Wykonano {attempts} prób losowania krawędzi.
 Zastanów się czy zamiana krawędzi jest możliwa.''')
-
-        self.draw_graph()
 
     def draw_graph(self, components=None):
         if self.graph is not None:
@@ -153,4 +162,16 @@ Zastanów się czy zamiana krawędzi jest możliwa.''')
             graph = self.graph.to_adjacency_list()
 
         components = graph.find_components()
+        biggest_comps = find_biggest_component(components)
+        res_string = ',  '.join(list(map(lambda x: str(x), biggest_comps)))
+
+        if len(biggest_comps) > 1:
+            self.results.show_normal(f'Największe wspólne składowe: {res_string}')
+        else:
+            self.results.show_normal(f'Największa wspólna składowa: {res_string}')
         self.draw_graph(components)
+
+    def clear_info_labels(self):
+        self.randomize_result.hide()
+        self.load_result.hide()
+        self.results.clear()
