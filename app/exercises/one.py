@@ -179,10 +179,19 @@ class ExerciseOneTab(ttk.Frame):
             self.print_graph()
 
     def gen_NL_callback(self, event=None):
-        n = int(self.verticles_entry_1.get())
-        l = int(self.edges_entry.get())
+        try:
+            n = int(self.verticles_entry_1.get())
+            l = int(self.edges_entry.get())
+        except ValueError:
+            messagebox.showinfo(title='Wykrzyknik!', message='Wprowadź prawidłowe dane wejściowe!')
+            return
+
+        if l < 0 or n < 0:
+            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków i liczba krawędzi nie mogą być ujemne!')
+            return
+
         if l > n * (n - 1) // 2:
-            messagebox.showinfo(title='Wykrzyknik!', message='Ilość krawędzi jest zbyt duża!')
+            messagebox.showinfo(title='Wykrzyknik!', message='Liczba krawędzi jest zbyt duża!')
             return
 
         self.graph = utils.graph_utils.gen_randgraph_NL(n, l)
@@ -190,8 +199,16 @@ class ExerciseOneTab(ttk.Frame):
         self.print_graph()
 
     def gen_NP_callback(self, event=None):
-        n = int(self.verticles_entry_2.get())
-        p = float(self.prob_entry.get())
+        try:
+            n = int(self.verticles_entry_2.get())
+            p = float(self.prob_entry.get())
+        except ValueError:
+            messagebox.showinfo(title='Wykrzyknik!', message='Wprowadź prawidłowe dane wejściowe!')
+            return
+
+        if n < 0:
+            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być ujemna!')
+            return
 
         if not 0 <= p <= 1:
             messagebox.showinfo(title='Wykrzyknik!', message='Prawdopodobieństwo musi być z przedziału [0, 1]!')
