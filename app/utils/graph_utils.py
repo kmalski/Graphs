@@ -21,7 +21,6 @@ def is_graphic_sequence(sequence_par: list):
         sequence[0] = 0
         sequence.sort(reverse=True)
 
-
 def randomize(graph, max_it):
     if not isinstance(graph, AdjacencyList):
         graph = graph.to_adjacency_list()

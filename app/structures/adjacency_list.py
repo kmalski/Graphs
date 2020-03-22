@@ -42,13 +42,16 @@ class AdjacencyList:
             left_index = sequence[0][1]
             for j in range(sequence[0][0] + 1):
                 right_index = sequence[j][1]
+                if left_index == right_index:
+                    continue
                 graph[left_index].append(right_index)
                 graph[right_index].append(left_index)
                 sequence[j][0] -= 1
 
             sequence[0][0] = 0
+            print(graph)
             sequence.sort(reverse=True, key=lambda x: x[0])
-                
+        
         return cls(graph)
 
     def to_file(self, file_path: str, add_extension=False):
