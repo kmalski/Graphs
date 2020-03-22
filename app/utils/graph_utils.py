@@ -24,7 +24,7 @@ def is_graphic_sequence(sequence_par: List[int]):
         sequence.sort(reverse=True)
 
 
-def randomize(graph, max_it: int):
+def randomize(graph, max_it: int = 100):
     if not isinstance(graph, AdjacencyList):
         graph = graph.to_adjacency_list()
 
@@ -54,7 +54,12 @@ def randomize(graph, max_it: int):
     return False
 
 
-def find_biggest_component(components: List[int]) -> Tuple[List[int]]:
+def randomize_times(graph, n: int, max_it=100):
+    for _ in range(n):
+        randomize(graph, max_it)
+
+
+def find_biggest_components(components: List[int]) -> Tuple[List[int]]:
     sizes = defaultdict(int)
     for component_name in components:
         sizes[component_name] += 1
@@ -68,3 +73,14 @@ def find_biggest_component(components: List[int]) -> Tuple[List[int]]:
                                    if component == component_name])
 
     return tuple(biggest_components)
+
+
+def generate_random_euler_graph(verticles_amount: int) -> AdjacencyList:
+    while True:
+        sequence = 2 * [random.randrange(2, verticles_amount, 2) for _ in range(verticles_amount // 2)]
+
+        if len(sequence) == verticles_amount - 1:
+            sequence.append(random.randrange(2, verticles_amount, 2))
+
+        if is_graphic_sequence(sequence):
+            return AdjacencyList.from_graphic_sequence(sequence)
