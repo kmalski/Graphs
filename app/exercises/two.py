@@ -1,7 +1,7 @@
 import utils.draw
 from structures.adjacency_list import AdjacencyList
 from utils.graph_utils import is_graphic_sequence, randomize, find_biggest_components,\
-    generate_random_euler_graph, randomize_times
+    generate_random_euler_graph, randomize_times, generate_k_regular_graph
 from utils.tkinter import ResizingSquareCanvas, ScrollableFrame, InfoLabel
 
 import random
@@ -53,7 +53,7 @@ class ExerciseTwoTab(ttk.Frame):
 
         ########################### 2 ###########################
 
-        ttk.Label(menu_frame, text='Ilość randomizacji').grid(row=5, column=0)
+        ttk.Label(menu_frame, text='Liczba randomizacji').grid(row=5, column=0)
 
         self.randomize_entry = ttk.Entry(menu_frame, width=30)
         self.randomize_entry.grid(row=6, column=0, pady=3)
@@ -77,7 +77,7 @@ class ExerciseTwoTab(ttk.Frame):
 
         ########################### 4 ###########################
 
-        ttk.Label(menu_frame, text='Ilość wierzchołków').grid(row=12, column=0)
+        ttk.Label(menu_frame, text='Liczba wierzchołków').grid(row=12, column=0)
 
         self.euler_entry = ttk.Entry(menu_frame, width=30)
         self.euler_entry.grid(row=13, column=0, pady=3)
@@ -93,7 +93,7 @@ class ExerciseTwoTab(ttk.Frame):
         k_regular_frame = ttk.Frame(menu_frame)
         k_regular_frame.grid(row=16, column=0)
 
-        ttk.Label(k_regular_frame, text='Ilość wierzch.').grid(row=0, column=0, padx=4)
+        ttk.Label(k_regular_frame, text='Liczba wierzch.').grid(row=0, column=0, padx=4)
 
         self.regular_n = ttk.Entry(k_regular_frame, width=15)
         self.regular_n.grid(row=1, column=0, pady=2, padx=4)
@@ -258,7 +258,27 @@ Zastanów się czy zamiana krawędzi jest możliwa.''')
         self.draw_graph()
 
     def k_regular(self):
-        pass
+        verticles_amount = self.regular_n.get()
+        degree = self.regular_k.get()
+
+        if not verticles_amount or not degree:
+                messagebox.showinfo(title='Wykrzyknik!', message='Musisz wprowadzić liczbę wierzchołków oraz ich stopień!')
+                return
+
+        try:
+            verticles_amount = int(verticles_amount)
+            degree = int(degree)
+        except ValueError:
+            messagebox.showinfo(title='Wykrzyknik!', message='Wprowadzono nieprawidłowe dane!')
+            return
+
+        if not -1 < degree < verticles_amount:
+            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków musi być większa od stopnia grafu!')
+            return
+
+        self.graph = generate_k_regular_graph(verticles_amount, degree)
+        randomize_times(self.graph, 100)
+        self.draw_graph()
 
     def hamilton_graph(self):
         pass
