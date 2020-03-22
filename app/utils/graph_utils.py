@@ -1,5 +1,7 @@
 from structures.adjacency_list import AdjacencyList
+from structures.adjacency_matrix import AdjacencyMatrix
 
+import numpy as np
 import random
 from copy import deepcopy
 
@@ -49,3 +51,26 @@ def randomize(graph, max_it):
                 return True
 
     return False
+
+def gen_randgraph_NL(N: int, L: int) -> AdjacencyMatrix:
+    matrix = np.zeros((N, N), int)
+    tmp = 0
+    while tmp < L:
+        x = random.randint(0, N - 1)
+        y = random.randint(0, N - 1)
+        if x != y and matrix[x][y] != 1:
+            matrix[x][y] = 1
+            matrix[y][x] = 1
+            tmp += 1
+
+    return AdjacencyMatrix.from_matrix(matrix)
+
+def gen_randgraph_NP(N: int, P: float) -> AdjacencyMatrix:
+    matrix = np.zeros((N, N), int)
+    for i in range(N):
+        for j in range(i):
+            if random.random() < P:
+                matrix[i][j] = 1
+                matrix[j][i] = 1
+    
+    return AdjacencyMatrix.from_matrix(matrix)

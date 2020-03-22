@@ -1,13 +1,14 @@
 import utils.tkinter
 import utils.draw
+import utils.graph_utils
 from structures.adjacency_list import AdjacencyList
 from structures.adjacency_matrix import AdjacencyMatrix
 from structures.incidence_matrix import IncidenceMatrix
 from utils.tkinter import ResizingSquareCanvas
 from utils.tkinter import ScrollableFrame
 
-import tkinter as tk
 import numpy as np
+import tkinter as tk
 import pathlib
 import random
 from tkinter import messagebox
@@ -180,45 +181,24 @@ class ExerciseOneTab(ttk.Frame):
     def gen_NL_callback(self, event=None):
         n = int(self.verticles_entry_1.get())
         l = int(self.edges_entry.get())
-        self.graph = self.gen_randgraph_NL(n, l)
+        if l > n * (n - 1) // 2:
+            messagebox.showinfo(title='Wykrzyknik!', message='Ilość krawędzi jest zbyt duża!')
+            return
+
+        self.graph = utils.graph_utils.gen_randgraph_NL(n, l)
         self.draw_graph()
         self.print_graph()
-
-    def gen_randgraph_NL(self, N: int, L: int) -> AdjacencyMatrix:
-        if L > N * (N - 1) // 2:
-            messagebox.showinfo(title='Wykrzyknik!', message='Ilość krawędzi jest zbyt duża!')
-            return self.graph
-
-        matrix = np.zeros((N, N), int)
-
-        tmp = 0
-        while tmp < L:
-            x = random.randint(0, N - 1)
-            y = random.randint(0, N - 1)
-            if x != y and matrix[x][y] != 1:
-                matrix[x][y] = 1
-                matrix[y][x] = 1
-                tmp += 1
-
-        return AdjacencyMatrix.from_matrix(matrix)
 
     def gen_NP_callback(self, event=None):
         n = int(self.verticles_entry_2.get())
         p = float(self.prob_entry.get())
-        self.graph = self.gen_randgraph_NP(n, p)
+
+        if not 0 <= p <= 1:
+            messagebox.showinfo(title='Wykrzyknik!', message='Prawdopodobieństwo musi być z przedziału [0, 1]!')
+            return
+
+        self.graph = utils.graph_utils.gen_randgraph_NP(n, p)
         self.draw_graph()
         self.print_graph()
 
-    def gen_randgraph_NP(self, N: int, P: float) -> AdjacencyMatrix:
-        if not 0 <= P <= 1:
-            messagebox.showinfo(title='Wykrzyknik!', message='Prawdopodobieństwo musi być z przedziału [0, 1]!')
-            return self.graph
 
-        matrix = np.zeros((N, N), int)
-        for i in range(N):
-            for j in range(i):
-                if random.random() < P:
-                    matrix[i][j] = 1
-                    matrix[j][i] = 1
-
-        return AdjacencyMatrix.from_matrix(matrix)
