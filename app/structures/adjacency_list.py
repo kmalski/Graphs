@@ -1,5 +1,6 @@
 import structures.adjacency_matrix as adj_matrix
 import structures.incidence_matrix as inc_matrix
+from utils.pythonic import all_equal
 
 from collections import defaultdict
 from copy import deepcopy
@@ -36,10 +37,10 @@ class AdjacencyList:
         graph = defaultdict(list)
         sequence = deepcopy(sequence_par)
         sequence.sort(reverse=True)
-        sequence = [[sequence[i], i] for i in range(len(sequence))] # create pairs [degree, index]
+        sequence = [[sequence[i], i] for i in range(len(sequence))]  # create pairs [degree, index]
 
         for i in range(len(sequence)):
-            graph[i] #creating isolated nodes
+            graph[i]  # creating isolated nodes
             left_index = sequence[0][1]
             for j in range(sequence[0][0] + 1):
                 right_index = sequence[j][1]
@@ -51,7 +52,7 @@ class AdjacencyList:
 
             sequence[0][0] = 0
             sequence.sort(reverse=True, key=lambda x: x[0])
-        
+
         return cls(graph)
 
     def to_file(self, file_path: str, add_extension=False):
@@ -84,8 +85,23 @@ class AdjacencyList:
         self.graph[vertex_1].remove(vertex_2)
         self.graph[vertex_2].remove(vertex_1)
 
+    def remove_vertex(self, vertex: int):
+        self.graph.pop(vertex)
+
     def is_edge(self, vertex_1: int, vertex_2: int) -> bool:
         return vertex_1 in self.graph[vertex_2]
+
+    def is_connected(self):
+        components = self.find_components()
+        return all_equal(list(filter(lambda x: x != -1, components)))
+
+    def is_bridge(self, vertex_1, vertex_2):
+        if len(self.graph[vertex_1]) == 1 or len(self.graph[vertex_2]) == 1:
+            return True
+        
+        graph = deepcopy(self)
+        graph.remove_edge(vertex_1, vertex_2)
+        return not graph.is_connected()
 
     def get_neighbors(self, vertex: int) -> list:
         return self.graph[vertex]
@@ -136,19 +152,46 @@ class AdjacencyList:
 
         return matrix
 
-    def find_components_recursive(self, nr, v, components):
-        for u in self.get_neighbors(v):
-            if components[u] == -1:
-                components[u] = nr
-                self.find_components_recursive(nr, u, components)
-
     def find_components(self):
+
+        def find_components_recursive(nr, v, components):
+            for u in self.get_neighbors(v):
+                if components[u] == -1:
+                    components[u] = nr
+                    find_components_recursive(nr, u, components)
+
         nr = 0
-        components = [-1 for _ in self.graph]
+        components = [-1 for _ in range(max(self.graph) + 1)]
 
         for v in self.graph:
             if components[v] == -1:
                 nr += 1
                 components[v] = nr
-                self.find_components_recursive(nr, v, components)
+                find_components_recursive(nr, v, components)
         return components
+
+    def find_eulerian_path(self):
+        curr_vertex = 0
+        next_vertex = None
+        path = []
+
+        graph = deepcopy(self)
+
+        while len(path) != self.get_amount_of_edges():
+            path.append(curr_vertex)
+
+            neighbors = graph.get_neighbors(curr_vertex)
+            non_bridges = list(filter(lambda x: not graph.is_bridge(curr_vertex, x), neighbors))
+
+            if not non_bridges:
+                next_vertex = neighbors[0]
+                graph.remove_edge(curr_vertex, next_vertex)
+                graph.remove_vertex(curr_vertex)
+            else:
+                next_vertex = non_bridges[0]
+                graph.remove_edge(curr_vertex, next_vertex)
+
+            curr_vertex = next_vertex
+
+        path.append(curr_vertex)
+        return path

@@ -10,7 +10,7 @@ class App (tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title('Grafy')
-        self.geometry('800x600')
+        self.geometry('1080x720')
 
         self.screen_state = False
 
