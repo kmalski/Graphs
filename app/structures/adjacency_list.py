@@ -2,6 +2,8 @@ import structures.adjacency_matrix as adj_matrix
 import structures.incidence_matrix as inc_matrix
 
 from collections import defaultdict
+from copy import deepcopy
+import random
 
 
 class AdjacencyList:
@@ -30,25 +32,26 @@ class AdjacencyList:
         return cls(defaultdict(list))
 
     @classmethod
-    def from_graphic_sequence(cls, sequence : list):
+    def from_graphic_sequence(cls, sequence_par: list):
         graph = defaultdict(list)
+        sequence = deepcopy(sequence_par)
         sequence.sort(reverse=True)
+        sequence = [[sequence[i], i] for i in range(len(sequence))] # create pairs [degree, index]
 
         for i in range(len(sequence)):
-            edges = sequence[i] - len(graph[i])
-
-            for j in range (i + 1, len(sequence)):
-                if edges == 0:
-                    break
-
-                if i == j or j in graph[i]:
+            left_index = sequence[0][1]
+            for j in range(sequence[0][0] + 1):
+                right_index = sequence[j][1]
+                if left_index == right_index:
                     continue
+                graph[left_index].append(right_index)
+                graph[right_index].append(left_index)
+                sequence[j][0] -= 1
 
-                if len(graph[j]) < sequence[j]:
-                    graph[j].append(i)
-                    graph[i].append(j)
-                    edges -= 1
-            
+            sequence[0][0] = 0
+            print(graph)
+            sequence.sort(reverse=True, key=lambda x: x[0])
+        
         return cls(graph)
 
     def to_file(self, file_path: str, add_extension=False):
@@ -77,8 +80,43 @@ class AdjacencyList:
         self.graph[vertex_1].append(vertex_2)
         self.graph[vertex_2].append(vertex_1)
 
+    def remove_edge(self, vertex_1: int, vertex_2: int):
+        self.graph[vertex_1].remove(vertex_2)
+        self.graph[vertex_2].remove(vertex_1)
+
+    def is_edge(self, vertex_1: int, vertex_2: int) -> bool:
+        return vertex_1 in self.graph[vertex_2]
+
     def get_neighbors(self, vertex: int) -> list:
         return self.graph[vertex]
+
+    def get_amount_of_edges(self) -> int:
+        amount_of_edges = sum(map(lambda neighbors: len(neighbors), self.graph.values()))
+        return amount_of_edges // 2
+
+    def get_amount_of_vertices(self) -> int:
+        return len(self.graph)
+
+    def get_random_edge(self) -> tuple:
+        if self.get_amount_of_edges() == 0:
+            return None
+
+        while True:
+            vertex_1, neighbors = random.choice(list(self.graph.items()))
+
+            if len(neighbors) != 0:
+                vertex_2 = random.choice(neighbors)
+                return (vertex_1, vertex_2)
+
+    def get_two_random_separated_edges(self):
+        a, b = self.get_random_edge()
+
+        for _ in range(self.get_amount_of_edges()):  # infinite loop break condition
+            edge = self.get_random_edge()
+            if a not in edge and b not in edge:
+                return ((a, b), edge)
+
+        return None
 
     def to_adjacency_matrix(self):
         matrix = adj_matrix.AdjacencyMatrix.init_with_zeros(len(self.graph))
