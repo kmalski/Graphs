@@ -1,8 +1,10 @@
 import utils.draw
 from structures.adjacency_list import AdjacencyList
-from utils.graph_utils import is_graphic_sequence, randomize
+from utils.graph_utils import is_graphic_sequence, randomize, find_biggest_components,\
+    generate_random_euler_graph, randomize_times
 from utils.tkinter import ResizingSquareCanvas, ScrollableFrame, InfoLabel
 
+import random
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -33,6 +35,8 @@ class ExerciseTwoTab(ttk.Frame):
         menu_frame = ttk.Frame(self)
         menu_frame.grid(row=0, column=0, sticky='N', padx=10, pady=10)
 
+        ########################### 1 ###########################
+
         ttk.Label(menu_frame, text='Ciąg liczb').grid(row=0, column=0)
 
         self.sequence_entry = ttk.Entry(menu_frame, width=55)
@@ -46,6 +50,8 @@ class ExerciseTwoTab(ttk.Frame):
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=4, column=0, columnspan=2, sticky='EW', pady=15)
+
+        ########################### 2 ###########################
 
         ttk.Label(menu_frame, text='Ilość randomizacji').grid(row=5, column=0)
 
@@ -61,11 +67,55 @@ class ExerciseTwoTab(ttk.Frame):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=9, column=0, columnspan=2, sticky='EW', pady=15)
 
+        ########################### 3 ###########################
+
         sequence_button = ttk.Button(menu_frame, width=30, text='Wyznacz spójne składowe', command=self.find_components)
         sequence_button.grid(row=10, column=0, pady=3)
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=11, column=0, columnspan=2, sticky='EW', pady=15)
+
+        ########################### 4 ###########################
+
+        ttk.Label(menu_frame, text='Ilość wierzchołków').grid(row=12, column=0)
+
+        self.euler_entry = ttk.Entry(menu_frame, width=30)
+        self.euler_entry.grid(row=13, column=0, pady=3)
+
+        euler_button = ttk.Button(menu_frame, width=30, text='Losuj graf eulerowski', command=self.euler_graph)
+        euler_button.grid(row=14, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=15, column=0, columnspan=2, sticky='EW', pady=15)
+
+        ########################### 5 ###########################
+
+        k_regular_frame = ttk.Frame(menu_frame)
+        k_regular_frame.grid(row=16, column=0)
+
+        ttk.Label(k_regular_frame, text='Ilość wierzch.').grid(row=0, column=0, padx=4)
+
+        self.regular_n = ttk.Entry(k_regular_frame, width=15)
+        self.regular_n.grid(row=1, column=0, pady=2, padx=4)
+
+        ttk.Label(k_regular_frame, text='Stopień wierzch.').grid(row=0, column=1, padx=4)
+
+        self.regular_k = ttk.Entry(k_regular_frame, width=15)
+        self.regular_k.grid(row=1, column=1, pady=2, padx=4)
+
+        ttk.Button(k_regular_frame, text='Generuj graf k-regularny', width=30, command=self.k_regular)\
+            .grid(row=2, column=0, columnspan=2, pady=10)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=17, column=0, columnspan=2, sticky='EW', pady=15)
+
+        ########################### 6 ###########################
+
+        hamilton_button = ttk.Button(menu_frame, width=30, text='Losuj graf hamiltonowski', command=self.hamilton_graph)
+        hamilton_button.grid(row=18, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=19, column=0, columnspan=2, sticky='EW', pady=15)
 
     def add_canvas(self):
         frame = ttk.Frame(self)
@@ -75,8 +125,26 @@ class ExerciseTwoTab(ttk.Frame):
         self.canvas = ResizingSquareCanvas(frame, width=1, height=1)
         self.canvas.grid(row=0, column=0)
 
+        results_frame = ttk.Frame(frame)
+        results_frame.grid(row=1, column=0, padx=20, pady=20, sticky='W')
+        self.results = InfoLabel(results_frame, font=('Roboto', 14), anchor='w', justify='left')
+        self.results.grid(row=0, column=0)
+
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(0, weight=1)
+
+    def draw_graph(self, components=None):
+        if self.graph is not None:
+            utils.draw.draw_graph(self.canvas, self.graph, components)
+
+    def clear_graph(self):
+        self.graph = None
+        self.canvas.delete('all')
+
+    def clear_info_labels(self):
+        self.randomize_result.hide()
+        self.load_result.hide()
+        self.results.clear()
 
     def check_sequence(self):
         sequence = self.sequence_entry.get()
@@ -90,6 +158,7 @@ class ExerciseTwoTab(ttk.Frame):
             messagebox.showinfo(title='Wykrzyknik!', message='Sekwencja musi składać się wyłącznie z liczb!')
             return
 
+        self.clear_info_labels()
         if is_graphic_sequence(sequence):
             self.load_result.show_success('Z podanej sekwencji MOŻNA utworzyć ciąg graficzny!')
             self.graph = AdjacencyList.from_graphic_sequence(sequence)
@@ -124,24 +193,19 @@ class ExerciseTwoTab(ttk.Frame):
             if randomize(self.graph, max_it=max_rand_it):  # infinite loop break condition
                 success_count += 1
 
-        if success_count > 0:
-            self.randomize_result.show_success(f'Randomizację udało się wykonać {success_count} razy')
+        if success_count == randomize_amount:
+            self.randomize_result.show_success(f'Randomizację udało się wykonać {success_count}/{randomize_amount} razy')
+            self.results.clear()
+            self.draw_graph()
+        elif success_count > 0:
+            self.randomize_result.show_warning(f'Randomizację udało się wykonać {success_count}/{randomize_amount} razy')
+            self.results.clear()
+            self.draw_graph()
         else:
             attempts = max_rand_it * self.graph.get_amount_of_vertices()
-            messagebox.showinfo(title='Wykrzyknik!',
-                                message=f'''Nie udało się zrandomizować grafu :(
+            self.randomize_result.show_fail(f'''Nie udało się zrandomizować grafu :(
 Wykonano {attempts} prób losowania krawędzi.
 Zastanów się czy zamiana krawędzi jest możliwa.''')
-
-        self.draw_graph()
-
-    def draw_graph(self, components=None):
-        if self.graph is not None:
-            utils.draw.draw_graph(self.canvas, self.graph, components)
-
-    def clear_graph(self):
-        self.graph = None
-        self.canvas.delete('all')
 
     def find_components(self):
         if self.graph is None:
@@ -153,4 +217,48 @@ Zastanów się czy zamiana krawędzi jest możliwa.''')
             graph = self.graph.to_adjacency_list()
 
         components = graph.find_components()
+        biggest_comps = find_biggest_components(components)
+        res_string = ',  '.join(list(map(lambda x: str(x), biggest_comps)))
+
+        if len(biggest_comps) > 1:
+            self.results.show_normal(f'Największe wspólne składowe: {res_string}')
+        else:
+            self.results.show_normal(f'Największa wspólna składowa: {res_string}')
         self.draw_graph(components)
+
+    def euler_graph(self):
+        self.clear_info_labels()
+        verticles_amount = self.euler_entry.get()
+
+        if not verticles_amount:
+            messagebox.showinfo(title='Wykrzyknik!', message='Musisz wprowadzić liczbę wierzchołków!')
+            return
+
+        try:
+            verticles_amount = int(verticles_amount)
+        except ValueError:
+            messagebox.showinfo(title='Wykrzyknik!', message='Wprowadzono nieprawidłowe dane!')
+            return
+
+        if verticles_amount < 3:
+            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być mniejsza od 3!')
+            return
+
+        self.graph = generate_random_euler_graph(verticles_amount)
+
+        while True:
+            randomize_times(self.graph, 100)
+            if self.graph.is_connected():
+                break
+
+        eulerian_path = self.graph.find_eulerian_path()
+        res_string = ' - '.join(list(map(lambda x: str(x), eulerian_path)))
+
+        self.results.show_normal(f'Kolejne wierzchołki cyklu eulera: {res_string}')
+        self.draw_graph()
+
+    def k_regular(self):
+        pass
+
+    def hamilton_graph(self):
+        pass
