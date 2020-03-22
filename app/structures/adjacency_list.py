@@ -134,3 +134,20 @@ class AdjacencyList:
                 matrix.add_edge(vertex_1, vertex_2)
 
         return matrix
+
+    def find_components_recursive(self, nr, v, comp):
+        for u in self.get_neighbors(v):
+            if comp[u] == -1:
+                comp[u] = nr
+                self.find_components_recursive(nr, u, comp)
+
+    def find_components(self):
+        nr = 0
+        comp = [ -1 for _ in self.graph]
+
+        for v in self.graph:
+            if comp[v] == -1:
+                nr += 1
+                comp[v] = nr
+                self.find_components_recursive(nr, v, comp)
+        return comp

@@ -2,19 +2,22 @@ from structures.adjacency_list import AdjacencyList
 
 import tkinter as tk
 from math import cos, sin, pi
+import randomcolor
 
-
-def create_circle(canvas, x, y, r):
+def create_circle(canvas, x, y, r, outline = "black", fill = "white"):
     x0 = x - r
     y0 = y - r
     x1 = x + r
     y1 = y + r
-    return canvas.create_oval(x0, y0, x1, y1, fill="white")
+    return canvas.create_oval(x0, y0, x1, y1, outline=outline, fill=fill)
 
 
-def draw_graph(canvas, graph):
+def draw_graph(canvas, graph, components = None):
     canvas.delete("all")
 
+    if components:
+        rand_color = randomcolor.RandomColor()
+        colors = rand_color.generate(count=max(components), luminosity='dark')
     graph_to_draw = graph
     if not isinstance(graph, AdjacencyList):
         graph_to_draw = graph.to_adjacency_list()
@@ -39,8 +42,14 @@ def draw_graph(canvas, graph):
             neighbour_x = center[0] + r * sin(neighbour_angle)
             neighbour_y = center[1] - r * cos(neighbour_angle)
 
-            canvas.create_line(x, y, neighbour_x, neighbour_y)
+            if components:
+                canvas.create_line(x, y, neighbour_x, neighbour_y, fill = colors[components[i] - 1])
+            else:
+                canvas.create_line(x, y, neighbour_x, neighbour_y)
 
-        create_circle(canvas, x, y, r * 0.2)
+        if components:
+            create_circle(canvas, x, y, r * 0.2, colors[components[i] - 1])
+        else:
+            create_circle(canvas, x, y, r * 0.2)
 
         canvas.create_text(x, y, text=str(i))

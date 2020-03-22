@@ -63,6 +63,12 @@ class ExerciseTwoTab(ttk.Frame):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=9, column=0, columnspan=2, sticky='EW', pady=15)
 
+        sequence_button = ttk.Button(menu_frame, width=30, text='Wyznacz spójne składowe', command=self.find_components)
+        sequence_button.grid(row=10, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=11, column=0, columnspan=2, sticky='EW', pady=15)
+
     def add_canvas(self):
         frame = ttk.Frame(self)
         frame.grid(row=0, column=2, sticky='NSWE')
@@ -134,10 +140,22 @@ Zastanów się czy zamiana krawędzi jest możliwa.''')
 
         self.draw_graph()
 
-    def draw_graph(self):
+    def draw_graph(self, components = None):
         if self.graph is not None:
-            utils.draw.draw_graph(self.canvas, self.graph)
+            utils.draw.draw_graph(self.canvas, self.graph, components)
 
     def clear_graph(self):
         self.graph = None
         self.canvas.delete('all')
+
+    def find_components(self):
+        if self.graph is None:
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
+            return
+        
+        graph = self.graph
+        if not isinstance(self.graph, AdjacencyList):
+            graph = self.graph.to_adjacency_list()
+
+        comp = graph.find_components()
+        self.draw_graph(comp)
