@@ -1,9 +1,7 @@
 import utils.draw
 from structures.adjacency_list import AdjacencyList
-from utils.graph_utils import is_graphic_sequence
-from utils.graph_utils import randomize
-from utils.tkinter import ResizingSquareCanvas
-from utils.tkinter import ScrollableFrame
+from utils.graph_utils import is_graphic_sequence, randomize
+from utils.tkinter import ResizingSquareCanvas, ScrollableFrame, InfoLabel
 
 import tkinter as tk
 from tkinter import ttk
@@ -43,8 +41,8 @@ class ExerciseTwoTab(ttk.Frame):
         sequence_button = ttk.Button(menu_frame, width=30, text='Sprawdź, czy to ciąg graficzny', command=self.check_sequence)
         sequence_button.grid(row=2, column=0, pady=3)
 
-        self.load_result = ttk.Label(menu_frame)
-        self.load_result.grid(row=3, column=0)
+        self.load_result = InfoLabel(menu_frame)
+        self.load_result.grid_quietly(row=3, column=0)
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=4, column=0, columnspan=2, sticky='EW', pady=15)
@@ -57,8 +55,8 @@ class ExerciseTwoTab(ttk.Frame):
         randomize_button = ttk.Button(menu_frame, width=30, text='Randomizuj graf', command=self.randomize_graph)
         randomize_button.grid(row=7, column=0, pady=3)
 
-        self.randomize_result = ttk.Label(menu_frame)
-        self.randomize_result.grid(row=8, column=0)
+        self.randomize_result = InfoLabel(menu_frame)
+        self.randomize_result.grid_quietly(row=8, column=0)
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=9, column=0, columnspan=2, sticky='EW', pady=15)
@@ -93,13 +91,11 @@ class ExerciseTwoTab(ttk.Frame):
             return
 
         if is_graphic_sequence(sequence):
-            self.load_result['text'] = 'Z podanej sekwencji MOŻNA utworzyć ciąg graficzny!'
-            self.load_result['foreground'] = '#006400'
+            self.load_result.show_success('Z podanej sekwencji MOŻNA utworzyć ciąg graficzny!')
             self.graph = AdjacencyList.from_graphic_sequence(sequence)
             self.draw_graph()
         else:
-            self.load_result['text'] = 'Z podanej sekwencji NIE MOŻNA utworzyć ciągu graficznego!'
-            self.load_result['foreground'] = '#FF0000'
+            self.load_result.show_fail('Z podanej sekwencji NIE MOŻNA utworzyć ciągu graficznego!')
             self.clear_graph()
 
     def randomize_graph(self):
@@ -129,18 +125,17 @@ class ExerciseTwoTab(ttk.Frame):
                 success_count += 1
 
         if success_count > 0:
-            self.randomize_result['text'] = f'Randomizację udało się wykonać {success_count} razy'
-            self.randomize_result['foreground'] = '#006400'
+            self.randomize_result.show_success(f'Randomizację udało się wykonać {success_count} razy')
         else:
             attempts = max_rand_it * self.graph.get_amount_of_vertices()
             messagebox.showinfo(title='Wykrzyknik!',
-message=f'''Nie udało się zrandomizować grafu :(
+                                message=f'''Nie udało się zrandomizować grafu :(
 Wykonano {attempts} prób losowania krawędzi.
 Zastanów się czy zamiana krawędzi jest możliwa.''')
 
         self.draw_graph()
 
-    def draw_graph(self, components = None):
+    def draw_graph(self, components=None):
         if self.graph is not None:
             utils.draw.draw_graph(self.canvas, self.graph, components)
 
@@ -152,7 +147,7 @@ Zastanów się czy zamiana krawędzi jest możliwa.''')
         if self.graph is None:
             messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
             return
-        
+
         graph = self.graph
         if not isinstance(self.graph, AdjacencyList):
             graph = self.graph.to_adjacency_list()
