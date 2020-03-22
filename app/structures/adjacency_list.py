@@ -4,6 +4,7 @@ from utils.pythonic import all_equal
 
 from collections import defaultdict
 from copy import deepcopy
+from dataclasses import dataclass
 import random
 
 
@@ -195,3 +196,46 @@ class AdjacencyList:
 
         path.append(curr_vertex)
         return path
+
+
+@dataclass(eq=True, order=True)
+class Node:
+    index: int
+    weight: int
+
+
+class AdjacencyListWithWeights(AdjacencyList):
+    def __init__(self, graph):
+        self.graph = graph
+
+    def __str__(self):
+        result = ''
+        for vertex, neighbors in self.graph.items():
+            result += str(vertex) + ': '
+            result += ', '.join(map(str, neighbors))
+            result += '\n'
+        return result
+
+    def add_edge(self, first, second, weight):
+        if not any(neigbour.index == second for neigbour in self.graph[first]):
+            self.graph[first].append(Node(second, weight))
+            self.graph[second].append(Node(first, weight))
+            return True
+        return False
+
+    def find_components(self):
+        def find_components_recursive(nr, v, components):
+            for u in self.get_neighbors(v):
+                if components[u.index] == -1:
+                    components[u.index] = nr
+                    find_components_recursive(nr, u.index, components)
+
+        nr = 0
+        components = [-1 for _ in self.graph]
+
+        for v in self.graph:
+            if components[v] == -1:
+                nr += 1
+                components[v] = nr
+                find_components_recursive(nr, v, components)
+        return components

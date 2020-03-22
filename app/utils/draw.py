@@ -1,4 +1,4 @@
-from structures.adjacency_list import AdjacencyList
+from structures.adjacency_list import AdjacencyList, AdjacencyListWithWeights
 
 import tkinter as tk
 from math import cos, sin, pi
@@ -53,4 +53,42 @@ def draw_graph(canvas, graph, components = None):
         else:
             create_circle(canvas, x, y, r * 0.2)
 
+        canvas.create_text(x, y, text=str(i))
+
+def draw_graph_with_weights(canvas, graph):
+    canvas.delete("all")
+
+    if not isinstance(graph, AdjacencyListWithWeights):
+        raise TypeError
+
+    n = len(graph.graph)
+    center = (canvas.winfo_width() / 2,
+              canvas.winfo_height() / 2)  # needed to convert from cartesian to screen coordinates
+    r = min(center) / 1.5
+
+    diff_angle = 2 * pi / n
+
+    padding = 7
+    for i in range(n):
+        # calculate node coordinates
+        angle = diff_angle * i
+        x = center[0] + r * sin(angle)
+        y = center[1] - r * cos(angle)
+
+        # drawing edges
+        for neighbour in graph.graph[i]:
+            if neighbour.index <= i:
+                continue
+            neighbour_angle = diff_angle * neighbour.index
+            neighbour_x = center[0] + r * sin(neighbour_angle)
+            neighbour_y = center[1] - r * cos(neighbour_angle)
+
+            canvas.create_line(x, y, neighbour_x, neighbour_y)
+            text_x = min(x, neighbour_x) + abs(x - neighbour_x)/2
+            text_y = min(y, neighbour_y) + abs(y - neighbour_y)/2
+
+            canvas.create_rectangle(text_x - padding, text_y - padding, text_x + padding, text_y + padding, outline="SystemButtonFace", fill="SystemButtonFace")
+            canvas.create_text(text_x, text_y, text=str(neighbour.weight))
+
+        create_circle(canvas, x, y, r * 0.2)
         canvas.create_text(x, y, text=str(i))
