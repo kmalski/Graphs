@@ -20,7 +20,7 @@ class ResizingSquareCanvas(tk.Canvas):
         self.scale('all', 0, 0, scale, scale)
 
 
-class ScrollableFrame(tk.Frame):
+class ScrollableFrame(ttk.Frame):
     '''
     Object itself is the outer frame containing canvas and scrollbars.
     If you wanted to use this class, remember to place things inside 
@@ -69,6 +69,43 @@ class ScrollableFrame(tk.Frame):
 
     def bind_horizontal_scroll(self, key, widget):
         widget.bind(key, self.on_horizontal_mousewheel)
+
+
+class InfoLabel(ttk.Label):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.fail_color = '#FF0000'
+        self.success_color = '#006400'
+
+    def set_fail_color(self, color):
+        self.fail_color = color
+
+    def set_success_color(self, color):
+        self.success_color = color
+
+    def show_fail(self, text):
+        super().grid()
+        self['text'] = text
+        self['foreground'] = self.fail_color
+
+    def show_success(self, text):
+        super().grid()
+        self['text'] = text
+        self['foreground'] = self.success_color
+
+    def grid_quietly(self, row, column):
+        super().grid(row=row, column=column)
+        super().grid_remove()
+
+    def hide(self):
+        super().grid_remove()
+
+    def show(self):
+        super().grid()
+
+    def clear(self):
+        self['text'] = ''
 
 
 def get_root_size(widget):

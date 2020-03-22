@@ -39,6 +39,7 @@ class AdjacencyList:
         sequence = [[sequence[i], i] for i in range(len(sequence))] # create pairs [degree, index]
 
         for i in range(len(sequence)):
+            graph[i] #creating isolated nodes
             left_index = sequence[0][1]
             for j in range(sequence[0][0] + 1):
                 right_index = sequence[j][1]
@@ -134,3 +135,20 @@ class AdjacencyList:
                 matrix.add_edge(vertex_1, vertex_2)
 
         return matrix
+
+    def find_components_recursive(self, nr, v, components):
+        for u in self.get_neighbors(v):
+            if components[u] == -1:
+                components[u] = nr
+                self.find_components_recursive(nr, u, components)
+
+    def find_components(self):
+        nr = 0
+        components = [-1 for _ in self.graph]
+
+        for v in self.graph:
+            if components[v] == -1:
+                nr += 1
+                components[v] = nr
+                self.find_components_recursive(nr, v, components)
+        return components
