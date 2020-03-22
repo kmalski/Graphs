@@ -49,7 +49,6 @@ class AdjacencyList:
                 sequence[j][0] -= 1
 
             sequence[0][0] = 0
-            print(graph)
             sequence.sort(reverse=True, key=lambda x: x[0])
         
         return cls(graph)
