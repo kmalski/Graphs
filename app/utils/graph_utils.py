@@ -108,3 +108,8 @@ def generate_random_euler_graph(verticles_amount: int) -> AdjacencyList:
 
         if is_graphic_sequence(sequence):
             return AdjacencyList.from_graphic_sequence(sequence)
+
+def generate_k_regular_graph(verticles_amount: int, degree: int) -> AdjacencyList:
+    sequence = verticles_amount * [degree]
+
+    return AdjacencyList.from_graphic_sequence(sequence)
