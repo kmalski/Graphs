@@ -111,7 +111,7 @@ class ExerciseTwoTab(ttk.Frame):
 
         ########################### 6 ###########################
 
-        hamilton_button = ttk.Button(menu_frame, width=30, text='Losuj graf hamiltonowski', command=self.hamilton_graph)
+        hamilton_button = ttk.Button(menu_frame, width=30, text='Szukaj cyklu Hamiltona', command=self.hamilton_graph)
         hamilton_button.grid(row=18, column=0, pady=3)
 
         ttk.Separator(menu_frame, orient='horizontal')\
@@ -254,10 +254,11 @@ Zastanów się czy zamiana krawędzi jest możliwa.''')
         eulerian_path = self.graph.find_eulerian_path()
         res_string = ' - '.join(list(map(lambda x: str(x), eulerian_path)))
 
-        self.results.show_normal(f'Kolejne wierzchołki cyklu eulera: {res_string}')
+        self.results.show_normal(f'Kolejne wierzchołki cyklu Eulera: {res_string}')
         self.draw_graph()
 
     def k_regular(self):
+        self.clear_info_labels()
         verticles_amount = self.regular_n.get()
         degree = self.regular_k.get()
 
@@ -281,4 +282,22 @@ Zastanów się czy zamiana krawędzi jest możliwa.''')
         self.draw_graph()
 
     def hamilton_graph(self):
-        pass
+        self.clear_info_labels()
+
+        if self.graph is None:
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
+            return
+
+        if not self.graph.is_connected():
+            self.results.show_normal('Graf nie jest hamiltonowski')
+            return
+
+        hamiltonian_cycle = []
+
+        if self.graph.is_hamiltonian(0, hamiltonian_cycle):
+            res_string = '\nKolejne wierzchołki cyklu Hamiltona: ' 
+            res_string += ' - '.join(list(map(lambda x: str(x), hamiltonian_cycle)))
+        else:
+            res_string = 'Graf nie jest hamiltonowski'
+
+        self.results.show_normal(res_string)

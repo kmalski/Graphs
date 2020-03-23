@@ -3,8 +3,9 @@ import structures.incidence_matrix as inc_matrix
 from utils.pythonic import all_equal
 
 from collections import defaultdict
-from copy import deepcopy
 from dataclasses import dataclass
+from copy import deepcopy
+from typing import List
 import random
 
 
@@ -196,6 +197,24 @@ class AdjacencyList:
 
         path.append(curr_vertex)
         return path
+
+    def is_hamiltonian(self, vertex: int, visited: List[int]) -> bool:
+        visited.append(vertex)
+        flag = False
+
+        if len(visited) == len(self.graph):
+            if vertex in self.graph[visited[0]]:
+                visited.append(visited[0])
+            return True
+        
+        for v in self.get_neighbors(vertex):
+            if v not in visited:
+                flag = self.is_hamiltonian(v, visited)
+
+        if flag:
+            return True
+
+        visited.pop(-1) 
 
 
 @dataclass(eq=True, order=True)

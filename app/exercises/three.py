@@ -69,7 +69,7 @@ class ExerciseThreeTab(ttk.Frame):
         while True:
             adj_matrix = utils.graph_utils.gen_randgraph_NP(n, 0.5)
             edges = adj_matrix.get_number_of_edges()
-            weights = [random.randint(0, 10) for _ in range(edges)]
+            weights = [random.randint(1, 10) for _ in range(edges)]
 
             self.graph = adj_matrix.to_adjacency_list_with_weights(weights)
 
