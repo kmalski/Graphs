@@ -6,6 +6,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from copy import deepcopy
 from typing import List
+import numpy as np
 import random
 
 
@@ -235,12 +236,15 @@ class AdjacencyListWithWeights(AdjacencyList):
             result += '\n'
         return result
 
-    def add_edge(self, first, second, weight):
+    def add_edge(self, first: int, second: int, weight: int):
         if not any(neigbour.index == second for neigbour in self.graph[first]):
             self.graph[first].append(Node(second, weight))
             self.graph[second].append(Node(first, weight))
             return True
         return False
+
+    def is_vertex(self, vertex: int) -> bool:
+        return vertex in self.graph.keys()
 
     def find_components(self):
         def find_components_recursive(nr, v, components):
@@ -258,3 +262,48 @@ class AdjacencyListWithWeights(AdjacencyList):
                 components[v] = nr
                 find_components_recursive(nr, v, components)
         return components
+
+    def get_edge_weight(self, vertex_1: int, vertex_2: int) -> int:
+        for node in self.graph[vertex_1]:
+            if node.index == vertex_2:
+                return node.weight
+        return None
+
+    def find_shortest_paths(self, first_vertex: int) -> str:
+        if first_vertex not in self.graph.keys():
+            return
+
+        weights = [np.inf for _ in self.graph.keys()]
+        previous = [None for _ in self.graph.keys()]
+
+        weights[first_vertex] = 0
+        ready_vertices = []
+
+        while len(ready_vertices) != len(self.graph):
+            temp_weights = [el if i not in ready_vertices else np.inf for i, el in enumerate(weights)]
+            vertex_1 = temp_weights.index(min(temp_weights))
+            ready_vertices.append(vertex_1)
+
+            for node in self.get_neighbors(vertex_1):
+                vertex_2 = node.index
+                new_weight = self.get_edge_weight(vertex_1, vertex_2) + weights[vertex_1]
+
+                if weights[vertex_2] > new_weight:
+                    weights[vertex_2] = new_weight
+                    previous[vertex_2] = vertex_1
+
+        #TODO pretty display
+        res_string = f'START: {first_vertex}'
+
+        for index in sorted(self.graph.keys()):
+            res_string += f'\nwaga({index}) = {weights[index]} \t ==>  ['
+            trail = [index]
+            
+            while previous[index] is not None:
+                trail.append(previous[index])
+                index = previous[index]
+            
+            res_string += ', '.join(map(lambda v: str(v), reversed(trail)))
+            res_string += ']'
+
+        return res_string
