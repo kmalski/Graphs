@@ -33,11 +33,22 @@ class ExerciseThreeTab(ttk.Frame):
 
         ttk.Label(menu_frame, text='Liczba wierzchołków').grid(row=0, column=0)
 
-        self.nodes_entry = ttk.Entry(menu_frame, width=55)
+        self.nodes_entry = ttk.Entry(menu_frame, width=30)
         self.nodes_entry.grid(row=1, column=0, pady=3)
 
         rand_button = ttk.Button(menu_frame, width=30, text='Generuj spójny graf ważony', command=self.generate_graph)
         rand_button.grid(row=2, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=3, column=0, columnspan=2, sticky='EW', pady=15)
+
+        ttk.Label(menu_frame, text='Wierzchołek startowy').grid(row=4, column=0)
+
+        self.dijkstra_entry = ttk.Entry(menu_frame, width=30)
+        self.dijkstra_entry.grid(row=5, column=0, pady=3)
+
+        dijkstra_button = ttk.Button(menu_frame, width=30, text='Szukaj najkrótszych ścieżek', command=self.initiate_protocol_dijkstra)
+        dijkstra_button.grid(row=6, column=0, pady=3)
 
         
     def add_canvas(self):
@@ -77,4 +88,22 @@ class ExerciseThreeTab(ttk.Frame):
                 break
 
         self.draw_graph()
-        
+
+    def initiate_protocol_dijkstra(self): 
+        if self.graph is None:
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
+            return
+
+        try:
+            vertex = int(self.dijkstra_entry.get())
+        except ValueError:
+            messagebox.showinfo(title='Wykrzyknik!', message='Wierzchołek musi być liczbą naturalną!')
+            return
+
+        if not self.graph.is_vertex(vertex):
+            messagebox.showinfo(title='Wykrzyknik!', message='We wprowadzonym grafie nie ma takiego wierzchołka!')
+            return
+
+        #TODO pretty display
+        res_string = self.graph.find_shortest_paths(vertex)
+        print(res_string)
