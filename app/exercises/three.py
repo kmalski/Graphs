@@ -95,15 +95,29 @@ class ExerciseThreeTab(ttk.Frame):
             return
 
         try:
-            vertex = int(self.dijkstra_entry.get())
+            first_vertex = int(self.dijkstra_entry.get())
         except ValueError:
             messagebox.showinfo(title='Wykrzyknik!', message='Wierzchołek musi być liczbą naturalną!')
             return
 
-        if not self.graph.is_vertex(vertex):
+        if not self.graph.has_vertex(first_vertex):
             messagebox.showinfo(title='Wykrzyknik!', message='We wprowadzonym grafie nie ma takiego wierzchołka!')
             return
 
+        weights, previous = self.graph.find_shortest_paths(first_vertex)
+        
         #TODO pretty display
-        res_string = self.graph.find_shortest_paths(vertex)
+        res_string = f'START: {first_vertex}'
+
+        for index in sorted(self.graph.get_vertices()):
+            res_string += f'\nwaga({index}) = {weights[index]} \t ==>  ['
+            trail = [index]
+            
+            while previous[index] is not None:
+                trail.append(previous[index])
+                index = previous[index]
+            
+            res_string += ', '.join(map(lambda v: str(v), reversed(trail)))
+            res_string += ']'
+
         print(res_string)

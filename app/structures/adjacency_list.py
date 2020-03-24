@@ -243,8 +243,11 @@ class AdjacencyListWithWeights(AdjacencyList):
             return True
         return False
 
-    def is_vertex(self, vertex: int) -> bool:
+    def has_vertex(self, vertex: int) -> bool:
         return vertex in self.graph.keys()
+
+    def get_vertices(self) -> List[Node]:
+        return self.graph.keys()
 
     def find_components(self):
         def find_components_recursive(nr, v, components):
@@ -269,7 +272,7 @@ class AdjacencyListWithWeights(AdjacencyList):
                 return node.weight
         return None
 
-    def find_shortest_paths(self, first_vertex: int) -> str:
+    def find_shortest_paths(self, first_vertex: int) -> List[List[int]]:
         if first_vertex not in self.graph.keys():
             return
 
@@ -292,18 +295,4 @@ class AdjacencyListWithWeights(AdjacencyList):
                     weights[vertex_2] = new_weight
                     previous[vertex_2] = vertex_1
 
-        #TODO pretty display
-        res_string = f'START: {first_vertex}'
-
-        for index in sorted(self.graph.keys()):
-            res_string += f'\nwaga({index}) = {weights[index]} \t ==>  ['
-            trail = [index]
-            
-            while previous[index] is not None:
-                trail.append(previous[index])
-                index = previous[index]
-            
-            res_string += ', '.join(map(lambda v: str(v), reversed(trail)))
-            res_string += ']'
-
-        return res_string
+        return [weights, previous]
