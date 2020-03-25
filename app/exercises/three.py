@@ -99,9 +99,9 @@ class ExerciseThreeTab(ttk.Frame):
         ttk.Separator(self, orient='vertical')\
             .grid(row=0, column=column, pady=5, sticky='NS')
 
-    def draw_graph(self, center=None):
+    def draw_graph(self, center_indices=None):
         if self.graph is not None:
-            utils.draw.draw_graph_with_weights(self.canvas, self.graph, center)
+            utils.draw.draw_graph_with_weights(self.canvas, self.graph, center_indices)
 
     def generate_graph(self):
         try:

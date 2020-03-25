@@ -297,7 +297,7 @@ class AdjacencyListWithWeights(AdjacencyList):
 
         return (weights, previous)
 
-    def calculate_distance_matrix(self) -> List[List[int]]:
+    def calculate_distance_matrix(self) -> np.ndarray:
         dist_matrix = []
 
         for vertex in sorted(self.get_vertices()):
@@ -306,13 +306,13 @@ class AdjacencyListWithWeights(AdjacencyList):
         
         return np.array(dist_matrix)
 
-    def find_graph_center(self) -> List[int]:
+    def find_graph_center(self) -> np.ndarray:
         dist_matrix = self.calculate_distance_matrix()
         weights_sum = list(map(lambda weights: sum(weights), dist_matrix))
         graph_center = np.where(weights_sum == min(weights_sum))[0]
         return graph_center
 
-    def find_minimax_center(self) -> List[int]:
+    def find_minimax_center(self) -> np.ndarray:
         dist_matrix = self.calculate_distance_matrix()
         farthest_vertices = list(map(lambda weights: max(weights), dist_matrix))
         minimax_center = np.where(farthest_vertices == min(farthest_vertices))[0]
