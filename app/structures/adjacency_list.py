@@ -273,11 +273,11 @@ class AdjacencyListWithWeights(AdjacencyList):
         return None
 
     def find_shortest_paths(self, first_vertex: int) -> Tuple[List[int]]:
-        if first_vertex not in self.graph.keys():
+        if first_vertex not in self.get_vertices():
             return
 
-        weights = [np.inf for _ in self.graph.keys()]
-        previous = [None for _ in self.graph.keys()]
+        weights = [np.inf for _ in self.get_vertices()]
+        previous = [None for _ in self.get_vertices()]
 
         weights[first_vertex] = 0
         ready_vertices = []
@@ -296,3 +296,24 @@ class AdjacencyListWithWeights(AdjacencyList):
                     previous[vertex_2] = vertex_1
 
         return (weights, previous)
+
+    def calculate_distance_matrix(self) -> List[List[int]]:
+        dist_matrix = []
+
+        for vertex in sorted(self.get_vertices()):
+            new_row = self.find_shortest_paths(vertex)[0]
+            dist_matrix.append(new_row)
+        
+        return np.array(dist_matrix)
+
+    def find_graph_center(self) -> List[int]:
+        dist_matrix = self.calculate_distance_matrix()
+        weights_sum = list(map(lambda weights: sum(weights), dist_matrix))
+        graph_center = np.where(weights_sum == min(weights_sum))[0]
+        return graph_center
+
+    def find_minimax_center(self) -> List[int]:
+        dist_matrix = self.calculate_distance_matrix()
+        farthest_vertices = list(map(lambda weights: max(weights), dist_matrix))
+        minimax_center = np.where(farthest_vertices == min(farthest_vertices))[0]
+        return minimax_center

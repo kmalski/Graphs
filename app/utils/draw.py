@@ -55,11 +55,15 @@ def draw_graph(canvas, graph, components = None):
 
         canvas.create_text(x, y, text=str(i))
 
-def draw_graph_with_weights(canvas, graph):
+def draw_graph_with_weights(canvas, graph, center_indices=None):
     canvas.delete("all")
 
     if not isinstance(graph, AdjacencyListWithWeights):
         raise TypeError
+
+    if center_indices is not None:
+        rand_color = randomcolor.RandomColor()
+        color = rand_color.generate(luminosity='dark')
 
     n = len(graph.graph)
     center = (canvas.winfo_width() / 2,
@@ -90,5 +94,9 @@ def draw_graph_with_weights(canvas, graph):
             canvas.create_rectangle(text_x - padding, text_y - padding, text_x + padding, text_y + padding, outline="SystemButtonFace", fill="SystemButtonFace")
             canvas.create_text(text_x, text_y, text=str(neighbour.weight))
 
-        create_circle(canvas, x, y, r * 0.2)
+        if center_indices is not None and i in center_indices:
+            create_circle(canvas, x, y, r * 0.2, color, width=3)
+        else:
+            create_circle(canvas, x, y, r * 0.2)
+
         canvas.create_text(x, y, text=str(i))
