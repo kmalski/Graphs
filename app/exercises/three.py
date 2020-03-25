@@ -5,6 +5,7 @@ from tkinter import messagebox
 import utils.draw
 import utils.graph_utils
 import random
+import numpy as np
 from utils.tkinter import ResizingSquareCanvas
 from utils.tkinter import ScrollableFrame
 
@@ -43,13 +44,31 @@ class ExerciseThreeTab(ttk.Frame):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=3, column=0, columnspan=2, sticky='EW', pady=15)
 
-        ttk.Label(menu_frame, text='Wierzchołek startowy').grid(row=4, column=0)
+        ttk.Label(menu_frame, text='Wierzchołek początkowy').grid(row=4, column=0)
 
         self.dijkstra_entry = ttk.Entry(menu_frame, width=30)
         self.dijkstra_entry.grid(row=5, column=0, pady=3)
 
-        dijkstra_button = ttk.Button(menu_frame, width=30, text='Szukaj najkrótszych ścieżek', command=self.initiate_protocol_dijkstra)
+        dijkstra_button = ttk.Button(menu_frame, width=30, text='Szukaj najkrótszych ścieżek', command=self.display_shortest_paths)
         dijkstra_button.grid(row=6, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=7, column=0, columnspan=2, sticky='EW', pady=15)
+
+        dist_matrix_button = ttk.Button(menu_frame, width=30, text='Oblicz macierz odległości', command=self.display_distance_matrix)
+        dist_matrix_button.grid(row=8, column=0, pady=3)
+        
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=9, column=0, columnspan=2, sticky='EW', pady=15)
+
+        graph_center_button = ttk.Button(menu_frame, width=30, text='Wyznacz centrum grafu', command=self.display_graph_center)
+        graph_center_button.grid(row=10, column=0, pady=3)
+        
+        minimax_center_button = ttk.Button(menu_frame, width=30, text='Wyznacz centrum minimax', command=self.display_minimax_center)
+        minimax_center_button.grid(row=11, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=12, column=0, columnspan=2, sticky='EW', pady=15)
 
     def add_canvas(self):
         frame = ttk.Frame(self)
@@ -73,13 +92,16 @@ class ExerciseThreeTab(ttk.Frame):
         frame.bind_vertical_scroll('<MouseWheel>', self)
         frame.bind_horizontal_scroll('<MouseWheel>', frame.scrollbar_x)
 
+    def clear_text(self):
+        self.result['text'] = ''
+
     def add_vertical_separator(self, column):
         ttk.Separator(self, orient='vertical')\
             .grid(row=0, column=column, pady=5, sticky='NS')
 
-    def draw_graph(self):
+    def draw_graph(self, center=None):
         if self.graph is not None:
-            utils.draw.draw_graph_with_weights(self.canvas, self.graph)
+            utils.draw.draw_graph_with_weights(self.canvas, self.graph, center)
 
     def generate_graph(self):
         try:
@@ -102,9 +124,10 @@ class ExerciseThreeTab(ttk.Frame):
             if self.graph.is_connected():
                 break
 
+        self.clear_text()
         self.draw_graph()
 
-    def initiate_protocol_dijkstra(self): 
+    def display_shortest_paths(self): 
         if self.graph is None:
             messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
             return
@@ -121,7 +144,6 @@ class ExerciseThreeTab(ttk.Frame):
 
         weights, previous = self.graph.find_shortest_paths(first_vertex)
         
-        #TODO pretty display
         res_string = f'START: {first_vertex}'
 
         for index in sorted(self.graph.get_vertices()):
@@ -136,3 +158,35 @@ class ExerciseThreeTab(ttk.Frame):
             res_string += ']'
 
         self.result['text'] = res_string
+
+    def display_distance_matrix(self):
+        if self.graph is None:
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
+            return
+        
+        dist_matrix = self.graph.calculate_distance_matrix()
+        
+        #TODO make equal spaces between elements of array (like in print)
+        with np.printoptions(threshold=2500, linewidth=np.inf, formatter={'all': '{0:>3d}'.format}):
+            # print(str(dist_matrix).replace('[', ' ').replace(']', ' '))
+            self.result['text'] = str(dist_matrix).replace('[', ' ').replace(']', ' ')
+
+    def display_graph_center(self):
+        if self.graph is None:
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
+            return
+
+        graph_center = self.graph.find_graph_center()
+        res_string = ', '.join([str(center) for center in graph_center.tolist()])
+        self.result['text'] = f'Centrum grafu: {res_string}'
+        self.draw_graph(graph_center)
+
+    def display_minimax_center(self):
+        if self.graph is None:
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
+            return
+        
+        minimax_center = self.graph.find_minimax_center()
+        res_string = ', '.join([str(center) for center in minimax_center.tolist()])
+        self.result['text'] = f'Centrum minimax: {res_string}'
+        self.draw_graph(minimax_center)
