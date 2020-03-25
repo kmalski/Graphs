@@ -5,7 +5,7 @@ from utils.pythonic import all_equal
 from collections import defaultdict
 from dataclasses import dataclass
 from copy import deepcopy
-from typing import List
+from typing import List, Tuple
 import numpy as np
 import random
 
@@ -236,7 +236,7 @@ class AdjacencyListWithWeights(AdjacencyList):
             result += '\n'
         return result
 
-    def add_edge(self, first: int, second: int, weight: int):
+    def add_edge(self, first: int, second: int, weight: int) -> bool:
         if not any(neigbour.index == second for neigbour in self.graph[first]):
             self.graph[first].append(Node(second, weight))
             self.graph[second].append(Node(first, weight))
@@ -272,7 +272,7 @@ class AdjacencyListWithWeights(AdjacencyList):
                 return node.weight
         return None
 
-    def find_shortest_paths(self, first_vertex: int) -> List[List[int]]:
+    def find_shortest_paths(self, first_vertex: int) -> Tuple[List[int]]:
         if first_vertex not in self.graph.keys():
             return
 
@@ -295,4 +295,4 @@ class AdjacencyListWithWeights(AdjacencyList):
                     weights[vertex_2] = new_weight
                     previous[vertex_2] = vertex_1
 
-        return [weights, previous]
+        return (weights, previous)
