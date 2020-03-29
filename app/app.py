@@ -1,7 +1,7 @@
 from exercises.one import ExerciseOneTab
 from exercises.two import ExerciseTwoTab
 from exercises.three import ExerciseThreeTab
-
+from exercises.four import ExerciseFourTab
 
 import tkinter as tk
 from tkinter import ttk
@@ -32,6 +32,9 @@ class App (tk.Tk):
 
         exercise_3 = ExerciseThreeTab(self)
         self.tabs.add(exercise_3, text='Zadanie 3')
+
+        exercise_4 = ExerciseFourTab(self)
+        self.tabs.add(exercise_4, text='Zadanie 4')
 
     def toggle_fullscreen(self, event=None):
         self.screen_state = not self.screen_state

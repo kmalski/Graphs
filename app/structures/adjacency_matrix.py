@@ -42,7 +42,7 @@ class AdjacencyMatrix:
     def get_neighbors(self, vertex: int) -> list:
         return [i for i, elem in enumerate(self.matrix[vertex]) if elem == 1]
 
-    def get_number_of_edges(self) ->int:
+    def get_number_of_edges(self) -> int:
         return sum(sum(self.matrix)) // 2
 
     def to_incidence_matrix(self):
@@ -63,13 +63,12 @@ class AdjacencyMatrix:
 
         return adjacency_list
 
-
     def to_adjacency_list_with_weights(self, weights):
         adjacency_list = adj_list.AdjacencyListWithWeights.init_empty()
 
         weight_number = 0
         for vertex in range(len(self.matrix)):
-            adjacency_list.graph[vertex] #creating isolated nodes
+            adjacency_list.graph[vertex]  # creating isolated nodes
             if any(self.matrix[vertex]):
                 neighbours = self.get_neighbors(vertex)
                 for neighbour in neighbours:
@@ -79,3 +78,21 @@ class AdjacencyMatrix:
 
         return adjacency_list
 
+
+class DirectedAdjacencyMatrix(AdjacencyMatrix):
+    def __init__(self, matrix):
+        self.matrix = matrix
+
+    def add_edge(self, vertex_from: int, vertex_to: int):
+        self.matrix[vertex_from][vertex_to] = 1
+
+    def get_number_of_edges(self) -> int:
+        return sum(sum(self.matrix))
+
+    def to_directed_adjacency_list(self):
+        adjacency_list = adj_list.DirectedAdjacencyList.init_empty()
+
+        for vertex in range(len(self.matrix)):
+            adjacency_list.set_neighbors(vertex, self.get_neighbors(vertex))
+
+        return adjacency_list

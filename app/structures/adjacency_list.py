@@ -348,3 +348,12 @@ class DirectedAdjacencyList(AdjacencyList):
 
     def get_amount_of_edges(self) -> int:
         return sum(map(lambda neighbors: len(neighbors), self.graph.values()))
+
+    def to_adjacency_matrix(self):
+        matrix = adj_matrix.DirectedAdjacencyMatrix.init_with_zeros(self.get_amount_of_vertices())
+
+        for vertex_from, row in self.graph.items():
+            for vertex_to in row:
+                matrix.add_edge(vertex_from, vertex_to)
+
+        return matrix

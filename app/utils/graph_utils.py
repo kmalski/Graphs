@@ -1,5 +1,5 @@
 from structures.adjacency_list import AdjacencyList
-from structures.adjacency_matrix import AdjacencyMatrix
+from structures.adjacency_matrix import AdjacencyMatrix, DirectedAdjacencyMatrix
 
 import numpy as np
 import random
@@ -55,7 +55,8 @@ def randomize(graph, max_it: int = 100):
 
     return False
 
-def gen_randgraph_NL(N: int, L: int) -> AdjacencyMatrix:
+
+def gen_rand_graph_NL(N: int, L: int) -> AdjacencyMatrix:
     matrix = np.zeros((N, N), int)
     tmp = 0
     while tmp < L:
@@ -68,6 +69,7 @@ def gen_randgraph_NL(N: int, L: int) -> AdjacencyMatrix:
 
     return AdjacencyMatrix.from_matrix(matrix)
 
+
 def gen_randgraph_NP(N: int, P: float) -> AdjacencyMatrix:
     matrix = np.zeros((N, N), int)
     for i in range(N):
@@ -75,8 +77,19 @@ def gen_randgraph_NP(N: int, P: float) -> AdjacencyMatrix:
             if random.random() < P:
                 matrix[i][j] = 1
                 matrix[j][i] = 1
-    
+
     return AdjacencyMatrix.from_matrix(matrix)
+
+
+def gen_rand_digraph_NP(N: int, P: float) -> DirectedAdjacencyMatrix:
+    matrix = np.zeros((N, N), int)
+    for i in range(N):
+        for j in range(N):
+            if random.random() < P:
+                matrix[i][j] = 1
+
+    return DirectedAdjacencyMatrix.from_matrix(matrix)
+
 
 def randomize_times(graph, n: int, max_it=100):
     for _ in range(n):
@@ -108,6 +121,7 @@ def generate_random_euler_graph(verticles_amount: int) -> AdjacencyList:
 
         if is_graphic_sequence(sequence):
             return AdjacencyList.from_graphic_sequence(sequence)
+
 
 def generate_k_regular_graph(verticles_amount: int, degree: int) -> AdjacencyList:
     sequence = verticles_amount * [degree]
