@@ -194,7 +194,7 @@ class ExerciseOneTab(ttk.Frame):
             messagebox.showinfo(title='Wykrzyknik!', message='Liczba krawędzi jest zbyt duża!')
             return
 
-        self.graph = utils.graph_utils.gen_randgraph_NL(n, l)
+        self.graph = utils.graph_utils.gen_rand_graph_NL(n, l)
         self.draw_graph()
         self.print_graph()
 
@@ -214,7 +214,7 @@ class ExerciseOneTab(ttk.Frame):
             messagebox.showinfo(title='Wykrzyknik!', message='Prawdopodobieństwo musi być z przedziału [0, 1]!')
             return
 
-        self.graph = utils.graph_utils.gen_randgraph_NP(n, p)
+        self.graph = utils.graph_utils.gen_rand_graph_NP(n, p)
         self.draw_graph()
         self.print_graph()
 
