@@ -99,3 +99,6 @@ class DirectedAdjacencyMatrix(AdjacencyMatrix):
             adjacency_list.set_neighbors(vertex, self.get_neighbors(vertex))
 
         return adjacency_list
+
+    def to_adjacency_list(self):
+        return self.to_directed_adjacency_list()

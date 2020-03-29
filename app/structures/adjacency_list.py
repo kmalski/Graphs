@@ -1,6 +1,6 @@
 import structures.adjacency_matrix as adj_matrix
 import structures.incidence_matrix as inc_matrix
-from utils.pythonic import all_equal
+from utils.pythonic import all_equal, MutableInt
 
 from collections import defaultdict
 from dataclasses import dataclass
@@ -353,7 +353,7 @@ class DirectedAdjacencyList(AdjacencyList):
         return sum(map(lambda neighbors: len(neighbors), self.graph.values()))
 
     def get_transposed(self):
-        adj_matrix = self.to_directed_adjacency_matrix().get_transposed()
+        adj_matrix = self.to_adjacency_matrix().get_transposed()
         return adj_matrix.to_adjacency_list()
 
     def to_directed_adjacency_matrix(self):
@@ -365,16 +365,19 @@ class DirectedAdjacencyList(AdjacencyList):
 
         return matrix
 
+    def to_adjacency_matrix(self):
+        return self.to_directed_adjacency_matrix()
+
     def find_components(self) -> Dict[int, List]:
 
         def visit(v, graph, d, f, t):
             t += 1
-            d[v] = t
+            d[v] = t.get()
             for u in graph.get_neighbors(v):
                 if d[u] == -1:
                     visit(u, graph, d, f, t)
             t += 1
-            f[v] = t
+            f[v] = t.get()
 
         def find_components_recursive(nr, v, graph_trans, comp):
             for u in graph_trans.get_neighbors(v):
@@ -385,7 +388,7 @@ class DirectedAdjacencyList(AdjacencyList):
         d = {}
         f = {}
         comp = {}
-        t = 0
+        t = MutableInt(0)
 
         for v in self.graph:
             d[v] = -1
