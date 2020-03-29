@@ -84,11 +84,18 @@ class AdjacencyList:
         self.graph[vertex_1].append(vertex_2)
         self.graph[vertex_2].append(vertex_1)
 
+    def add_vertex(self, vertex: int):
+        self.graph[vertex] = []
+
     def remove_edge(self, vertex_1: int, vertex_2: int):
         self.graph[vertex_1].remove(vertex_2)
         self.graph[vertex_2].remove(vertex_1)
 
     def remove_vertex(self, vertex: int):
+        for v in self.graph.values():
+            if vertex in v:
+                v.remove(vertex)
+
         self.graph.pop(vertex)
 
     def is_edge(self, vertex_1: int, vertex_2: int) -> bool:
@@ -317,3 +324,27 @@ class AdjacencyListWithWeights(AdjacencyList):
         farthest_vertices = list(map(lambda weights: max(weights), dist_matrix))
         minimax_center = np.where(farthest_vertices == min(farthest_vertices))[0]
         return minimax_center
+
+
+class DirectedAdjacencyList(AdjacencyList):
+    def __init__(self, graph):
+        self.graph = graph
+
+    def add_edge(self, vertex_from: int, vertex_to: int):
+        self.graph[vertex_from].append(vertex_to)
+
+    def remove_edge(self, vertex_from: int, vertex_to: int):
+        self.graph[vertex_from].remove(vertex_to)
+
+    def remove_vertex(self, vertex: int):
+        for v in self.graph.values():
+            if vertex in v:
+                v.remove(vertex)
+
+        self.graph.pop(vertex)
+
+    def is_edge(self, vertex_from: int, vertex_to: int) -> bool:
+        return vertex_to in self.graph[vertex_from]
+
+    def get_amount_of_edges(self) -> int:
+        return sum(map(lambda neighbors: len(neighbors), self.graph.values()))
