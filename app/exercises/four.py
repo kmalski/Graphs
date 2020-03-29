@@ -6,6 +6,7 @@ from utils.tkinter import ResizingSquareCanvas, ScrollableFrame, InfoLabel
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+from collections import defaultdict
 
 
 class ExerciseFourTab(ttk.Frame):
@@ -123,9 +124,14 @@ class ExerciseFourTab(ttk.Frame):
             graph = self.graph.to_directed_adjacency_list()
 
         components = graph.find_components()
+        grouped_comp = defaultdict(list)
+        for v, nr in components.items():
+            grouped_comp[nr].append(v)
+        grouped_comp = dict(sorted(grouped_comp.items()))
+
         res_string = 'Silnie spójne składowe\n'
-        for comp_nr, vertices in components.items():
+        for comp_nr, vertices in grouped_comp.items():
             res_string += f'{comp_nr}: {vertices}\n'
 
         self.result.show_normal(res_string)
-        # self.draw_graph(components)
+        utils.draw.draw_directed_graph(self.canvas, self.graph, components)

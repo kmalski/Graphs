@@ -109,7 +109,7 @@ def draw_directed_graph(canvas, graph, components=None):
 
     if components:
         rand_color = randomcolor.RandomColor()
-        colors = rand_color.generate(count=max(components), luminosity='dark')
+        colors = rand_color.generate(count=max(components.values()), luminosity='dark')
 
     graph_to_draw = graph
     if not isinstance(graph, AdjacencyList):
@@ -133,7 +133,7 @@ def draw_directed_graph(canvas, graph, components=None):
             neighbour_x = center[0] + (r * 0.8) * sin(neighbour_angle)
             neighbour_y = center[1] - (r * 0.8) * cos(neighbour_angle)
 
-            if components:
+            if components and components[i] == components[neighbour]:
                 canvas.create_line(x, y, neighbour_x, neighbour_y, arrow='last', fill=colors[components[i] - 1], width=2)
             else:
                 canvas.create_line(x, y, neighbour_x, neighbour_y, arrow='last')
