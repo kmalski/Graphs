@@ -1,18 +1,10 @@
-import utils.tkinter
 import utils.draw
 import utils.graph_utils
-from structures.adjacency_list import AdjacencyList
-from structures.adjacency_matrix import AdjacencyMatrix
-from structures.incidence_matrix import IncidenceMatrix
-from utils.tkinter import ResizingSquareCanvas
-from utils.tkinter import ScrollableFrame
+from structures.adjacency_list import AdjacencyList, DirectedAdjacencyList
+from utils.tkinter import ResizingSquareCanvas, ScrollableFrame, InfoLabel
 
-import numpy as np
 import tkinter as tk
-import pathlib
-import random
 from tkinter import messagebox
-from tkinter import filedialog
 from tkinter import ttk
 
 
@@ -41,6 +33,7 @@ class ExerciseFourTab(ttk.Frame):
         menu_frame.grid(row=0, column=0, sticky='N', padx=10, pady=10)
 
         ########################### 1 ###########################
+
         gen_np_frame = ttk.Frame(menu_frame)
         gen_np_frame.grid(row=0, column=0)
 
@@ -58,12 +51,20 @@ class ExerciseFourTab(ttk.Frame):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=1, column=0, sticky='EW', pady=15)
 
+        ########################### 2 ###########################
+
+        comp_button = ttk.Button(menu_frame, width=30, text='Wyznacz silne spójne składowe', command=self.find_components)
+        comp_button.grid(row=2, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=3, column=0, columnspan=2, sticky='EW', pady=15)
+
     def add_text_frame(self):
         frame = ScrollableFrame(self)
         frame.grid(row=0, column=2, sticky='NSWE')
         frame.grid_propagate(False)
 
-        self.result = ttk.Label(frame.scrollable_frame, font=("Helvetica", 16))
+        self.result = InfoLabel(frame.scrollable_frame, font=("Helvetica", 16))
         self.result.grid(row=1, column=0)
 
         frame.bind_vertical_scroll('<MouseWheel>', self)
@@ -90,10 +91,7 @@ class ExerciseFourTab(ttk.Frame):
 
     def print_graph(self):
         if self.graph is not None:
-            self.result['text'] = str(self.graph)
-
-    def clear_text(self):
-        self.result['text'] = ''
+            self.result.show_normal(str(self.graph))
 
     def gen_NP(self, event=None):
         try:
@@ -114,3 +112,20 @@ class ExerciseFourTab(ttk.Frame):
         self.graph = utils.graph_utils.gen_rand_digraph_NP(n, p).to_directed_adjacency_list()
         self.draw_graph()
         self.print_graph()
+
+    def find_components(self, event=None):
+        if self.graph is None:
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
+            return
+
+        graph = self.graph
+        if not isinstance(self.graph, DirectedAdjacencyList):
+            graph = self.graph.to_directed_adjacency_list()
+
+        components = graph.find_components()
+        res_string = 'Silnie spójne składowe\n'
+        for comp_nr, vertices in components.items():
+            res_string += f'{comp_nr}: {vertices}\n'
+
+        self.result.show_normal(res_string)
+        # self.draw_graph(components)

@@ -5,7 +5,7 @@ from utils.pythonic import all_equal
 from collections import defaultdict
 from dataclasses import dataclass
 from copy import deepcopy
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 import numpy as np
 import random
 
@@ -108,13 +108,16 @@ class AdjacencyList:
     def is_bridge(self, vertex_1, vertex_2):
         if len(self.graph[vertex_1]) == 1 or len(self.graph[vertex_2]) == 1:
             return True
-        
+
         graph = deepcopy(self)
         graph.remove_edge(vertex_1, vertex_2)
         return not graph.is_connected()
 
     def get_neighbors(self, vertex: int) -> list:
         return self.graph[vertex]
+
+    def get_vertices(self) -> list:
+        return self.graph.keys()
 
     def get_amount_of_edges(self) -> int:
         amount_of_edges = sum(map(lambda neighbors: len(neighbors), self.graph.values()))
@@ -214,7 +217,7 @@ class AdjacencyList:
             if vertex in self.graph[visited[0]]:
                 visited.append(visited[0])
             return True
-        
+
         for v in self.get_neighbors(vertex):
             if v not in visited:
                 flag = self.is_hamiltonian(v, visited)
@@ -222,7 +225,7 @@ class AdjacencyList:
         if flag:
             return True
 
-        visited.pop(-1) 
+        visited.pop(-1)
 
 
 @dataclass(eq=True, order=True)
@@ -310,7 +313,7 @@ class AdjacencyListWithWeights(AdjacencyList):
         for vertex in sorted(self.get_vertices()):
             new_row = self.find_shortest_paths(vertex)[0]
             dist_matrix.append(new_row)
-        
+
         return np.array(dist_matrix)
 
     def find_graph_center(self) -> np.ndarray:
@@ -349,7 +352,11 @@ class DirectedAdjacencyList(AdjacencyList):
     def get_amount_of_edges(self) -> int:
         return sum(map(lambda neighbors: len(neighbors), self.graph.values()))
 
-    def to_adjacency_matrix(self):
+    def get_transposed(self):
+        adj_matrix = self.to_directed_adjacency_matrix().get_transposed()
+        return adj_matrix.to_adjacency_list()
+
+    def to_directed_adjacency_matrix(self):
         matrix = adj_matrix.DirectedAdjacencyMatrix.init_with_zeros(self.get_amount_of_vertices())
 
         for vertex_from, row in self.graph.items():
@@ -357,3 +364,52 @@ class DirectedAdjacencyList(AdjacencyList):
                 matrix.add_edge(vertex_from, vertex_to)
 
         return matrix
+
+    def find_components(self) -> Dict[int, List]:
+
+        def visit(v, graph, d, f, t):
+            t += 1
+            d[v] = t
+            for u in graph.get_neighbors(v):
+                if d[u] == -1:
+                    visit(u, graph, d, f, t)
+            t += 1
+            f[v] = t
+
+        def find_components_recursive(nr, v, graph_trans, comp):
+            for u in graph_trans.get_neighbors(v):
+                if comp[u] == -1:
+                    comp[u] = nr
+                    find_components_recursive(nr, u, graph_trans, comp)
+
+        d = {}
+        f = {}
+        comp = {}
+        t = 0
+
+        for v in self.graph:
+            d[v] = -1
+            f[v] = -1
+
+        for v in self.graph:
+            if d[v] == -1:
+                visit(v, self, d, f, t)
+
+        graph_trans = self.get_transposed()
+        nr = 0
+
+        for v in graph_trans.get_vertices():
+            comp[v] = -1
+
+        vertices = list(graph_trans.get_vertices())
+        vertices.sort(key=lambda v: f[v], reverse=True)
+        for v in vertices:
+            if comp[v] == -1:
+                nr += 1
+                comp[v] = nr
+                find_components_recursive(nr, v, graph_trans, comp)
+
+        result = defaultdict(list)
+        for v, nr in comp.items():
+            result[nr].append(v)
+        return dict(sorted(result.items()))

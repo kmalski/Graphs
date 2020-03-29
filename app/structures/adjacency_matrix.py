@@ -89,6 +89,9 @@ class DirectedAdjacencyMatrix(AdjacencyMatrix):
     def get_number_of_edges(self) -> int:
         return sum(sum(self.matrix))
 
+    def get_transposed(self):
+        return self.from_matrix(self.matrix.transpose())
+
     def to_directed_adjacency_list(self):
         adjacency_list = adj_list.DirectedAdjacencyList.init_empty()
 

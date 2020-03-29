@@ -85,7 +85,7 @@ def gen_rand_digraph_NP(N: int, P: float) -> DirectedAdjacencyMatrix:
     matrix = np.zeros((N, N), int)
     for i in range(N):
         for j in range(N):
-            if random.random() < P:
+            if random.random() < P and i != j:
                 matrix[i][j] = 1
 
     return DirectedAdjacencyMatrix.from_matrix(matrix)
