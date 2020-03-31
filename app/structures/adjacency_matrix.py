@@ -1,5 +1,6 @@
 import structures.adjacency_list as adj_list
 import structures.incidence_matrix as inc_matrix
+import structures.weighted_adjacency_list as wgt_adj_list
 
 import numpy as np
 import sys
@@ -63,8 +64,8 @@ class AdjacencyMatrix:
 
         return adjacency_list
 
-    def to_adjacency_list_with_weights(self, weights):
-        adjacency_list = adj_list.AdjacencyListWithWeights.init_empty()
+    def to_weighted_adjacency_list(self, weights):
+        adjacency_list = wgt_adj_list.WeightedAdjacencyList.init_empty()
 
         weight_number = 0
         for vertex in range(len(self.matrix)):

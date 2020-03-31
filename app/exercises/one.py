@@ -1,28 +1,23 @@
-import utils.tkinter
 import utils.draw
 import utils.graph_utils
+from exercises.base import BaseTab
 from structures.adjacency_list import AdjacencyList
 from structures.adjacency_matrix import AdjacencyMatrix
 from structures.incidence_matrix import IncidenceMatrix
-from utils.tkinter import ResizingSquareCanvas
-from utils.tkinter import ScrollableFrame
+from utils.tkinter import ResizingSquareCanvas, ScrollableFrame
 
-import numpy as np
-import tkinter as tk
 import pathlib
 import random
-from tkinter import messagebox
-from tkinter import filedialog
-from tkinter import ttk
+import numpy as np
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox
 
 
-class ExerciseOneTab(ttk.Frame):
+class ExerciseOneTab(BaseTab):
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
 
         np.set_printoptions(threshold=2500, linewidth=np.inf)
-
-        self.graph = None
 
         self.grid_columnconfigure(0, weight=0)  # menu
         self.grid_columnconfigure(1, weight=0)  # separator
@@ -34,13 +29,15 @@ class ExerciseOneTab(ttk.Frame):
 
         self.add_menu()
         self.add_vertical_separator(column=1)
-        self.add_graph_text_representation()
+        self.add_text_frame(row=0, column=2)
         self.add_vertical_separator(column=3)
-        self.add_canvas()
+        self.add_canvas(row=0, column=4)
 
     def add_menu(self):
         menu_frame = ttk.Frame(self)
         menu_frame.grid(row=0, column=0, sticky='N', padx=10, pady=10)
+
+        ########################### 1 ###########################
 
         ttk.Button(menu_frame, text='Wczytaj graf...', width=30, command=self.load_graph)\
             .grid(row=0, column=0, pady=3, columnspan=2)
@@ -49,6 +46,8 @@ class ExerciseOneTab(ttk.Frame):
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=2, column=0, columnspan=2, sticky='EW', pady=15)
+
+        ########################### 2 ###########################
 
         ttk.Button(menu_frame, text='Konwertuj na listę sąsiedztwa', width=30, command=self.convert_to_adj_list)\
             .grid(row=3, column=0, pady=3, columnspan=2)
@@ -59,6 +58,8 @@ class ExerciseOneTab(ttk.Frame):
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=6, column=0, columnspan=2, sticky='EW', pady=15)
+
+        ########################### 3 ###########################
 
         ttk.Label(menu_frame, text='N').grid(row=7, column=0)
         self.verticles_entry_1 = ttk.Entry(menu_frame, width=10)
@@ -74,43 +75,21 @@ class ExerciseOneTab(ttk.Frame):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=10, column=0, columnspan=2, sticky='EW', pady=15)
 
+        ########################### 4 ###########################
+
         ttk.Label(menu_frame, text='N').grid(row=11, column=0)
         self.verticles_entry_2 = ttk.Entry(menu_frame, width=10)
         self.verticles_entry_2.grid(row=12, column=0, pady=2)
+
         ttk.Label(menu_frame, text='P').grid(row=11, column=1)
         self.prob_entry = ttk.Entry(menu_frame, width=10)
         self.prob_entry.grid(row=12, column=1, pady=2)
+
         ttk.Button(menu_frame, text='Generuj', width=15, command=self.gen_NP_callback)\
             .grid(row=13, column=0, columnspan=2, pady=10)
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=14, column=0, columnspan=2, sticky='EW', pady=15)
-
-    def add_graph_text_representation(self):
-        frame = ScrollableFrame(self)
-        frame.grid(row=0, column=2, sticky='NSWE')
-        frame.grid_propagate(False)
-
-        self.graph_representation = ttk.Label(frame.scrollable_frame, font=("Helvetica", 16))
-        self.graph_representation.grid(row=0, column=0)
-
-        frame.bind_vertical_scroll('<MouseWheel>', self)
-        frame.bind_horizontal_scroll('<MouseWheel>', frame.scrollbar_x)
-
-    def add_canvas(self):
-        frame = ttk.Frame(self)
-        frame.grid(row=0, column=4, sticky='NSWE')
-        frame.grid_propagate(False)
-
-        self.canvas = ResizingSquareCanvas(frame, width=1, height=1)
-        self.canvas.grid(row=0, column=0)
-
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_rowconfigure(0, weight=1)
-
-    def add_vertical_separator(self, column):
-        ttk.Separator(self, orient='vertical')\
-            .grid(row=0, column=column, pady=5, sticky='NS')
 
     def load_graph(self, event=None):
         self.graph = None
@@ -154,10 +133,6 @@ class ExerciseOneTab(ttk.Frame):
             self.graph.to_file(file_path)
         else:
             self.graph.to_file(file_path, add_extension=True)
-
-    def print_graph(self):
-        if self.graph is not None:
-            self.graph_representation['text'] = str(self.graph)
 
     def draw_graph(self):
         if self.graph is not None:
