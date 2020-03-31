@@ -1,22 +1,20 @@
 import utils.draw
+from exercises.base import BaseTab
 from structures.adjacency_list import AdjacencyList
 from utils.graph_utils import is_graphic_sequence, randomize, find_biggest_components,\
     generate_random_euler_graph, randomize_times, generate_k_regular_graph
-from utils.tkinter import ResizingSquareCanvas, ScrollableFrame, InfoLabel
+from utils.tkinter import InfoLabel, ResizingSquareCanvas
 
 import random
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 
 max_rand_it = 1000
 
 
-class ExerciseTwoTab(ttk.Frame):
+class ExerciseTwoTab(BaseTab):
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
-
-        self.graph = None
 
         self.grid_columnconfigure(0, weight=0)  # menu
         self.grid_columnconfigure(1, weight=0)  # separator
@@ -25,11 +23,8 @@ class ExerciseTwoTab(ttk.Frame):
         self.grid_rowconfigure(0, weight=1)
 
         self.add_menu()
-
-        ttk.Separator(self, orient='vertical')\
-            .grid(row=0, column=1, pady=5, sticky='NS')
-
-        self.add_canvas()
+        self.add_vertical_separator(column=1)
+        self.add_canvas(row=0, column=2)
 
     def add_menu(self):
         menu_frame = ttk.Frame(self)
@@ -117,7 +112,7 @@ class ExerciseTwoTab(ttk.Frame):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=19, column=0, columnspan=2, sticky='EW', pady=15)
 
-    def add_canvas(self):
+    def add_canvas(self, row, column):
         frame = ttk.Frame(self)
         frame.grid(row=0, column=2, sticky='NSWE')
         frame.grid_propagate(False)
@@ -136,10 +131,6 @@ class ExerciseTwoTab(ttk.Frame):
     def draw_graph(self, components=None):
         if self.graph is not None:
             utils.draw.draw_graph(self.canvas, self.graph, components)
-
-    def clear_graph(self):
-        self.graph = None
-        self.canvas.delete('all')
 
     def clear_info_labels(self):
         self.randomize_result.hide()
@@ -263,8 +254,8 @@ Zastanów się czy zamiana krawędzi jest możliwa.''')
         degree = self.regular_k.get()
 
         if not verticles_amount or not degree:
-                messagebox.showinfo(title='Wykrzyknik!', message='Musisz wprowadzić liczbę wierzchołków oraz ich stopień!')
-                return
+            messagebox.showinfo(title='Wykrzyknik!', message='Musisz wprowadzić liczbę wierzchołków oraz ich stopień!')
+            return
 
         try:
             verticles_amount = int(verticles_amount)
@@ -295,7 +286,7 @@ Zastanów się czy zamiana krawędzi jest możliwa.''')
         hamiltonian_cycle = []
 
         if self.graph.is_hamiltonian(0, hamiltonian_cycle):
-            res_string = '\nKolejne wierzchołki cyklu Hamiltona: ' 
+            res_string = '\nKolejne wierzchołki cyklu Hamiltona: '
             res_string += ' - '.join(list(map(lambda x: str(x), hamiltonian_cycle)))
         else:
             res_string = 'Graf nie jest hamiltonowski'

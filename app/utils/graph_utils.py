@@ -56,6 +56,11 @@ def randomize(graph, max_it: int = 100):
     return False
 
 
+def randomize_times(graph, n: int, max_it=100):
+    for _ in range(n):
+        randomize(graph, max_it)
+
+
 def gen_rand_graph_NL(N: int, L: int) -> AdjacencyMatrix:
     matrix = np.zeros((N, N), int)
     tmp = 0
@@ -70,7 +75,7 @@ def gen_rand_graph_NL(N: int, L: int) -> AdjacencyMatrix:
     return AdjacencyMatrix.from_matrix(matrix)
 
 
-def gen_randgraph_NP(N: int, P: float) -> AdjacencyMatrix:
+def gen_rand_graph_NP(N: int, P: float) -> AdjacencyMatrix:
     matrix = np.zeros((N, N), int)
     for i in range(N):
         for j in range(i):
@@ -91,9 +96,21 @@ def gen_rand_digraph_NP(N: int, P: float) -> DirectedAdjacencyMatrix:
     return DirectedAdjacencyMatrix.from_matrix(matrix)
 
 
-def randomize_times(graph, n: int, max_it=100):
-    for _ in range(n):
-        randomize(graph, max_it)
+def generate_random_euler_graph(verticles_amount: int) -> AdjacencyList:
+    while True:
+        sequence = 2 * [random.randrange(2, verticles_amount, 2) for _ in range(verticles_amount // 2)]
+
+        if len(sequence) == verticles_amount - 1:
+            sequence.append(random.randrange(2, verticles_amount, 2))
+
+        if is_graphic_sequence(sequence):
+            return AdjacencyList.from_graphic_sequence(sequence)
+
+
+def generate_k_regular_graph(verticles_amount: int, degree: int) -> AdjacencyList:
+    sequence = verticles_amount * [degree]
+
+    return AdjacencyList.from_graphic_sequence(sequence)
 
 
 def find_biggest_components(components: List[int]) -> Tuple[List[int]]:
@@ -110,20 +127,3 @@ def find_biggest_components(components: List[int]) -> Tuple[List[int]]:
                                    if component == component_name])
 
     return tuple(biggest_components)
-
-
-def generate_random_euler_graph(verticles_amount: int) -> AdjacencyList:
-    while True:
-        sequence = 2 * [random.randrange(2, verticles_amount, 2) for _ in range(verticles_amount // 2)]
-
-        if len(sequence) == verticles_amount - 1:
-            sequence.append(random.randrange(2, verticles_amount, 2))
-
-        if is_graphic_sequence(sequence):
-            return AdjacencyList.from_graphic_sequence(sequence)
-
-
-def generate_k_regular_graph(verticles_amount: int, degree: int) -> AdjacencyList:
-    sequence = verticles_amount * [degree]
-
-    return AdjacencyList.from_graphic_sequence(sequence)

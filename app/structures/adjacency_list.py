@@ -3,16 +3,18 @@ import structures.incidence_matrix as inc_matrix
 from utils.pythonic import all_equal
 
 from collections import defaultdict
-from dataclasses import dataclass
 from copy import deepcopy
 from typing import List, Tuple, Dict
-import numpy as np
 import random
 
 
 class AdjacencyList:
     def __init__(self, graph):
         self.graph = graph
+
+    @classmethod
+    def init_empty(cls):
+        return cls(defaultdict(list))
 
     @classmethod
     def from_file(cls, file_path: str):
@@ -30,10 +32,6 @@ class AdjacencyList:
                 graph[int(vertex)] = list(map(lambda x: int(x), neighbors))
 
         return cls(graph)
-
-    @classmethod
-    def init_empty(cls):
-        return cls(defaultdict(list))
 
     @classmethod
     def from_graphic_sequence(cls, sequence_par: list):
@@ -98,22 +96,7 @@ class AdjacencyList:
 
         self.graph.pop(vertex)
 
-    def is_edge(self, vertex_1: int, vertex_2: int) -> bool:
-        return vertex_1 in self.graph[vertex_2]
-
-    def is_connected(self):
-        components = self.find_components()
-        return all_equal(list(filter(lambda x: x != -1, components)))
-
-    def is_bridge(self, vertex_1, vertex_2):
-        if len(self.graph[vertex_1]) == 1 or len(self.graph[vertex_2]) == 1:
-            return True
-
-        graph = deepcopy(self)
-        graph.remove_edge(vertex_1, vertex_2)
-        return not graph.is_connected()
-
-    def get_neighbors(self, vertex: int) -> list:
+    def get_neighbors(self, vertex: int) -> List:
         return self.graph[vertex]
 
     def get_vertices(self) -> list:
@@ -146,6 +129,39 @@ class AdjacencyList:
                 return ((a, b), edge)
 
         return None
+
+    def is_edge(self, vertex_1: int, vertex_2: int) -> bool:
+        return vertex_1 in self.graph[vertex_2]
+
+    def is_connected(self):
+        components = self.find_components()
+        return all_equal(list(filter(lambda x: x != -1, components)))
+
+    def is_bridge(self, vertex_1, vertex_2):
+        if len(self.graph[vertex_1]) == 1 or len(self.graph[vertex_2]) == 1:
+            return True
+
+        graph = deepcopy(self)
+        graph.remove_edge(vertex_1, vertex_2)
+        return not graph.is_connected()
+
+    def is_hamiltonian(self, vertex: int, visited: List[int]) -> bool:
+        visited.append(vertex)
+        flag = False
+
+        if len(visited) == len(self.graph):
+            if vertex in self.graph[visited[0]]:
+                visited.append(visited[0])
+            return True
+
+        for v in self.get_neighbors(vertex):
+            if v not in visited:
+                flag = self.is_hamiltonian(v, visited)
+
+        if flag:
+            return True
+
+        visited.pop(-1)
 
     def to_adjacency_matrix(self):
         matrix = adj_matrix.AdjacencyMatrix.init_with_zeros(len(self.graph))
@@ -209,125 +225,6 @@ class AdjacencyList:
         path.append(curr_vertex)
         return path
 
-    def is_hamiltonian(self, vertex: int, visited: List[int]) -> bool:
-        visited.append(vertex)
-        flag = False
-
-        if len(visited) == len(self.graph):
-            if vertex in self.graph[visited[0]]:
-                visited.append(visited[0])
-            return True
-
-        for v in self.get_neighbors(vertex):
-            if v not in visited:
-                flag = self.is_hamiltonian(v, visited)
-
-        if flag:
-            return True
-
-        visited.pop(-1)
-
-
-@dataclass(eq=True, order=True)
-class Node:
-    index: int
-    weight: int
-
-
-class AdjacencyListWithWeights(AdjacencyList):
-    def __init__(self, graph):
-        self.graph = graph
-
-    def __str__(self):
-        result = ''
-        for vertex, neighbors in self.graph.items():
-            result += str(vertex) + ': '
-            result += ', '.join(map(str, neighbors))
-            result += '\n'
-        return result
-
-    def add_edge(self, first: int, second: int, weight: int) -> bool:
-        if not any(neigbour.index == second for neigbour in self.graph[first]):
-            self.graph[first].append(Node(second, weight))
-            self.graph[second].append(Node(first, weight))
-            return True
-        return False
-
-    def has_vertex(self, vertex: int) -> bool:
-        return vertex in self.graph.keys()
-
-    def get_vertices(self) -> List[Node]:
-        return self.graph.keys()
-
-    def find_components(self):
-        def find_components_recursive(nr, v, components):
-            for u in self.get_neighbors(v):
-                if components[u.index] == -1:
-                    components[u.index] = nr
-                    find_components_recursive(nr, u.index, components)
-
-        nr = 0
-        components = [-1 for _ in self.graph]
-
-        for v in self.graph:
-            if components[v] == -1:
-                nr += 1
-                components[v] = nr
-                find_components_recursive(nr, v, components)
-        return components
-
-    def get_edge_weight(self, vertex_1: int, vertex_2: int) -> int:
-        for node in self.graph[vertex_1]:
-            if node.index == vertex_2:
-                return node.weight
-        return None
-
-    def find_shortest_paths(self, first_vertex: int) -> Tuple[List[int]]:
-        if first_vertex not in self.get_vertices():
-            return
-
-        weights = [np.inf for _ in self.get_vertices()]
-        previous = [None for _ in self.get_vertices()]
-
-        weights[first_vertex] = 0
-        ready_vertices = []
-
-        while len(ready_vertices) != len(self.graph):
-            temp_weights = [el if i not in ready_vertices else np.inf for i, el in enumerate(weights)]
-            vertex_1 = temp_weights.index(min(temp_weights))
-            ready_vertices.append(vertex_1)
-
-            for node in self.get_neighbors(vertex_1):
-                vertex_2 = node.index
-                new_weight = self.get_edge_weight(vertex_1, vertex_2) + weights[vertex_1]
-
-                if weights[vertex_2] > new_weight:
-                    weights[vertex_2] = new_weight
-                    previous[vertex_2] = vertex_1
-
-        return (weights, previous)
-
-    def calculate_distance_matrix(self) -> np.ndarray:
-        dist_matrix = []
-
-        for vertex in sorted(self.get_vertices()):
-            new_row = self.find_shortest_paths(vertex)[0]
-            dist_matrix.append(new_row)
-
-        return np.array(dist_matrix)
-
-    def find_graph_center(self) -> np.ndarray:
-        dist_matrix = self.calculate_distance_matrix()
-        weights_sum = list(map(lambda weights: sum(weights), dist_matrix))
-        graph_center = np.where(weights_sum == min(weights_sum))[0]
-        return graph_center
-
-    def find_minimax_center(self) -> np.ndarray:
-        dist_matrix = self.calculate_distance_matrix()
-        farthest_vertices = list(map(lambda weights: max(weights), dist_matrix))
-        minimax_center = np.where(farthest_vertices == min(farthest_vertices))[0]
-        return minimax_center
-
 
 class DirectedAdjacencyList(AdjacencyList):
     def __init__(self, graph):
@@ -346,15 +243,15 @@ class DirectedAdjacencyList(AdjacencyList):
 
         self.graph.pop(vertex)
 
-    def is_edge(self, vertex_from: int, vertex_to: int) -> bool:
-        return vertex_to in self.graph[vertex_from]
-
     def get_amount_of_edges(self) -> int:
         return sum(map(lambda neighbors: len(neighbors), self.graph.values()))
 
     def get_transposed(self):
         adj_matrix = self.to_adjacency_matrix().get_transposed()
         return adj_matrix.to_adjacency_list()
+
+    def is_edge(self, vertex_from: int, vertex_to: int) -> bool:
+        return vertex_to in self.graph[vertex_from]
 
     def to_directed_adjacency_matrix(self):
         matrix = adj_matrix.DirectedAdjacencyMatrix.init_with_zeros(self.get_amount_of_vertices())

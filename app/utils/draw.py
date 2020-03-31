@@ -1,4 +1,5 @@
-from structures.adjacency_list import AdjacencyList, AdjacencyListWithWeights
+from structures.adjacency_list import AdjacencyList
+from structures.weighted_adjacency_list import WeightedAdjacencyList
 
 import tkinter as tk
 from math import cos, sin, pi
@@ -60,7 +61,7 @@ def draw_graph(canvas, graph, components=None):
 def draw_graph_with_weights(canvas, graph, center_indices=None):
     canvas.delete("all")
 
-    if not isinstance(graph, AdjacencyListWithWeights):
+    if not isinstance(graph, WeightedAdjacencyList):
         raise TypeError
 
     if center_indices is not None:
