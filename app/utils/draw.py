@@ -146,11 +146,15 @@ def draw_directed_graph(canvas, graph, components=None):
 
         canvas.create_text(x, y, text=str(i))
 
-def draw_directed_graph_with_weights(canvas, graph):
+def draw_directed_graph_with_weights(canvas, graph, components=None):
     canvas.delete("all")
 
     if not isinstance(graph, WeightedAdjacencyList):
         raise TypeError
+
+    if components:
+        rand_color = randomcolor.RandomColor()
+        colors = rand_color.generate(count=max(components.values()), luminosity='dark')
 
     n = len(graph.graph)
     center = (canvas.winfo_width() / 2,
@@ -175,9 +179,17 @@ def draw_directed_graph_with_weights(canvas, graph):
             text_x = min(x, neighbour_x) + abs(x - neighbour_x)/2
             text_y = min(y, neighbour_y) + abs(y - neighbour_y)/2
 
-            canvas.create_line(x, y, neighbour_x, neighbour_y, arrow='last')
+            if components and components[i] == components[neighbour.index]:
+                canvas.create_line(x, y, neighbour_x, neighbour_y, arrow='last', fill=colors[components[i] - 1], width=2)
+            else:
+                canvas.create_line(x, y, neighbour_x, neighbour_y, arrow='last')
+
             canvas.create_rectangle(text_x - padding, text_y - padding, text_x + padding, text_y + padding, outline="SystemButtonFace", fill="SystemButtonFace")
             canvas.create_text(text_x, text_y, text=str(neighbour.weight))
 
-        create_circle(canvas, x, y, r * 0.2)
+        if components:
+            create_circle(canvas, x, y, r * 0.2, colors[components[i] - 1], width=2)
+        else:
+            create_circle(canvas, x, y, r * 0.2)
+            
         canvas.create_text(x, y, text=str(i))
