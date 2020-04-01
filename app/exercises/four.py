@@ -2,6 +2,7 @@ import utils.draw
 import utils.graph_utils
 from exercises.base import BaseTab
 from structures.adjacency_list import AdjacencyList, DirectedAdjacencyList
+from structures.weighted_adjacency_list import WeightedDirectedAdjacencyList
 
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -57,9 +58,20 @@ class ExerciseFourTab(BaseTab):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=3, column=0, columnspan=2, sticky='EW', pady=15)
 
+        ########################### 3 ###########################
+
+        comp_button = ttk.Button(menu_frame, width=30, text='Wylosuj wagi', command=self.add_random_weights)
+        comp_button.grid(row=4, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=5, column=0, columnspan=2, sticky='EW', pady=15)
+
     def draw_graph(self):
         if self.graph is not None:
-            utils.draw.draw_directed_graph(self.canvas, self.graph)
+            if isinstance(self.graph, WeightedDirectedAdjacencyList):
+                utils.draw.draw_directed_graph_with_weights(self.canvas, self.graph)
+            else:
+                utils.draw.draw_directed_graph(self.canvas, self.graph)
 
     def gen_NP(self, event=None):
         try:
@@ -101,4 +113,18 @@ class ExerciseFourTab(BaseTab):
             res_string += f'{comp_nr}: {vertices}\n'
 
         self.result.show_normal(res_string)
-        utils.draw.draw_directed_graph(self.canvas, self.graph, components)
+        utils.draw.draw_directed_graph(self.canvas, graph, components)
+
+    def add_random_weights(self):
+        if self.graph is None:
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
+            return
+
+        if not isinstance(self.graph, WeightedDirectedAdjacencyList):
+            self.graph = WeightedDirectedAdjacencyList.from_directed_adj_list(self.graph, -5, 10)
+        else: 
+            self.graph.set_random_weights(-5, 10)
+
+        self.draw_graph()
+        self.print_graph()
+

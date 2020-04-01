@@ -129,6 +129,9 @@ class AdjacencyList:
                 return ((a, b), edge)
 
         return None
+    
+    def get_graph_items(self):
+        return self.graph.items()
 
     def is_edge(self, vertex_1: int, vertex_2: int) -> bool:
         return vertex_1 in self.graph[vertex_2]
