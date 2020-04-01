@@ -66,12 +66,12 @@ class ExerciseFourTab(BaseTab):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=5, column=0, columnspan=2, sticky='EW', pady=15)
 
-    def draw_graph(self):
+    def draw_graph(self, components=None):
         if self.graph is not None:
             if isinstance(self.graph, WeightedDirectedAdjacencyList):
-                utils.draw.draw_directed_graph_with_weights(self.canvas, self.graph)
+                utils.draw.draw_directed_graph_with_weights(self.canvas, self.graph, components)
             else:
-                utils.draw.draw_directed_graph(self.canvas, self.graph)
+                utils.draw.draw_directed_graph(self.canvas, self.graph, components)
 
     def gen_NP(self, event=None):
         try:
@@ -113,7 +113,7 @@ class ExerciseFourTab(BaseTab):
             res_string += f'{comp_nr}: {vertices}\n'
 
         self.result.show_normal(res_string)
-        utils.draw.draw_directed_graph(self.canvas, graph, components)
+        self.draw_graph(components)
 
     def add_random_weights(self):
         if self.graph is None:
