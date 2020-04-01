@@ -1,15 +1,19 @@
+import structures.adjacency_list as adj_list
 from utils.pythonic import all_equal
 
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import List, Tuple, Dict
 import numpy as np
-
+import random
 
 @dataclass(eq=True, order=True)
 class Node:
     index: int
     weight: int
+
+    def __str__(self):
+        return f'(index = {self.index}, weight = {self.weight})' 
 
 
 class WeightedAdjacencyList:
@@ -116,3 +120,48 @@ class WeightedAdjacencyList:
         farthest_vertices = list(map(lambda weights: max(weights), dist_matrix))
         minimax_center = np.where(farthest_vertices == min(farthest_vertices))[0]
         return minimax_center
+
+
+class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
+    def __init__(self, graph):
+        self.graph = graph
+
+    @classmethod
+    def from_directed_adj_list(cls, directed_adj_list, randomMin: int, randomMax: int):
+        if not isinstance(directed_adj_list, adj_list.DirectedAdjacencyList):
+            raise TypeError
+
+        graph = defaultdict(list)
+
+        for vertex, neighbors in directed_adj_list.get_graph_items():
+            graph[vertex] #creating isolated nodes
+
+            for neighbor in neighbors:
+                graph[vertex].append(Node(neighbor, random.randint(randomMin, randomMax)))
+        
+        return cls(graph)
+
+    def to_directed_adjacency_list(self):
+        adjacency_list = adj_list.DirectedAdjacencyList.init_empty()
+
+        for vertex, neighbors in self.graph.items():
+            neighbor_list = [v.index for v in neighbors]
+            adjacency_list.set_neighbors(vertex, neighbor_list)
+
+        return adjacency_list
+        
+    def add_edge(self, vertex_from: int, vertex_to: int, weight: int):
+        if not any(neigbour.index == vertex_to for neigbour in self.graph[vertex_from]):
+            self.graph[vertex_from].append(Node(vertex_to, weight))
+            return True
+        return False
+
+    def set_random_weights(self, randomMin: int, randomMax: int):
+        for neighbors in self.graph.values():
+            for neighbor in neighbors:
+                neighbor.weight = random.randint(randomMin, randomMax) 
+
+    
+                
+    
+            
