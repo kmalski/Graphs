@@ -118,12 +118,12 @@ class ExerciseThreeTab(BaseTab):
             messagebox.showinfo(title='Wykrzyknik!', message='We wprowadzonym grafie nie ma takiego wierzchołka!')
             return
 
-        weights, previous = self.graph.find_shortest_paths(first_vertex)
+        distance, previous = self.graph.find_shortest_paths(first_vertex)
 
         res_string = f'START: {first_vertex}'
 
         for index in sorted(self.graph.get_vertices()):
-            res_string += f'\nwaga({index}) = {weights[index]} \t ==>  ['
+            res_string += f'\nwaga({index}) = {distance[index]} \t ==>  ['
             trail = [index]
 
             while previous[index] is not None:

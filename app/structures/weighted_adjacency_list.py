@@ -4,6 +4,7 @@ from utils.pythonic import all_equal
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import List, Tuple, Dict
+from copy import deepcopy
 import numpy as np
 import random
 
@@ -54,6 +55,9 @@ class WeightedAdjacencyList:
                 return node.weight
         return None
 
+    def get_graph_items(self) -> Tuple[int, List[Node]]:
+        return self.graph.items()
+
     def is_connected(self):
         components = self.find_components()
         return all_equal(list(filter(lambda x: x != -1, components)))
@@ -85,29 +89,31 @@ class WeightedAdjacencyList:
         return components
 
     def find_shortest_paths(self, first_vertex: int) -> Tuple[List[int]]:
-        if first_vertex not in self.get_vertices():
-            return
+        '''Dijkstra's algorithm'''
 
-        weights = [np.inf for _ in self.get_vertices()]
-        previous = [None for _ in self.get_vertices()]
+        if first_vertex not in self.graph.keys():
+            raise ValueError
 
-        weights[first_vertex] = 0
+        distance = [np.inf for _ in self.graph.keys()]
+        previous = [None for _ in self.graph.keys()]
+
+        distance[first_vertex] = 0
         ready_vertices = []
 
         while len(ready_vertices) != len(self.graph):
-            temp_weights = [el if i not in ready_vertices else np.inf for i, el in enumerate(weights)]
-            vertex_1 = temp_weights.index(min(temp_weights))
+            temp_distance = [el if i not in ready_vertices else np.inf for i, el in enumerate(distance)]
+            vertex_1 = temp_distance.index(min(temp_distance))
             ready_vertices.append(vertex_1)
 
             for node in self.get_neighbors(vertex_1):
                 vertex_2 = node.index
-                new_weight = self.get_edge_weight(vertex_1, vertex_2) + weights[vertex_1]
+                new_distance = self.get_edge_weight(vertex_1, vertex_2) + distance[vertex_1]
 
-                if weights[vertex_2] > new_weight:
-                    weights[vertex_2] = new_weight
+                if distance[vertex_2] > new_distance:
+                    distance[vertex_2] = new_distance
                     previous[vertex_2] = vertex_1
 
-        return (weights, previous)
+        return (distance, previous)
 
     def find_graph_center(self) -> np.ndarray:
         dist_matrix = self.calculate_distance_matrix()
@@ -150,18 +156,95 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
 
         return adjacency_list
         
-    def add_edge(self, vertex_from: int, vertex_to: int, weight: int):
+    def add_edge(self, vertex_from: int, vertex_to: int, weight: int) -> bool:
         if not any(neigbour.index == vertex_to for neigbour in self.graph[vertex_from]):
             self.graph[vertex_from].append(Node(vertex_to, weight))
             return True
+        return False
+    
+    def set_edge_weight(self, vertex_from: int, vertex_to: int, weight: int) -> bool:
+        for neighbour in self.graph[vertex_from]:
+            if neighbour.index == vertex_to:
+                neighbour.weight = weight
+                return True
         return False
 
     def set_random_weights(self, randomMin: int, randomMax: int):
         for neighbors in self.graph.values():
             for neighbor in neighbors:
                 neighbor.weight = random.randint(randomMin, randomMax) 
+    
+    def remove_vertex(self, vertex: int):
+        for vertices in self.graph.values():
+            for node in vertices:
+                if node.index == vertex:
+                    vertices.remove(node)
 
+        self.graph.pop(vertex)
     
-                
-    
+    def has_negative_cycle(self) -> bool:
+        temp_graph = deepcopy(self)
+
+        source = len(self.graph)
+        for vertex in self.graph.keys():
+            temp_graph.add_edge(source, vertex, 0)
+
+        return temp_graph.find_shortest_paths(source) is None
+
+    def find_shortest_paths(self, first_vertex: int) -> List[int]: 
+        '''Bellman-Ford's algorithm'''
+
+        if first_vertex not in self.graph.keys():
+            raise ValueError
+
+        distance = [np.inf for _ in self.graph.keys()]
+        distance[first_vertex] = 0
+
+        for _ in range(len(self.graph.keys()) - 1):
+            for vertex_1, neighbours in self.graph.items():
+                for neighbour in neighbours:
+                    vertex_2 = neighbour.index
+                    new_distance = self.get_edge_weight(vertex_1, vertex_2) + distance[vertex_1]
+
+                    if distance[vertex_2] > new_distance: 
+                        distance[vertex_2] = new_distance 
+
+        for vertex_1, neighbours in self.graph.items():
+            for neighbour in neighbours:
+                vertex_2 = neighbour.index
+                if distance[vertex_2] > self.get_edge_weight(vertex_1, vertex_2) + distance[vertex_1]:
+                    return None
+
+        return distance
+
+    def calculate_distance_matrix(self) -> np.ndarray:   
+        '''Johnson's algorithm'''
+
+        temp_graph = deepcopy(self)
+
+        source = len(self.graph)
+        for vertex in self.graph.keys():
+            temp_graph.add_edge(source, vertex, 0)
+
+        h = temp_graph.find_shortest_paths(source)
+        
+        if not h:
+            return None
+        else:
+            for vertex_1, neighbours in temp_graph.get_graph_items():
+                for neighbour in neighbours:
+                    vertex_2 = neighbour.index
+                    new_weight = temp_graph.get_edge_weight(vertex_1, vertex_2) + h[vertex_1] - h[vertex_2]
+                    temp_graph.set_edge_weight(vertex_1, vertex_2, new_weight)
+            
+            size = len(self.graph)
+            dist_matrix = np.full((size, size), None)
+            temp_graph.remove_vertex(source)
+
+            for vertex_1 in temp_graph.get_vertices():
+                dijkstra_distance, _ = super(WeightedDirectedAdjacencyList, temp_graph).find_shortest_paths(vertex_1)
+                for vertex_2 in temp_graph.get_vertices():
+                    dist_matrix[vertex_1, vertex_2] = dijkstra_distance[vertex_2] - h[vertex_1] + h[vertex_2]
+            
+            return dist_matrix
             

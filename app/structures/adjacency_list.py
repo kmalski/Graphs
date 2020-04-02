@@ -130,7 +130,7 @@ class AdjacencyList:
 
         return None
     
-    def get_graph_items(self):
+    def get_graph_items(self) -> Tuple[int, List[int]]:
         return self.graph.items()
 
     def is_edge(self, vertex_1: int, vertex_2: int) -> bool:
@@ -255,6 +255,9 @@ class DirectedAdjacencyList(AdjacencyList):
 
     def is_edge(self, vertex_from: int, vertex_to: int) -> bool:
         return vertex_to in self.graph[vertex_from]
+
+    def is_strongly_connected(self):
+        return all_equal(self.find_components().values())
 
     def to_directed_adjacency_matrix(self):
         matrix = adj_matrix.DirectedAdjacencyMatrix.init_with_zeros(self.get_amount_of_vertices())
