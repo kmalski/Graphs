@@ -1,10 +1,12 @@
 import utils.draw
 import utils.graph_utils
+from utils.pythonic import all_equal
 from exercises.base import BaseTab
 from structures.adjacency_list import AdjacencyList, DirectedAdjacencyList
 from structures.weighted_adjacency_list import WeightedDirectedAdjacencyList
 
 import tkinter as tk
+import numpy as np
 from tkinter import ttk, messagebox
 from collections import defaultdict
 
@@ -37,8 +39,8 @@ class ExerciseFourTab(BaseTab):
         gen_np_frame.grid(row=0, column=0)
 
         ttk.Label(gen_np_frame, text='N').grid(row=0, column=0)
-        self.verticles_entry = ttk.Entry(gen_np_frame, width=10)
-        self.verticles_entry.grid(row=1, column=0, pady=2, padx=2)
+        self.vertices_entry = ttk.Entry(gen_np_frame, width=10)
+        self.vertices_entry.grid(row=1, column=0, pady=2, padx=2)
 
         ttk.Label(gen_np_frame, text='P').grid(row=0, column=1)
         self.prob_entry = ttk.Entry(gen_np_frame, width=10)
@@ -60,11 +62,34 @@ class ExerciseFourTab(BaseTab):
 
         ########################### 3 ###########################
 
-        comp_button = ttk.Button(menu_frame, width=30, text='Wylosuj wagi', command=self.add_random_weights)
-        comp_button.grid(row=4, column=0, pady=3)
+        gen_n_frame = ttk.Frame(menu_frame)
+        gen_n_frame.grid(row=4, column=0)
+
+        ttk.Label(gen_n_frame, text='N').grid(row=0, column=0)
+        self.vertices_entry2 = ttk.Entry(gen_n_frame, width=10)
+        self.vertices_entry2.grid(row=1, column=0, pady=2, padx=2)
+
+        ttk.Button(gen_n_frame, width=30, text='Wygeneruj silnie spójny graf', command=self.gen_N)\
+            .grid(row=2, column=0, pady=(10, 3))
+
+        #########################################################
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=5, column=0, columnspan=2, sticky='EW', pady=15)
+
+        ttk.Button(menu_frame, width=30, text='Losuj wagi', command=self.set_random_weights)\
+            .grid(row=6, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=7, column=0, columnspan=2, sticky='EW', pady=15)
+
+        ########################### 4 ###########################
+
+        comp_button = ttk.Button(menu_frame, width=30, text='Oblicz macierz odległości', command=self.display_distance_matrix)
+        comp_button.grid(row=8, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=9, column=0, columnspan=2, sticky='EW', pady=15)
 
     def draw_graph(self, components=None):
         if self.graph is not None:
@@ -75,7 +100,7 @@ class ExerciseFourTab(BaseTab):
 
     def gen_NP(self, event=None):
         try:
-            n = int(self.verticles_entry.get())
+            n = int(self.vertices_entry.get())
             p = float(self.prob_entry.get())
         except ValueError:
             messagebox.showinfo(title='Wykrzyknik!', message='Wprowadź prawidłowe dane wejściowe!')
@@ -90,6 +115,41 @@ class ExerciseFourTab(BaseTab):
             return
 
         self.graph = utils.graph_utils.gen_rand_digraph_NP(n, p).to_directed_adjacency_list()
+        self.draw_graph()
+        self.print_graph()
+
+    def gen_N(self):
+        try:
+            n = int(self.vertices_entry2.get())
+        except ValueError:
+            messagebox.showinfo(title='Wykrzyknik!', message='Wprowadź prawidłowe dane wejściowe!')
+            return
+
+        if n < 0:
+            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być ujemna!')
+            return
+        
+        while True:
+            self.graph = utils.graph_utils.gen_rand_digraph_NP(n, 0.3).to_directed_adjacency_list()
+            if self.graph.is_strongly_connected():
+                break
+
+        self.draw_graph()
+        self.print_graph()
+
+    def set_random_weights(self):
+        if self.graph is None:
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
+            return
+
+        if not isinstance(self.graph, WeightedDirectedAdjacencyList):
+            self.graph = WeightedDirectedAdjacencyList.from_directed_adj_list(self.graph, -5, 10)
+        else:
+            self.graph.set_random_weights(-5, 10)
+
+        while self.graph.has_negative_cycle():
+            self.graph.set_random_weights(-5, 10)
+
         self.draw_graph()
         self.print_graph()
 
@@ -115,16 +175,22 @@ class ExerciseFourTab(BaseTab):
         self.result.show_normal(res_string)
         self.draw_graph(components)
 
-    def add_random_weights(self):
+    def display_distance_matrix(self):
         if self.graph is None:
             messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
             return
-
+        
         if not isinstance(self.graph, WeightedDirectedAdjacencyList):
-            self.graph = WeightedDirectedAdjacencyList.from_directed_adj_list(self.graph, -5, 10)
-        else: 
-            self.graph.set_random_weights(-5, 10)
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wylosować wagi!')
+            return
 
-        self.draw_graph()
-        self.print_graph()
+        if not self.graph.to_directed_adjacency_list().is_strongly_connected():
+            messagebox.showinfo(title='Wykrzyknik!', message='Graf musi być silnie spójny!')
+            return
 
+        dist_matrix = self.graph.calculate_distance_matrix()
+
+        # TODO make equal spaces between elements of array (like in print)
+        with np.printoptions(threshold=2500, linewidth=np.inf, formatter={'all': '{0:>3d}'.format}):
+            # print(str(dist_matrix).replace('[', ' ').replace(']', ' '))
+            self.result.show_normal(str(dist_matrix).replace('[', ' ').replace(']', ' '))
