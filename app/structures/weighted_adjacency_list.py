@@ -121,6 +121,35 @@ class WeightedAdjacencyList:
         graph_center = np.where(weights_sum == min(weights_sum))[0]
         return graph_center
 
+    def find_minimal_tree(self):
+
+        visited = [0]
+        temp_graph = deepcopy(self.graph)
+        number_of_nodes = len(self.graph)
+        minimal_tree = WeightedAdjacencyList.init_empty()
+
+        min_visited = 0
+        min_index = np.inf
+        min_weight = np.inf
+
+        while len(visited) < number_of_nodes:
+            for i in visited:
+                for node in temp_graph[i]:
+                    if not any(visited_node == node.index for visited_node in visited):
+                        if node.weight < min_weight:
+                            min_index = node.index
+                            min_weight = node.weight
+                            min_visited = i
+            visited.append(min_index)
+            minimal_tree.add_edge(min_index, min_visited, min_weight)
+            for i, o in enumerate(temp_graph[min_visited]):
+                if o.weight == min_weight:
+                    del temp_graph[min_visited][i]
+                    break
+            min_weight = np.inf
+
+        return minimal_tree
+
     def find_minimax_center(self) -> np.ndarray:
         dist_matrix = self.calculate_distance_matrix()
         farthest_vertices = list(map(lambda weights: max(weights), dist_matrix))

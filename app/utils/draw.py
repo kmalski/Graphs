@@ -58,13 +58,13 @@ def draw_graph(canvas, graph, components=None):
         canvas.create_text(x, y, text=str(i))
 
 
-def draw_graph_with_weights(canvas, graph, center_indices=None):
+def draw_graph_with_weights(canvas, graph, center_indices=None, minimal_tree=None):
     canvas.delete("all")
 
     if not isinstance(graph, WeightedAdjacencyList):
         raise TypeError
 
-    if center_indices is not None:
+    if center_indices is not None or minimal_tree:
         rand_color = randomcolor.RandomColor()
         color = rand_color.generate(luminosity='dark')
 
@@ -90,14 +90,18 @@ def draw_graph_with_weights(canvas, graph, center_indices=None):
             neighbour_x = center[0] + r * sin(neighbour_angle)
             neighbour_y = center[1] - r * cos(neighbour_angle)
 
-            canvas.create_line(x, y, neighbour_x, neighbour_y)
+            if minimal_tree and neighbour in minimal_tree.graph[i]:
+                canvas.create_line(x, y, neighbour_x, neighbour_y, fill=color, width=2)
+            else:
+               canvas.create_line(x, y, neighbour_x, neighbour_y)
+
             text_x = min(x, neighbour_x) + abs(x - neighbour_x)/2
             text_y = min(y, neighbour_y) + abs(y - neighbour_y)/2
 
             canvas.create_rectangle(text_x - padding, text_y - padding, text_x + padding, text_y + padding, outline="SystemButtonFace", fill="SystemButtonFace")
             canvas.create_text(text_x, text_y, text=str(neighbour.weight))
 
-        if center_indices is not None and i in center_indices:
+        if center_indices is not None and i in center_indices or minimal_tree and minimal_tree.graph[i]:
             create_circle(canvas, x, y, r * 0.2, color, width=3)
         else:
             create_circle(canvas, x, y, r * 0.2)
