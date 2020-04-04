@@ -94,8 +94,8 @@ class ExerciseThreeTab(BaseTab):
             messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków musi być liczbą naturalną!')
             return
 
-        if n < 0:
-            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być ujemna!')
+        if n <= 0:
+            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być ujemna lub równa zero!')
             return
 
         while True:
