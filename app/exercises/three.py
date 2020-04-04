@@ -75,9 +75,17 @@ class ExerciseThreeTab(BaseTab):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=12, column=0, columnspan=2, sticky='EW', pady=15)
 
-    def draw_graph(self, center_indices=None):
+        ########################### 5 ###########################
+
+        prim_button = ttk.Button(menu_frame, width=30, text='Minimalne drzewo rozpinające', command=self.display_minimal_tree)
+        prim_button.grid(row=16, column=0, pady=3)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=17, column=0, columnspan=2, sticky='EW', pady=15)
+
+    def draw_graph(self, center_indices=None, minimal_tree=None):
         if self.graph is not None:
-            utils.draw.draw_graph_with_weights(self.canvas, self.graph, center_indices)
+            utils.draw.draw_graph_with_weights(self.canvas, self.graph, center_indices, minimal_tree)
 
     def generate_graph(self):
         try:
@@ -86,8 +94,8 @@ class ExerciseThreeTab(BaseTab):
             messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków musi być liczbą naturalną!')
             return
 
-        if n < 0:
-            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być ujemna!')
+        if n <= 0:
+            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być ujemna lub równa zero!')
             return
 
         while True:
@@ -166,3 +174,11 @@ class ExerciseThreeTab(BaseTab):
         res_string = ', '.join([str(center) for center in minimax_center.tolist()])
         self.result.show_normal(f'Centrum minimax: {res_string}')
         self.draw_graph(minimax_center)
+
+    def display_minimal_tree(self):
+        if self.graph is None:
+            messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
+            return
+
+        minimal_tree = self.graph.find_minimal_tree()
+        self.draw_graph(minimal_tree=minimal_tree)
