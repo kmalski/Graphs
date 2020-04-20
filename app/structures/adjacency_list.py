@@ -155,7 +155,7 @@ class AdjacencyList:
         if len(visited) == len(self.graph):
             if vertex in self.graph[visited[0]]:
                 visited.append(visited[0])
-            return True
+                return True
 
         for v in self.get_neighbors(vertex):
             if v not in visited:
