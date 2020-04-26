@@ -110,6 +110,7 @@ class ExerciseThreeTab(BaseTab):
 
         self.clear_text()
         self.draw_graph()
+        self.print_graph()
 
     def display_shortest_paths(self):
         if self.graph is None:
