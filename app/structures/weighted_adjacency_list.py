@@ -170,11 +170,11 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
     def __init__(self, graph):
         self.graph = graph
 
-    def is_output_vertex(self, vertex, listToCheck = None):
-        if listToCheck is None:
-            listToCheck = self.graph.keys()
+    def is_output_vertex(self, vertex, list_to_check = None) -> bool:
+        if list_to_check is None:
+            list_to_check = self.graph.keys()
 
-        for i in listToCheck:
+        for i in list_to_check:
             if any(neighbour.index == vertex for neighbour in self.get_neighbors(i)):
                 return True
         return False
@@ -299,16 +299,16 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
         layers = {0: [0]}
         self.add_vertex(0)
 
-        lastIndex = 0
+        last_index = 0
         for layer in range(1, n + 1):
             number_of_vertices = random.randint(2, n)
             for i in range(number_of_vertices):
-                lastIndex += 1
-                self.add_vertex(lastIndex)
-                layers.setdefault(layer, []).append(lastIndex)
+                last_index += 1
+                self.add_vertex(last_index)
+                layers.setdefault(layer, []).append(last_index)
 
-        layers.setdefault(n + 1, []).append(lastIndex + 1)
-        self.add_vertex(lastIndex + 1)
+        layers.setdefault(n + 1, []).append(last_index + 1)
+        self.add_vertex(last_index + 1)
 
         for i in range(n + 1):
             while any(not self.get_neighbors(vertex) for vertex in layers[i]) or any(not self.is_output_vertex(vertex, layers[i]) for vertex in layers[i + 1]):
@@ -330,7 +330,7 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
 
         return layers
 
-    def convert_to_networkX(self):
+    def convert_to_networkX(self) -> nx.DiGraph:
         visualization = nx.DiGraph()
         visualization.add_nodes_from(self.get_vertices())
 

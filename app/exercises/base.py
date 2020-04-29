@@ -55,5 +55,5 @@ class BaseTab(ttk.Frame, ABC):
         self.graph = None
         self.canvas.delete('all')
 
-    def add_text_to_result(self, text):
-        self.result.add_text(text)
+    def append_text(self, text):
+        self.result.append(text)

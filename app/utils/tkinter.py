@@ -118,7 +118,7 @@ class InfoLabel(ttk.Label):
     def clear(self):
         self['text'] = ''
 
-    def add_text(self, text):
+    def append(self, text):
         self['text'] += text
 
 

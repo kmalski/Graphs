@@ -1,10 +1,11 @@
 from exercises.base import BaseTab
 from structures.weighted_adjacency_list import WeightedDirectedAdjacencyList
 
+import networkx as nx
 import tkinter as tk
+
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
-import networkx as nx
 from tkinter import ttk, messagebox
 
 
@@ -57,8 +58,8 @@ class ExerciseFiveTab(BaseTab):
         frame.grid_propagate(False)
 
         figure = Figure(figsize=(5, 4), constrained_layout=True, frameon=False)
-        self.ax = figure.add_subplot(111)
-        self.ax.axis(False)
+        self.axis = figure.add_subplot(111)
+        self.axis.axis(False)
         self.canvas = FigureCanvasTkAgg(figure, master=frame)
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
@@ -86,12 +87,12 @@ class ExerciseFiveTab(BaseTab):
         layers = self.graph.generate_flow_network(n)
 
         self.visualization = self.graph.convert_to_networkX()
-        self.ax.clear()
+        self.axis.clear()
         
         labels = nx.get_edge_attributes(self.visualization,'weight')
         pos=nx.spring_layout(self.visualization)
-        nx.draw_networkx(self.visualization, pos=pos, ax=self.ax)
-        nx.draw_networkx_edge_labels(self.visualization, pos=pos, edge_labels=labels, ax=self.ax)
+        nx.draw_networkx(self.visualization, pos=pos, ax=self.axis)
+        nx.draw_networkx_edge_labels(self.visualization, pos=pos, edge_labels=labels, ax=self.axis)
 
         self.canvas.draw()
         self.print_graph()
@@ -100,5 +101,5 @@ class ExerciseFiveTab(BaseTab):
         for layer, vertices in layers.items():
             layers_string += f'{layer}: {vertices}\n'
 
-        self.add_text_to_result(layers_string)
+        self.append_text(layers_string)
         
