@@ -5,16 +5,17 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import List, Tuple, Dict
 from copy import deepcopy
+import networkx as nx
 import numpy as np
 import random
 
 @dataclass(eq=True, order=True)
 class Node:
     index: int
-    weight: int
+    weight: int = 0
 
     def __str__(self):
-        return f'(index = {self.index}, weight = {self.weight})' 
+        return f'({self.index}, waga = {self.weight})' 
 
 
 class WeightedAdjacencyList:
@@ -40,6 +41,9 @@ class WeightedAdjacencyList:
             return True
         return False
 
+    def add_vertex(self, index: int):
+        self.graph[index]
+
     def has_vertex(self, vertex: int) -> bool:
         return vertex in self.graph.keys()
 
@@ -61,6 +65,11 @@ class WeightedAdjacencyList:
     def is_connected(self):
         components = self.find_components()
         return all_equal(list(filter(lambda x: x != -1, components)))
+
+    def is_edge(self, first_vertex : int, second_vertex : Node) -> bool:
+        if first_vertex in self.graph:
+            return any(neighbour.index == second_vertex for neighbour in self.graph[first_vertex])
+        return False
 
     def calculate_distance_matrix(self) -> np.ndarray:
         dist_matrix = []
@@ -160,6 +169,15 @@ class WeightedAdjacencyList:
 class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
     def __init__(self, graph):
         self.graph = graph
+
+    def is_output_vertex(self, vertex, listToCheck = None):
+        if listToCheck is None:
+            listToCheck = self.graph.keys()
+
+        for i in listToCheck:
+            if any(neighbour.index == vertex for neighbour in self.get_neighbors(i)):
+                return True
+        return False
 
     @classmethod
     def from_directed_adj_list(cls, directed_adj_list, randomMin: int, randomMax: int):
@@ -276,4 +294,48 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
                     dist_matrix[vertex_1, vertex_2] = dijkstra_distance[vertex_2] - h[vertex_1] + h[vertex_2]
             
             return dist_matrix
+
+    def generate_flow_network(self, n: int) -> dict:
+        layers = {0: [0]}
+        self.add_vertex(0)
+
+        lastIndex = 0
+        for layer in range(1, n + 1):
+            number_of_vertices = random.randint(2, n)
+            for i in range(number_of_vertices):
+                lastIndex += 1
+                self.add_vertex(lastIndex)
+                layers.setdefault(layer, []).append(lastIndex)
+
+        layers.setdefault(n + 1, []).append(lastIndex + 1)
+        self.add_vertex(lastIndex + 1)
+
+        for i in range(n + 1):
+            while any(not self.get_neighbors(vertex) for vertex in layers[i]) or any(not self.is_output_vertex(vertex, layers[i]) for vertex in layers[i + 1]):
+                start = random.choice(layers[i])
+                end = random.choice(layers[i + 1])
+                if not self.is_edge(start, end):
+                    self.add_edge(start, end, 0)
+
+        additional_edge_number = 0
+        while additional_edge_number < 2 * n:
+            vertices = list(self.get_vertices())
+            start = random.choice(vertices)
+            end = random.choice(vertices)
+            if start != end and not self.is_edge(start, end) and not self.is_edge(end, start) and end != 0 and start != len(vertices) - 1:
+                self.add_edge(start, end, 0)
+                additional_edge_number += 1
+
+        self.set_random_weights(1, 10)
+
+        return layers
+
+    def convert_to_networkX(self):
+        visualization = nx.DiGraph()
+        visualization.add_nodes_from(self.get_vertices())
+
+        for start_index in self.get_vertices():
+            for end_vertex in self.graph[start_index]:
+                visualization.add_edge(start_index, end_vertex.index, weight=end_vertex.weight)
+        return visualization
             

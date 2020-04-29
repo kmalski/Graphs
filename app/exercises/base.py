@@ -54,3 +54,6 @@ class BaseTab(ttk.Frame, ABC):
     def clear_graph(self):
         self.graph = None
         self.canvas.delete('all')
+
+    def add_text_to_result(self, text):
+        self.result.add_text(text)

@@ -118,6 +118,9 @@ class InfoLabel(ttk.Label):
     def clear(self):
         self['text'] = ''
 
+    def add_text(self, text):
+        self['text'] += text
+
 
 def get_root_size(widget):
     root = widget.winfo_toplevel()
