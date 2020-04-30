@@ -110,9 +110,9 @@ class ExerciseFiveTab(BaseTab):
 
         self.append_text(layers_string)
 
-    def BFS(self, s, t, path, G):
+    def BFS(self, s, t, path, matrix):
 
-        visited = [False for _ in range(len(G))]
+        visited = [False for _ in range(len(matrix))]
         visited[s] = True
 
         Q = cs.deque([])
@@ -122,13 +122,7 @@ class ExerciseFiveTab(BaseTab):
 
             u = Q.popleft()
 
-            # for v in self.graph.get_neighbors(u):
-            #    if visited[v.index] == False:
-            #        visited[v.index] = v.index
-            #        path[v.index] = u
-            #        Q.append(v.index)
-
-            for ind, val in enumerate(G[u]):
+            for ind, val in enumerate(matrix[u]):
                 if visited[ind] == False and val > 0:
                     Q.append(ind)
                     visited[ind] = True
@@ -136,7 +130,8 @@ class ExerciseFiveTab(BaseTab):
 
         return True if visited[t] else False
 
-    def FordFulkenson(self, s=0, t=0):
+    def FordFulkenson(self):
+        s = 0
         t = len(self.graph.get_vertices())-1
 
         matrix = self.graph.convert_to_matrix()
@@ -166,3 +161,7 @@ class ExerciseFiveTab(BaseTab):
 
         # return (abs(maxFlow), path)
         print(abs(maxFlow))
+        text = "\nMaksymalny\nprzepływ\n"
+        text += str(maxFlow)
+        self.append_text(text)
+
