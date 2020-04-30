@@ -3,6 +3,8 @@ from structures.weighted_adjacency_list import WeightedDirectedAdjacencyList
 
 import networkx as nx
 import tkinter as tk
+import collections as cs
+import math
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
@@ -45,6 +47,9 @@ class ExerciseFiveTab(BaseTab):
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=1, column=0, sticky='EW', pady=15)
+
+        ttk.Button(gen_np_frame, text='Wartość maksymalnego przepływu', width=30, command=self.FordFulkenson)\
+            .grid(row=3, column=0, columnspan=2, pady=10)
 
 
     def add_canvas(self, row, column):
@@ -102,4 +107,58 @@ class ExerciseFiveTab(BaseTab):
             layers_string += f'{layer}: {vertices}\n'
 
         self.append_text(layers_string)
+
+
+    def BFS(self,s, t, path,G):
         
+        visited =[False for _ in range(len(G))]
+        visited[s] = True
+
+        Q = cs.deque([])
+        Q.append(s)
+         
+        while Q:
+ 
+            u = Q.popleft()
+         
+            for v in self.graph.get_neighbors(u):
+                if visited[v.index] == False:
+                    visited[v.index] = v.index
+                    path[v.index] = u
+                    Q.append(v.index)
+        
+        return True if visited[t] else False
+    
+    def FordFulkenson(self,s = 0,t = 0):
+        t = len(self.graph.get_vertices())-1
+        
+        matrix = self.graph.convert_to_matrix()
+        licznik = 0
+        print(matrix)
+        path = [-1 for _ in range(len(self.graph.get_vertices()))]
+        maxFlow = 0 
+        while self.BFS(s, t, path,matrix) :
+            
+            pathFlow = math.inf
+            tmp = t
+        
+            while(tmp !=  s):
+                pathFlow = min (pathFlow, matrix[path[tmp]][tmp])
+                tmp = path[tmp]
+                print(path)
+            maxFlow +=  pathFlow
+            v = t
+            print("150 "+str(pathFlow))
+            while(v !=  s):
+                u = path[v]
+                matrix[u][v] -= pathFlow
+                matrix[v][u] += pathFlow
+                v = path[v]
+            print("155")
+            print(matrix)
+            licznik+=1
+            if licznik > 3:
+                exit()
+
+        #return (abs(maxFlow), path)
+        print(abs(maxFlow))
