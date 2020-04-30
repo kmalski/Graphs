@@ -51,12 +51,11 @@ class ExerciseFiveTab(BaseTab):
         ttk.Button(gen_np_frame, text='Wartość maksymalnego przepływu', width=30, command=self.FordFulkenson)\
             .grid(row=3, column=0, columnspan=2, pady=10)
 
-
     def add_canvas(self, row, column):
         class CustomToolbar(NavigationToolbar2Tk):
             # only display the buttons we need
             toolitems = [t for t in NavigationToolbar2Tk.toolitems if
-                 t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
+                         t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
 
         frame = ttk.Frame(self)
         frame.grid(row=row, column=column, sticky='NSWE')
@@ -70,7 +69,7 @@ class ExerciseFiveTab(BaseTab):
 
         self.toolbar = CustomToolbar(self.canvas, frame)
         self.toolbar.update()
-        
+
         self.canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.canvas.draw()
 
@@ -81,11 +80,13 @@ class ExerciseFiveTab(BaseTab):
         try:
             n = int(self.vertices_entry.get())
         except ValueError:
-            messagebox.showinfo(title='Wykrzyknik!', message='Wprowadź prawidłowe dane wejściowe!')
+            messagebox.showinfo(title='Wykrzyknik!',
+                                message='Wprowadź prawidłowe dane wejściowe!')
             return
 
         if n < 2:
-            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być mniejsza niż 2!')
+            messagebox.showinfo(
+                title='Wykrzyknik!', message='Liczba wierzchołków nie może być mniejsza niż 2!')
             return
 
         self.graph = WeightedDirectedAdjacencyList.init_empty()
@@ -93,11 +94,12 @@ class ExerciseFiveTab(BaseTab):
 
         self.visualization = self.graph.convert_to_networkX()
         self.axis.clear()
-        
-        labels = nx.get_edge_attributes(self.visualization,'weight')
-        pos=nx.spring_layout(self.visualization)
+
+        labels = nx.get_edge_attributes(self.visualization, 'weight')
+        pos = nx.spring_layout(self.visualization)
         nx.draw_networkx(self.visualization, pos=pos, ax=self.axis)
-        nx.draw_networkx_edge_labels(self.visualization, pos=pos, edge_labels=labels, ax=self.axis)
+        nx.draw_networkx_edge_labels(
+            self.visualization, pos=pos, edge_labels=labels, ax=self.axis)
 
         self.canvas.draw()
         self.print_graph()
@@ -108,57 +110,59 @@ class ExerciseFiveTab(BaseTab):
 
         self.append_text(layers_string)
 
+    def BFS(self, s, t, path, G):
 
-    def BFS(self,s, t, path,G):
-        
-        visited =[False for _ in range(len(G))]
+        visited = [False for _ in range(len(G))]
         visited[s] = True
 
         Q = cs.deque([])
         Q.append(s)
-         
+
         while Q:
- 
+
             u = Q.popleft()
-         
-            for v in self.graph.get_neighbors(u):
-                if visited[v.index] == False:
-                    visited[v.index] = v.index
-                    path[v.index] = u
-                    Q.append(v.index)
-        
+
+            # for v in self.graph.get_neighbors(u):
+            #    if visited[v.index] == False:
+            #        visited[v.index] = v.index
+            #        path[v.index] = u
+            #        Q.append(v.index)
+
+            for ind, val in enumerate(G[u]):
+                if visited[ind] == False and val > 0:
+                    Q.append(ind)
+                    visited[ind] = True
+                    path[ind] = u
+
         return True if visited[t] else False
-    
-    def FordFulkenson(self,s = 0,t = 0):
+
+    def FordFulkenson(self, s=0, t=0):
         t = len(self.graph.get_vertices())-1
-        
+
         matrix = self.graph.convert_to_matrix()
         licznik = 0
-        print(matrix)
+
         path = [-1 for _ in range(len(self.graph.get_vertices()))]
-        maxFlow = 0 
-        while self.BFS(s, t, path,matrix) :
-            
+        maxFlow = 0
+        while self.BFS(s, t, path, matrix):
+
             pathFlow = math.inf
             tmp = t
-        
-            while(tmp !=  s):
-                pathFlow = min (pathFlow, matrix[path[tmp]][tmp])
+
+            while(tmp != s):
+                pathFlow = min(pathFlow, matrix[path[tmp]][tmp])
                 tmp = path[tmp]
-                print(path)
-            maxFlow +=  pathFlow
+
+            maxFlow += pathFlow
             v = t
-            print("150 "+str(pathFlow))
-            while(v !=  s):
+
+            while(v != s):
                 u = path[v]
                 matrix[u][v] -= pathFlow
                 matrix[v][u] += pathFlow
                 v = path[v]
-            print("155")
-            print(matrix)
-            licznik+=1
-            if licznik > 3:
-                exit()
 
-        #return (abs(maxFlow), path)
+            licznik += 1
+
+        # return (abs(maxFlow), path)
         print(abs(maxFlow))
