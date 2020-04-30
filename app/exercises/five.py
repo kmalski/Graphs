@@ -119,7 +119,6 @@ class ExerciseFiveTab(BaseTab):
         Q.append(s)
 
         while Q:
-
             u = Q.popleft()
 
             for ind, val in enumerate(matrix[u]):
@@ -139,8 +138,8 @@ class ExerciseFiveTab(BaseTab):
 
         path = [-1 for _ in range(len(self.graph.get_vertices()))]
         maxFlow = 0
-        while self.BFS(s, t, path, matrix):
 
+        while self.BFS(s, t, path, matrix):
             pathFlow = math.inf
             tmp = t
 
@@ -159,9 +158,8 @@ class ExerciseFiveTab(BaseTab):
 
             licznik += 1
 
-        # return (abs(maxFlow), path)
         print(abs(maxFlow))
-        text = "\nMaksymalny\nprzepływ\n"
+        text = "\nMaksymalny\nprzepływ:\n"
         text += str(maxFlow)
         self.append_text(text)
 
