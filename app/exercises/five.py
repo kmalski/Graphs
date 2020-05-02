@@ -132,7 +132,7 @@ class ExerciseFiveTab(BaseTab):
     def set_flow_labels(self, flow_matrix):
         weights = nx.get_edge_attributes(self.visualization, 'weight')
         for i, j in weights.keys():
-            weights[(i, j)] = str(flow_matrix[i][j]) + '/' + str(weights[(i, j)])
+            weights[(i, j)] = str(flow_matrix[j][i]) + '/' + str(weights[(i, j)])
 
         nx.draw_networkx_edge_labels(
             self.visualization, pos=self.pos, edge_labels=weights, ax=self.axis)
