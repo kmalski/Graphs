@@ -92,8 +92,7 @@ class ExerciseFiveTab(BaseTab):
             return
 
         if n < 2:
-            messagebox.showinfo(
-                title='Wykrzyknik!', message='Liczba wierzchołków nie może być mniejsza niż 2!')
+            messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być mniejsza niż 2!')
             return
 
         self.graph = WeightedDirectedAdjacencyList.init_empty()
@@ -105,14 +104,13 @@ class ExerciseFiveTab(BaseTab):
         labels = nx.get_edge_attributes(self.visualization, 'weight')
         self.pos = nx.spring_layout(self.visualization)
         nx.draw_networkx(self.visualization, pos=self.pos, ax=self.axis)
-        nx.draw_networkx_edge_labels(
-            self.visualization, pos=self.pos, edge_labels=labels, ax=self.axis)
+        nx.draw_networkx_edge_labels(self.visualization, pos=self.pos, edge_labels=labels, ax=self.axis)
 
         self.canvas.draw()
         self.print_graph()
         self.append_layers_info()
 
-    def BFS(self, source, target, path, matrix):
+    def b_f_s(self, source, target, path, matrix):
 
         visited = [False for _ in range(len(matrix))]
         visited[source] = True
@@ -149,7 +147,7 @@ class ExerciseFiveTab(BaseTab):
         path = [-1 for _ in range(len(self.graph.get_vertices()))]
         max_Flow = 0
 
-        while self.BFS(source, target, path, matrix):
+        while self.b_f_s(source, target, path, matrix):
             path_Flow = math.inf
             tmp = target
 
@@ -170,7 +168,7 @@ class ExerciseFiveTab(BaseTab):
         self.print_graph()
         self.append_layers_info()
 
-        text = "\nMaksymalny przepływ:\n"
+        text = '\nMaksymalny przepływ:\n'
         text += str(max_Flow)
         self.append_text(text)
         self.set_flow_labels(matrix)
