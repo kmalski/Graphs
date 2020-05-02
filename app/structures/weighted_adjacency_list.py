@@ -338,4 +338,13 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
             for end_vertex in self.graph[start_index]:
                 visualization.add_edge(start_index, end_vertex.index, weight=end_vertex.weight)
         return visualization
-            
+
+    
+    def convert_to_adjacency_matrix(self):
+        vertices = list(self.get_vertices())
+        L = [[0 for x in range(len(vertices))] for y in range(len(vertices))]
+
+        for start_index in self.get_vertices():
+            for end_vertex in self.graph[start_index]:
+                L[start_index][end_vertex.index] = end_vertex.weight 
+        return L
