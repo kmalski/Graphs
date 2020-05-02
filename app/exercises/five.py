@@ -147,23 +147,23 @@ class ExerciseFiveTab(BaseTab):
         matrix = self.graph.convert_to_adjacency_matrix()
         
         path = [-1 for _ in range(len(self.graph.get_vertices()))]
-        max_Flow = 0
+        max_flow = 0
 
         while self.b_f_s(source, target, path, matrix):
-            path_Flow = math.inf
+            path_flow = math.inf
             tmp = target
 
-            while(tmp != source):
-                path_Flow = min(path_Flow, matrix[path[tmp]][tmp])
+            while tmp != source:
+                path_flow = min(path_flow, matrix[path[tmp]][tmp])
                 tmp = path[tmp]
 
-            max_Flow += path_Flow
+            max_flow += path_flow
             v = target
 
             while v != source:
                 u = path[v]
-                matrix[u][v] -= path_Flow
-                matrix[v][u] += path_Flow
+                matrix[u][v] -= path_flow
+                matrix[v][u] += path_flow
                 v = path[v]
 
             
@@ -171,7 +171,7 @@ class ExerciseFiveTab(BaseTab):
         self.append_layers_info()
 
         text = '\nMaksymalny przepływ:\n'
-        text += str(max_Flow)
+        text += str(max_flow)
         self.append_text(text)
         self.set_flow_labels(matrix)
 
