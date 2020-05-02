@@ -17,7 +17,7 @@ class ExerciseFiveTab(BaseTab):
 
         self.grid_columnconfigure(0, weight=0)  # menu
         self.grid_columnconfigure(1, weight=0)  # separator
-        self.grid_columnconfigure(2, weight=2)  # text frame
+        self.grid_columnconfigure(2, weight=4)  # text frame
         self.grid_columnconfigure(3, weight=0)  # separator
         self.grid_columnconfigure(4, weight=2)  # canvas
 
@@ -75,6 +75,13 @@ class ExerciseFiveTab(BaseTab):
 
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(0, weight=1)
+    
+    def append_layers_info(self):
+        layers_string = '\nWarstwy:\n'
+        for layer, vertices in self.layers.items():
+            layers_string += f'{layer}: {vertices}\n'
+
+        self.append_text(layers_string)
 
     def generate_network(self):
         try:
@@ -90,7 +97,7 @@ class ExerciseFiveTab(BaseTab):
             return
 
         self.graph = WeightedDirectedAdjacencyList.init_empty()
-        layers = self.graph.generate_flow_network(n)
+        self.layers = self.graph.generate_flow_network(n)
 
         self.visualization = self.graph.convert_to_networkX()
         self.axis.clear()
@@ -103,12 +110,7 @@ class ExerciseFiveTab(BaseTab):
 
         self.canvas.draw()
         self.print_graph()
-
-        layers_string = '\nWarstwy:\n'
-        for layer, vertices in layers.items():
-            layers_string += f'{layer}: {vertices}\n'
-
-        self.append_text(layers_string)
+        self.append_layers_info()
 
     def BFS(self, s, t, path, matrix):
 
@@ -167,8 +169,10 @@ class ExerciseFiveTab(BaseTab):
 
             licznik += 1
 
-        print(abs(maxFlow))
-        text = "\nMaksymalny\nprzepływ:\n"
+        self.print_graph()
+        self.append_layers_info()
+
+        text = "\nMaksymalny przepływ:\n"
         text += str(maxFlow)
         self.append_text(text)
         self.set_flow_labels(matrix)
