@@ -47,8 +47,8 @@ class ExerciseFiveTab(BaseTab):
         
         ########################### 2 ###########################
 
-        ttk.Button(menu_frame, text='Wartość maksymalnego przepływu', width=30, command=self.FordFulkenson)\
-            .grid(row=4, column=0, columnspan=2, pady=10)
+        ttk.Button(menu_frame, text='Wartość maksymalnego przepływu', width=30, command=self.Ford_Fulkenson)\
+            .grid(row=4, column=0, columnspan=2, pady=3)
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=5, column=0, columnspan=2, sticky='EW', pady=15)
@@ -117,15 +117,15 @@ class ExerciseFiveTab(BaseTab):
         visited = [False for _ in range(len(matrix))]
         visited[source] = True
 
-        Q = cs.deque([])
-        Q.append(source)
+        q = cs.deque([])
+        q.append(source)
 
-        while Q:
-            u = Q.popleft()
+        while q:
+            u = q.popleft()
 
             for ind, val in enumerate(matrix[u]):
                 if not visited[ind]  and val > 0:
-                    Q.append(ind)
+                    q.append(ind)
                     visited[ind] = True
                     path[ind] = u
 
@@ -140,7 +140,7 @@ class ExerciseFiveTab(BaseTab):
             self.visualization, pos=self.pos, edge_labels=weights, ax=self.axis)
         self.canvas.draw()
 
-    def FordFulkenson(self):
+    def Ford_Fulkenson(self):
         source = 0
         target = len(self.graph.get_vertices())-1
 
