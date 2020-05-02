@@ -1,4 +1,5 @@
 import structures.adjacency_list as adj_list
+import structures.adjacency_matrix as adj_matrix
 from utils.pythonic import all_equal
 
 from collections import defaultdict
@@ -9,13 +10,14 @@ import networkx as nx
 import numpy as np
 import random
 
+
 @dataclass(eq=True, order=True)
 class Node:
     index: int
     weight: int = 0
 
     def __str__(self):
-        return f'({self.index}, waga = {self.weight})' 
+        return f'({self.index}, waga = {self.weight})'
 
 
 class WeightedAdjacencyList:
@@ -66,7 +68,7 @@ class WeightedAdjacencyList:
         components = self.find_components()
         return all_equal(list(filter(lambda x: x != -1, components)))
 
-    def is_edge(self, first_vertex : int, second_vertex : Node) -> bool:
+    def is_edge(self, first_vertex: int, second_vertex: Node) -> bool:
         if first_vertex in self.graph:
             return any(neighbour.index == second_vertex for neighbour in self.graph[first_vertex])
         return False
@@ -170,15 +172,6 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
     def __init__(self, graph):
         self.graph = graph
 
-    def is_output_vertex(self, vertex, list_to_check = None) -> bool:
-        if list_to_check is None:
-            list_to_check = self.graph.keys()
-
-        for i in list_to_check:
-            if any(neighbour.index == vertex for neighbour in self.get_neighbors(i)):
-                return True
-        return False
-
     @classmethod
     def from_directed_adj_list(cls, directed_adj_list, randomMin: int, randomMax: int):
         if not isinstance(directed_adj_list, adj_list.DirectedAdjacencyList):
@@ -187,11 +180,11 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
         graph = defaultdict(list)
 
         for vertex, neighbors in directed_adj_list.get_graph_items():
-            graph[vertex] #creating isolated nodes
+            graph[vertex]  # creating isolated nodes
 
             for neighbor in neighbors:
                 graph[vertex].append(Node(neighbor, random.randint(randomMin, randomMax)))
-        
+
         return cls(graph)
 
     def to_directed_adjacency_list(self):
@@ -202,13 +195,13 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
             adjacency_list.set_neighbors(vertex, neighbor_list)
 
         return adjacency_list
-        
+
     def add_edge(self, vertex_from: int, vertex_to: int, weight: int) -> bool:
         if not any(neigbour.index == vertex_to for neigbour in self.graph[vertex_from]):
             self.graph[vertex_from].append(Node(vertex_to, weight))
             return True
         return False
-    
+
     def set_edge_weight(self, vertex_from: int, vertex_to: int, weight: int) -> bool:
         for neighbour in self.graph[vertex_from]:
             if neighbour.index == vertex_to:
@@ -219,8 +212,8 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
     def set_random_weights(self, randomMin: int, randomMax: int):
         for neighbors in self.graph.values():
             for neighbor in neighbors:
-                neighbor.weight = random.randint(randomMin, randomMax) 
-    
+                neighbor.weight = random.randint(randomMin, randomMax)
+
     def remove_vertex(self, vertex: int):
         for vertices in self.graph.values():
             for node in vertices:
@@ -228,7 +221,16 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
                     vertices.remove(node)
 
         self.graph.pop(vertex)
-    
+
+    def is_output_vertex(self, vertex, list_to_check=None) -> bool:
+        if list_to_check is None:
+            list_to_check = self.graph.keys()
+
+        for i in list_to_check:
+            if any(neighbour.index == vertex for neighbour in self.get_neighbors(i)):
+                return True
+        return False
+
     def has_negative_cycle(self) -> bool:
         temp_graph = deepcopy(self)
 
@@ -238,7 +240,7 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
 
         return temp_graph.find_shortest_paths(source) is None
 
-    def find_shortest_paths(self, first_vertex: int) -> List[int]: 
+    def find_shortest_paths(self, first_vertex: int) -> List[int]:
         '''Bellman-Ford's algorithm'''
 
         if first_vertex not in self.graph.keys():
@@ -253,8 +255,8 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
                     vertex_2 = neighbour.index
                     new_distance = self.get_edge_weight(vertex_1, vertex_2) + distance[vertex_1]
 
-                    if distance[vertex_2] > new_distance: 
-                        distance[vertex_2] = new_distance 
+                    if distance[vertex_2] > new_distance:
+                        distance[vertex_2] = new_distance
 
         for vertex_1, neighbours in self.graph.items():
             for neighbour in neighbours:
@@ -264,7 +266,7 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
 
         return distance
 
-    def calculate_distance_matrix(self) -> np.ndarray:   
+    def calculate_distance_matrix(self) -> np.ndarray:
         '''Johnson's algorithm'''
 
         temp_graph = deepcopy(self)
@@ -274,7 +276,7 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
             temp_graph.add_edge(source, vertex, 0)
 
         h = temp_graph.find_shortest_paths(source)
-        
+
         if not h:
             return None
         else:
@@ -283,7 +285,7 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
                     vertex_2 = neighbour.index
                     new_weight = temp_graph.get_edge_weight(vertex_1, vertex_2) + h[vertex_1] - h[vertex_2]
                     temp_graph.set_edge_weight(vertex_1, vertex_2, new_weight)
-            
+
             size = len(self.graph)
             dist_matrix = np.full((size, size), None)
             temp_graph.remove_vertex(source)
@@ -292,7 +294,7 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
                 dijkstra_distance, _ = super(WeightedDirectedAdjacencyList, temp_graph).find_shortest_paths(vertex_1)
                 for vertex_2 in temp_graph.get_vertices():
                     dist_matrix[vertex_1, vertex_2] = dijkstra_distance[vertex_2] - h[vertex_1] + h[vertex_2]
-            
+
             return dist_matrix
 
     def generate_flow_network(self, n: int) -> dict:
@@ -330,7 +332,7 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
 
         return layers
 
-    def convert_to_networkX(self) -> nx.DiGraph:
+    def to_networkX(self) -> nx.DiGraph:
         visualization = nx.DiGraph()
         visualization.add_nodes_from(self.get_vertices())
 
@@ -339,12 +341,12 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
                 visualization.add_edge(start_index, end_vertex.index, weight=end_vertex.weight)
         return visualization
 
-    
-    def convert_to_adjacency_matrix(self):
+    def to_matrix(self) -> List[List[int]]:
         vertices = list(self.get_vertices())
-        L = [[0 for x in range(len(vertices))] for y in range(len(vertices))]
+        matrix = [[0 for x in range(len(vertices))] for y in range(len(vertices))]
 
         for start_index in self.get_vertices():
             for end_vertex in self.graph[start_index]:
-                L[start_index][end_vertex.index] = end_vertex.weight 
-        return L
+                matrix[start_index][end_vertex.index] = end_vertex.weight
+
+        return matrix
