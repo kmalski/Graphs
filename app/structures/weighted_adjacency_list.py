@@ -340,7 +340,7 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
         return visualization
 
     
-    def convert_to_matrix(self):
+    def convert_to_adjacency_matrix(self):
         vertices = list(self.get_vertices())
         L = [[0 for x in range(len(vertices))] for y in range(len(vertices))]
 
