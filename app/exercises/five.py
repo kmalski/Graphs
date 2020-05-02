@@ -35,21 +35,23 @@ class ExerciseFiveTab(BaseTab):
 
         ########################### 1 ###########################
 
-        gen_np_frame = ttk.Frame(menu_frame)
-        gen_np_frame.grid(row=0, column=0)
-
-        ttk.Label(gen_np_frame, text='N').grid(row=0, column=0)
-        self.vertices_entry = ttk.Entry(gen_np_frame, width=10)
+        ttk.Label(menu_frame, text='N').grid(row=0, column=0)
+        self.vertices_entry = ttk.Entry(menu_frame, width=10)
         self.vertices_entry.grid(row=1, column=0, pady=2, padx=2)
 
-        ttk.Button(gen_np_frame, text='Generuj losową sieć przepływową', width=30, command=self.generate_network)\
+        ttk.Button(menu_frame, text='Generuj losową sieć przepływową', width=30, command=self.generate_network)\
             .grid(row=2, column=0, columnspan=1, pady=10)
 
         ttk.Separator(menu_frame, orient='horizontal')\
-            .grid(row=1, column=0, sticky='EW', pady=15)
+            .grid(row=3, column=0, sticky='EW', pady=15)
+        
+        ########################### 2 ###########################
 
-        ttk.Button(gen_np_frame, text='Wartość maksymalnego przepływu', width=30, command=self.FordFulkenson)\
-            .grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Button(menu_frame, text='Wartość maksymalnego przepływu', width=30, command=self.FordFulkenson)\
+            .grid(row=4, column=0, columnspan=2, pady=10)
+
+        ttk.Separator(menu_frame, orient='horizontal')\
+            .grid(row=5, column=0, columnspan=2, sticky='EW', pady=15)
 
     def add_canvas(self, row, column):
         class CustomToolbar(NavigationToolbar2Tk):
