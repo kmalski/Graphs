@@ -1,11 +1,10 @@
 from exercises.base import BaseTab
 from structures.weighted_adjacency_list import WeightedDirectedAdjacencyList
 
+import math
 import networkx as nx
 import tkinter as tk
 import collections as cs
-import math
-
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 from tkinter import ttk, messagebox
@@ -44,10 +43,10 @@ class ExerciseFiveTab(BaseTab):
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=3, column=0, sticky='EW', pady=15)
-        
+
         ########################### 2 ###########################
 
-        ttk.Button(menu_frame, text='Wartość maksymalnego przepływu', width=30, command=self.Ford_Fulkenson)\
+        ttk.Button(menu_frame, text='Wartość maksymalnego przepływu', width=30, command=self.ford_fulkenson)\
             .grid(row=4, column=0, columnspan=2, pady=3)
 
         ttk.Separator(menu_frame, orient='horizontal')\
@@ -67,17 +66,16 @@ class ExerciseFiveTab(BaseTab):
         self.axis = figure.add_subplot(111)
         self.axis.axis(False)
         self.canvas = FigureCanvasTkAgg(figure, master=frame)
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.toolbar = CustomToolbar(self.canvas, frame)
         self.toolbar.update()
 
-        self.canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.canvas.draw()
 
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(0, weight=1)
-    
+
     def append_layers_info(self):
         layers_string = '\nWarstwy:\n'
         for layer, vertices in self.layers.items():
@@ -89,8 +87,7 @@ class ExerciseFiveTab(BaseTab):
         try:
             n = int(self.vertices_entry.get())
         except ValueError:
-            messagebox.showinfo(title='Wykrzyknik!',
-                                message='Wprowadź prawidłowe dane wejściowe!')
+            messagebox.showinfo(title='Wykrzyknik!', message='Wprowadź prawidłowe dane wejściowe!')
             return
 
         if n < 2:
@@ -100,7 +97,7 @@ class ExerciseFiveTab(BaseTab):
         self.graph = WeightedDirectedAdjacencyList.init_empty()
         self.layers = self.graph.generate_flow_network(n)
 
-        self.visualization = self.graph.convert_to_networkX()
+        self.visualization = self.graph.to_networkX()
         self.axis.clear()
 
         labels = nx.get_edge_attributes(self.visualization, 'weight')
@@ -112,8 +109,7 @@ class ExerciseFiveTab(BaseTab):
         self.print_graph()
         self.append_layers_info()
 
-    def b_f_s(self, source, target, path, matrix):
-
+    def bfs(self, source, target, path, matrix):
         visited = [False for _ in range(len(matrix))]
         visited[source] = True
 
@@ -124,7 +120,7 @@ class ExerciseFiveTab(BaseTab):
             u = q.popleft()
 
             for ind, val in enumerate(matrix[u]):
-                if not visited[ind]  and val > 0:
+                if not visited[ind] and val > 0:
                     q.append(ind)
                     visited[ind] = True
                     path[ind] = u
@@ -136,20 +132,17 @@ class ExerciseFiveTab(BaseTab):
         for i, j in weights.keys():
             weights[(i, j)] = str(flow_matrix[j][i]) + '/' + str(weights[(i, j)])
 
-        nx.draw_networkx_edge_labels(
-            self.visualization, pos=self.pos, edge_labels=weights, ax=self.axis)
+        nx.draw_networkx_edge_labels(self.visualization, pos=self.pos, edge_labels=weights, ax=self.axis)
         self.canvas.draw()
 
-    def Ford_Fulkenson(self):
+    def ford_fulkenson(self):
         source = 0
-        target = len(self.graph.get_vertices())-1
-
-        matrix = self.graph.convert_to_adjacency_matrix()
-        
+        target = len(self.graph.get_vertices()) - 1
+        matrix = self.graph.to_matrix()
         path = [-1 for _ in range(len(self.graph.get_vertices()))]
         max_flow = 0
 
-        while self.b_f_s(source, target, path, matrix):
+        while self.bfs(source, target, path, matrix):
             path_flow = math.inf
             tmp = target
 
@@ -166,7 +159,6 @@ class ExerciseFiveTab(BaseTab):
                 matrix[v][u] += path_flow
                 v = path[v]
 
-            
         self.print_graph()
         self.append_layers_info()
 
@@ -174,5 +166,3 @@ class ExerciseFiveTab(BaseTab):
         text += str(max_flow)
         self.append_text(text)
         self.set_flow_labels(matrix)
-
-
