@@ -96,10 +96,10 @@ class ExerciseFiveTab(BaseTab):
         self.axis.clear()
 
         labels = nx.get_edge_attributes(self.visualization, 'weight')
-        pos = nx.spring_layout(self.visualization)
-        nx.draw_networkx(self.visualization, pos=pos, ax=self.axis)
+        self.pos = nx.spring_layout(self.visualization)
+        nx.draw_networkx(self.visualization, pos=self.pos, ax=self.axis)
         nx.draw_networkx_edge_labels(
-            self.visualization, pos=pos, edge_labels=labels, ax=self.axis)
+            self.visualization, pos=self.pos, edge_labels=labels, ax=self.axis)
 
         self.canvas.draw()
         self.print_graph()
@@ -128,6 +128,15 @@ class ExerciseFiveTab(BaseTab):
                     path[ind] = u
 
         return True if visited[t] else False
+
+    def set_flow_labels(self, flow_matrix):
+        weights = nx.get_edge_attributes(self.visualization, 'weight')
+        for i, j in weights.keys():
+            weights[(i, j)] = str(flow_matrix[i][j]) + '/' + str(weights[(i, j)])
+
+        nx.draw_networkx_edge_labels(
+            self.visualization, pos=self.pos, edge_labels=weights, ax=self.axis)
+        self.canvas.draw()
 
     def FordFulkenson(self):
         s = 0
@@ -162,4 +171,6 @@ class ExerciseFiveTab(BaseTab):
         text = "\nMaksymalny\nprzepływ:\n"
         text += str(maxFlow)
         self.append_text(text)
+        self.set_flow_labels(matrix)
+
 
