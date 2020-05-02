@@ -103,3 +103,22 @@ class DirectedAdjacencyMatrix(AdjacencyMatrix):
 
     def to_adjacency_list(self):
         return self.to_directed_adjacency_list()
+
+    def iterative_pagerank(self):
+        n = len(self.matrix)
+
+        P = np.zeros((n, n))
+        for i in range(n):
+            for j in range(n):
+                P[i][j] = 0.85 * self.matrix[i][j] / sum(self.matrix[i]) + 0.15 / n
+
+        pagerank = np.full(n, 1/n)
+
+        while True:
+            previous = pagerank.copy()
+            pagerank = pagerank.dot(P)
+
+            if np.linalg.norm(pagerank - previous) < 10**-5:
+                break
+
+        return {index: round(value, 4) for index, value in enumerate(pagerank)}

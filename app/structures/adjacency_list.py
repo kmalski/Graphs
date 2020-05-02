@@ -6,6 +6,7 @@ from collections import defaultdict
 from copy import deepcopy
 from typing import List, Tuple, Dict
 import random
+import networkx as nx
 
 
 class AdjacencyList:
@@ -236,6 +237,15 @@ class DirectedAdjacencyList(AdjacencyList):
     def add_edge(self, vertex_from: int, vertex_to: int):
         self.graph[vertex_from].append(vertex_to)
 
+    def convert_to_networkX(self) -> nx.DiGraph:
+        visualization = nx.DiGraph()
+        visualization.add_nodes_from(self.get_vertices())
+
+        for start_index in self.get_vertices():
+            for end_vertex in self.graph[start_index]:
+                visualization.add_edge(start_index, end_vertex)
+        return visualization
+
     def remove_edge(self, vertex_from: int, vertex_to: int):
         self.graph[vertex_from].remove(vertex_to)
 
@@ -245,6 +255,13 @@ class DirectedAdjacencyList(AdjacencyList):
                 v.remove(vertex)
 
         self.graph.pop(vertex)
+        
+    def generate_pagerank_graph(self, n: int):
+        while any(not self.graph[i] for i in range(n)):
+            start = random.randint(0, n - 1)
+            end = random.randint(0, n - 1)
+            if not self.is_edge(start, end) and start != end:
+                self.add_edge(start, end)
 
     def get_amount_of_edges(self) -> int:
         return sum(map(lambda neighbors: len(neighbors), self.graph.values()))
@@ -317,3 +334,19 @@ class DirectedAdjacencyList(AdjacencyList):
                 find_components_recursive(nr, v, graph_trans, comp)
 
         return comp
+
+    def random_walk_pagerank(self, N) -> dict:
+        visits = [0 for _ in self.graph]
+     
+        current = 0
+
+        for _ in range(N):
+            p = random.random()
+            if p < 0.85:  # go to random neighbour
+                current = random.choice(self.get_neighbors(current))
+                visits[current] += 1
+            else: # teleportation *magic*
+                current = random.randrange(0, self.get_amount_of_vertices())
+                visits[current] += 1
+
+        return {index: count / N for index, count in enumerate(visits)}
