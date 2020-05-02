@@ -112,24 +112,24 @@ class ExerciseFiveTab(BaseTab):
         self.print_graph()
         self.append_layers_info()
 
-    def BFS(self, s, t, path, matrix):
+    def BFS(self, source, target, path, matrix):
 
         visited = [False for _ in range(len(matrix))]
-        visited[s] = True
+        visited[source] = True
 
         Q = cs.deque([])
-        Q.append(s)
+        Q.append(source)
 
         while Q:
             u = Q.popleft()
 
             for ind, val in enumerate(matrix[u]):
-                if visited[ind] == False and val > 0:
+                if not visited[ind]  and val > 0:
                     Q.append(ind)
                     visited[ind] = True
                     path[ind] = u
 
-        return True if visited[t] else False
+        return visited[target]
 
     def set_flow_labels(self, flow_matrix):
         weights = nx.get_edge_attributes(self.visualization, 'weight')
@@ -141,39 +141,37 @@ class ExerciseFiveTab(BaseTab):
         self.canvas.draw()
 
     def FordFulkenson(self):
-        s = 0
-        t = len(self.graph.get_vertices())-1
+        source = 0
+        target = len(self.graph.get_vertices())-1
 
-        matrix = self.graph.convert_to_matrix()
-        licznik = 0
-
+        matrix = self.graph.convert_to_adjacency_matrix()
+        
         path = [-1 for _ in range(len(self.graph.get_vertices()))]
-        maxFlow = 0
+        max_Flow = 0
 
-        while self.BFS(s, t, path, matrix):
-            pathFlow = math.inf
-            tmp = t
+        while self.BFS(source, target, path, matrix):
+            path_Flow = math.inf
+            tmp = target
 
-            while(tmp != s):
-                pathFlow = min(pathFlow, matrix[path[tmp]][tmp])
+            while(tmp != source):
+                path_Flow = min(path_Flow, matrix[path[tmp]][tmp])
                 tmp = path[tmp]
 
-            maxFlow += pathFlow
-            v = t
+            max_Flow += path_Flow
+            v = target
 
-            while(v != s):
+            while v != source:
                 u = path[v]
-                matrix[u][v] -= pathFlow
-                matrix[v][u] += pathFlow
+                matrix[u][v] -= path_Flow
+                matrix[v][u] += path_Flow
                 v = path[v]
 
-            licznik += 1
-
+            
         self.print_graph()
         self.append_layers_info()
 
         text = "\nMaksymalny przepływ:\n"
-        text += str(maxFlow)
+        text += str(max_Flow)
         self.append_text(text)
         self.set_flow_labels(matrix)
 
