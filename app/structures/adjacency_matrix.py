@@ -104,7 +104,7 @@ class DirectedAdjacencyMatrix(AdjacencyMatrix):
     def to_adjacency_list(self):
         return self.to_directed_adjacency_list()
 
-    def iterative_pagerank(self):
+    def iterative_pagerank(self) -> Dict[int, float]:
         n = len(self.matrix)
 
         P = np.zeros((n, n))
