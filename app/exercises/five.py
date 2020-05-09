@@ -5,8 +5,6 @@ import math
 import networkx as nx
 import tkinter as tk
 import collections as cs
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.figure import Figure
 from tkinter import ttk, messagebox
 
 
@@ -26,7 +24,7 @@ class ExerciseFiveTab(BaseTab):
         self.add_vertical_separator(column=1)
         self.add_text_frame(row=0, column=2)
         self.add_vertical_separator(column=3)
-        self.add_canvas(row=0, column=4)
+        self.add_canvas(row=0, column=4, for_networkx=True)
 
     def add_menu(self):
         menu_frame = ttk.Frame(self)
@@ -52,29 +50,6 @@ class ExerciseFiveTab(BaseTab):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=5, column=0, columnspan=2, sticky='EW', pady=15)
 
-    def add_canvas(self, row, column):
-        class CustomToolbar(NavigationToolbar2Tk):
-            # only display the buttons we need
-            toolitems = [t for t in NavigationToolbar2Tk.toolitems if
-                         t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
-
-        frame = ttk.Frame(self)
-        frame.grid(row=row, column=column, sticky='NSWE')
-        frame.grid_propagate(False)
-
-        figure = Figure(figsize=(5, 4), constrained_layout=True, frameon=False)
-        self.axis = figure.add_subplot(111)
-        self.axis.axis(False)
-        self.canvas = FigureCanvasTkAgg(figure, master=frame)
-
-        self.toolbar = CustomToolbar(self.canvas, frame)
-        self.toolbar.update()
-
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.canvas.draw()
-
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_rowconfigure(0, weight=1)
 
     def append_layers_info(self):
         layers_string = '\nWarstwy:\n'

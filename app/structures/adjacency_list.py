@@ -237,7 +237,7 @@ class DirectedAdjacencyList(AdjacencyList):
     def add_edge(self, vertex_from: int, vertex_to: int):
         self.graph[vertex_from].append(vertex_to)
 
-    def convert_to_networkX(self) -> nx.DiGraph:
+    def to_networkX(self) -> nx.DiGraph:
         visualization = nx.DiGraph()
         visualization.add_nodes_from(self.get_vertices())
 
@@ -255,13 +255,6 @@ class DirectedAdjacencyList(AdjacencyList):
                 v.remove(vertex)
 
         self.graph.pop(vertex)
-        
-    def generate_pagerank_graph(self, n: int):
-        while any(not self.graph[i] for i in range(n)):
-            start = random.randint(0, n - 1)
-            end = random.randint(0, n - 1)
-            if not self.is_edge(start, end) and start != end:
-                self.add_edge(start, end)
 
     def get_amount_of_edges(self) -> int:
         return sum(map(lambda neighbors: len(neighbors), self.graph.values()))
@@ -335,7 +328,7 @@ class DirectedAdjacencyList(AdjacencyList):
 
         return comp
 
-    def random_walk_pagerank(self, N) -> dict:
+    def random_walk_pagerank(self, N) -> Dict[int, float]:
         visits = [0 for _ in self.graph]
      
         current = 0

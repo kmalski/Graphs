@@ -1,12 +1,10 @@
 from exercises.base import BaseTab
+from utils.graph_utils import generate_pagerank_graph
 from structures.adjacency_list import DirectedAdjacencyList
 
 import networkx as nx
 import tkinter as tk
 import random
-
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.figure import Figure
 from tkinter import ttk, messagebox
 
 
@@ -26,7 +24,7 @@ class ExerciseSixTab(BaseTab):
         self.add_vertical_separator(column=1)
         self.add_text_frame(row=0, column=2)
         self.add_vertical_separator(column=3)
-        self.add_canvas(row=0, column=4)
+        self.add_canvas(row=0, column=4, for_networkx=True)
 
     def add_menu(self):
         menu_frame = ttk.Frame(self)
@@ -60,51 +58,20 @@ class ExerciseSixTab(BaseTab):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=8, column=0, columnspan=2, sticky='EW', pady=15)
 
-    def add_canvas(self, row, column):
-        class CustomToolbar(NavigationToolbar2Tk):
-            # only display the buttons we need
-            toolitems = [t for t in NavigationToolbar2Tk.toolitems if
-                         t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
-
-        frame = ttk.Frame(self)
-        frame.grid(row=row, column=column, sticky='NSWE')
-        frame.grid_propagate(False)
-
-        figure = Figure(figsize=(5, 4), constrained_layout=True, frameon=False)
-        self.axis = figure.add_subplot(111)
-        self.axis.axis(False)
-        self.canvas = FigureCanvasTkAgg(figure, master=frame)
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
-        self.toolbar = CustomToolbar(self.canvas, frame)
-        self.toolbar.update()
-
-        self.canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.canvas.draw()
-
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_rowconfigure(0, weight=1)
-    
-    def print_graph(self):
-        if self.graph is not None:
-            self.result.show_normal(str(self.graph))
-
     def generate_graph(self):
         try:
             n = int(self.vertices_entry.get())
         except ValueError:
-            messagebox.showinfo(title='Wykrzyknik!',
-                                message='Wprowadź prawidłowe dane wejściowe!')
+            messagebox.showinfo(title='Wykrzyknik!', message='Wprowadź prawidłowe dane wejściowe!')
             return
 
         if n < 2:
             messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być mniejsza niż 2!')
             return
 
-        self.graph = DirectedAdjacencyList.init_empty()
-        self.graph.generate_pagerank_graph(n)
+        self.graph = generate_pagerank_graph(n)
 
-        self.visualization = self.graph.convert_to_networkX()
+        self.visualization = self.graph.to_networkX()
         self.axis.clear()
 
         self.pos = nx.spring_layout(self.visualization)
