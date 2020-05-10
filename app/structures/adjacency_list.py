@@ -237,15 +237,6 @@ class DirectedAdjacencyList(AdjacencyList):
     def add_edge(self, vertex_from: int, vertex_to: int):
         self.graph[vertex_from].append(vertex_to)
 
-    def to_networkX(self) -> nx.DiGraph:
-        visualization = nx.DiGraph()
-        visualization.add_nodes_from(self.get_vertices())
-
-        for start_index in self.get_vertices():
-            for end_vertex in self.graph[start_index]:
-                visualization.add_edge(start_index, end_vertex)
-        return visualization
-
     def remove_edge(self, vertex_from: int, vertex_to: int):
         self.graph[vertex_from].remove(vertex_to)
 
@@ -280,6 +271,15 @@ class DirectedAdjacencyList(AdjacencyList):
 
     def to_adjacency_matrix(self):
         return self.to_directed_adjacency_matrix()
+
+    def to_networkX(self) -> nx.DiGraph:
+        visualization = nx.DiGraph()
+        visualization.add_nodes_from(self.get_vertices())
+
+        for start_index in self.get_vertices():
+            for end_vertex in self.graph[start_index]:
+                visualization.add_edge(start_index, end_vertex)
+        return visualization
 
     def find_components(self) -> Dict[int, List]:
 

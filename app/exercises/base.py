@@ -32,12 +32,12 @@ class BaseTab(ttk.Frame, ABC):
         frame.bind_vertical_scroll('<MouseWheel>', self)
         frame.bind_horizontal_scroll('<MouseWheel>', frame.scrollbar_x)
 
-    def add_canvas(self, row, column, for_networkx=False):
+    def add_canvas(self, row, column, for_networkX=False):
         frame = ttk.Frame(self)
         frame.grid(row=row, column=column, sticky='NSWE')
         frame.grid_propagate(False)
 
-        if not for_networkx:
+        if not for_networkX:
             self.canvas = ResizingSquareCanvas(frame, width=1, height=1)
             self.canvas.grid(row=0, column=0)
         else:

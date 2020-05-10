@@ -24,7 +24,7 @@ class ExerciseSixTab(BaseTab):
         self.add_vertical_separator(column=1)
         self.add_text_frame(row=0, column=2)
         self.add_vertical_separator(column=3)
-        self.add_canvas(row=0, column=4, for_networkx=True)
+        self.add_canvas(row=0, column=4, for_networkX=True)
 
     def add_menu(self):
         menu_frame = ttk.Frame(self)
@@ -96,7 +96,6 @@ class ExerciseSixTab(BaseTab):
 
         self.print_graph()
         self.append_pagerank_info(pagerank)
-
 
     def iterative_pagerank(self):
         if self.graph is None:
