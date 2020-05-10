@@ -4,7 +4,7 @@ import structures.weighted_adjacency_list as wgt_adj_list
 
 import numpy as np
 import sys
-
+from typing import Dict
 
 class AdjacencyMatrix:
     def __init__(self, matrix):
@@ -93,6 +93,25 @@ class DirectedAdjacencyMatrix(AdjacencyMatrix):
     def get_transposed(self):
         return self.from_matrix(self.matrix.transpose())
 
+    def iterative_pagerank(self) -> Dict[int, float]:
+        n = len(self.matrix)
+
+        P = np.zeros((n, n))
+        for i in range(n):
+            for j in range(n):
+                P[i][j] = 0.85 * self.matrix[i][j] / sum(self.matrix[i]) + 0.15 / n
+
+        pagerank = np.full(n, 1/n)
+
+        while True:
+            previous = pagerank.copy()
+            pagerank = pagerank.dot(P)
+
+            if np.linalg.norm(pagerank - previous) < 10**-5:
+                break
+
+        return {index: round(value, 4) for index, value in enumerate(pagerank)}
+
     def to_directed_adjacency_list(self):
         adjacency_list = adj_list.DirectedAdjacencyList.init_empty()
 
@@ -103,3 +122,6 @@ class DirectedAdjacencyMatrix(AdjacencyMatrix):
 
     def to_adjacency_list(self):
         return self.to_directed_adjacency_list()
+
+
+        

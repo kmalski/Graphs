@@ -6,6 +6,7 @@ from collections import defaultdict
 from copy import deepcopy
 from typing import List, Tuple, Dict
 import random
+import networkx as nx
 
 
 class AdjacencyList:
@@ -271,6 +272,15 @@ class DirectedAdjacencyList(AdjacencyList):
     def to_adjacency_matrix(self):
         return self.to_directed_adjacency_matrix()
 
+    def to_networkX(self) -> nx.DiGraph:
+        visualization = nx.DiGraph()
+        visualization.add_nodes_from(self.get_vertices())
+
+        for start_index in self.get_vertices():
+            for end_vertex in self.graph[start_index]:
+                visualization.add_edge(start_index, end_vertex)
+        return visualization
+
     def find_components(self) -> Dict[int, List]:
 
         def visit(v, graph, d, f, t):
@@ -317,3 +327,19 @@ class DirectedAdjacencyList(AdjacencyList):
                 find_components_recursive(nr, v, graph_trans, comp)
 
         return comp
+
+    def random_walk_pagerank(self, N) -> Dict[int, float]:
+        visits = [0 for _ in self.graph]
+     
+        current = 0
+
+        for _ in range(N):
+            p = random.random()
+            if p < 0.85:  # go to random neighbour
+                current = random.choice(self.get_neighbors(current))
+                visits[current] += 1
+            else: # teleportation *magic*
+                current = random.randrange(0, self.get_amount_of_vertices())
+                visits[current] += 1
+
+        return {index: count / N for index, count in enumerate(visits)}
