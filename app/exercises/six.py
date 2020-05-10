@@ -6,6 +6,7 @@ from structures.coordinated_adjacency_list import CoordinatedAdjacencyList
 import networkx as nx
 import tkinter as tk
 import random
+from typing import Dict
 from tkinter import ttk, filedialog, messagebox
 
 
@@ -88,14 +89,14 @@ class ExerciseSixTab(BaseTab):
         self.canvas.draw()
         self.print_graph()
 
-    def append_pagerank_info(self, pagerank):
+    def append_pagerank_info(self, pagerank: Dict[int, float]):
         pagerank_string = '\nPageRank:\n'
         for index, pr in sorted(pagerank.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
             pagerank_string += f'{index}: {pr}\n'
 
         self.append_text(pagerank_string)
 
-    def append_cycle_length_info(self, result_string):
+    def append_cycle_length_info(self, result_string: str):
         result_string += str(round(self.graph.calculate_path_length(), 6))
         self.append_text(result_string)
 

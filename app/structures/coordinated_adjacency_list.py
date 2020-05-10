@@ -77,7 +77,7 @@ class CoordinatedAdjacencyList:
                 visualization.add_edge(start_vertex.index, end_vertex.index)
         return visualization
 
-    def calculate_path_length(self):
+    def calculate_path_length(self) -> float:
         length = 0
         previous_vertex = None
         for start_vertex, vertexes in self.graph.items():
