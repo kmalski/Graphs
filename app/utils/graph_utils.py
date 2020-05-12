@@ -112,6 +112,7 @@ def generate_k_regular_graph(verticles_amount: int, degree: int) -> AdjacencyLis
 
     return AdjacencyList.from_graphic_sequence(sequence)
 
+
 def generate_pagerank_graph(n: int) -> DirectedAdjacencyList:
     graph = DirectedAdjacencyList.init_empty()
     while any(not graph.get_neighbors(i) for i in range(n)):
@@ -119,8 +120,9 @@ def generate_pagerank_graph(n: int) -> DirectedAdjacencyList:
         end = random.randint(0, n - 1)
         if not graph.is_edge(start, end) and start != end:
             graph.add_edge(start, end)
-    
+
     return graph
+
 
 def find_biggest_components(components: List[int]) -> Tuple[List[int]]:
     sizes = defaultdict(int)

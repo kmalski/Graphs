@@ -3,6 +3,11 @@ from tkinter import ttk
 
 
 class ResizingSquareCanvas(tk.Canvas):
+    '''
+    Wrapper for a tkinter Canvas which resizes and scales 
+    the drawing inside along with the entire window.
+    '''
+
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 

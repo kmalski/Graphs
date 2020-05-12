@@ -192,5 +192,3 @@ class ExerciseOneTab(BaseTab):
         self.graph = utils.graph_utils.gen_rand_graph_NP(n, p)
         self.draw_graph()
         self.print_graph()
-
-

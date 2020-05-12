@@ -168,7 +168,7 @@ class WeightedAdjacencyList:
         return minimax_center
 
 
-class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
+class DirectedWeightedAdjacencyList(WeightedAdjacencyList):
     def __init__(self, graph):
         self.graph = graph
 
@@ -186,15 +186,6 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
                 graph[vertex].append(Node(neighbor, random.randint(randomMin, randomMax)))
 
         return cls(graph)
-
-    def to_directed_adjacency_list(self):
-        adjacency_list = adj_list.DirectedAdjacencyList.init_empty()
-
-        for vertex, neighbors in self.graph.items():
-            neighbor_list = [v.index for v in neighbors]
-            adjacency_list.set_neighbors(vertex, neighbor_list)
-
-        return adjacency_list
 
     def add_edge(self, vertex_from: int, vertex_to: int, weight: int) -> bool:
         if not any(neigbour.index == vertex_to for neigbour in self.graph[vertex_from]):
@@ -291,7 +282,7 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
             temp_graph.remove_vertex(source)
 
             for vertex_1 in temp_graph.get_vertices():
-                dijkstra_distance, _ = super(WeightedDirectedAdjacencyList, temp_graph).find_shortest_paths(vertex_1)
+                dijkstra_distance, _ = super(DirectedWeightedAdjacencyList, temp_graph).find_shortest_paths(vertex_1)
                 for vertex_2 in temp_graph.get_vertices():
                     dist_matrix[vertex_1, vertex_2] = dijkstra_distance[vertex_2] - h[vertex_1] + h[vertex_2]
 
@@ -331,6 +322,15 @@ class WeightedDirectedAdjacencyList(WeightedAdjacencyList):
         self.set_random_weights(1, 10)
 
         return layers
+
+    def to_directed_adjacency_list(self):
+        adjacency_list = adj_list.DirectedAdjacencyList.init_empty()
+
+        for vertex, neighbors in self.graph.items():
+            neighbor_list = [v.index for v in neighbors]
+            adjacency_list.set_neighbors(vertex, neighbor_list)
+
+        return adjacency_list
 
     def to_networkX(self) -> nx.DiGraph:
         visualization = nx.DiGraph()

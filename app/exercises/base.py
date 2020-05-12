@@ -44,7 +44,7 @@ class BaseTab(ttk.Frame, ABC):
             class CustomToolbar(NavigationToolbar2Tk):
                 # only display the buttons we need
                 toolitems = [t for t in NavigationToolbar2Tk.toolitems if
-                            t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
+                             t[0] in ('Home', 'Pan', 'Zoom', 'Save')]
 
             figure = Figure(figsize=(5, 4), constrained_layout=True, frameon=False)
             self.axis = figure.add_subplot(111)
@@ -63,16 +63,16 @@ class BaseTab(ttk.Frame, ABC):
     def draw_graph(self):
         pass
 
+    def clear_graph(self):
+        self.graph = None
+        self.canvas.delete('all')
+
     def print_graph(self):
         if self.graph is not None:
             self.result.show_normal(str(self.graph))
 
     def clear_text(self):
         self.result.clear()
-
-    def clear_graph(self):
-        self.graph = None
-        self.canvas.delete('all')
 
     def append_text(self, text):
         self.result.append(text)

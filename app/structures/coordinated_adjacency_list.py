@@ -10,6 +10,7 @@ import numpy as np
 import random
 import math
 
+
 @dataclass(eq=True, order=True, frozen=True)
 class Node:
     index: int
@@ -17,7 +18,8 @@ class Node:
     y: int
 
     def __str__(self):
-        return f'({self.index}, x = {self.x}, y = {self.y})' 
+        return f'({self.index}, x = {self.x}, y = {self.y})'
+
 
 class CoordinatedAdjacencyList:
     def __init__(self, graph):

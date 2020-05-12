@@ -37,7 +37,7 @@ class App (tk.Tk):
 
         exercise_4 = ExerciseFourTab(self)
         self.tabs.add(exercise_4, text='Zadanie 4')
-        
+
         exercise_5 = ExerciseFiveTab(self)
         self.tabs.add(exercise_5, text='Zadanie 5')
 

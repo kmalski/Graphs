@@ -1,5 +1,5 @@
 from exercises.base import BaseTab
-from structures.weighted_adjacency_list import WeightedDirectedAdjacencyList
+from structures.weighted_adjacency_list import DirectedWeightedAdjacencyList
 
 import math
 import networkx as nx
@@ -50,7 +50,6 @@ class ExerciseFiveTab(BaseTab):
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=5, column=0, columnspan=2, sticky='EW', pady=15)
 
-
     def append_layers_info(self):
         layers_string = '\nWarstwy:\n'
         for layer, vertices in self.layers.items():
@@ -69,7 +68,7 @@ class ExerciseFiveTab(BaseTab):
             messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być mniejsza niż 2!')
             return
 
-        self.graph = WeightedDirectedAdjacencyList.init_empty()
+        self.graph = DirectedWeightedAdjacencyList.init_empty()
         self.layers = self.graph.generate_flow_network(n)
 
         self.visualization = self.graph.to_networkX()

@@ -3,7 +3,7 @@ import utils.graph_utils
 from utils.pythonic import all_equal
 from exercises.base import BaseTab
 from structures.adjacency_list import AdjacencyList, DirectedAdjacencyList
-from structures.weighted_adjacency_list import WeightedDirectedAdjacencyList
+from structures.weighted_adjacency_list import DirectedWeightedAdjacencyList
 
 import tkinter as tk
 import numpy as np
@@ -93,7 +93,7 @@ class ExerciseFourTab(BaseTab):
 
     def draw_graph(self, components=None):
         if self.graph is not None:
-            if isinstance(self.graph, WeightedDirectedAdjacencyList):
+            if isinstance(self.graph, DirectedWeightedAdjacencyList):
                 utils.draw.draw_directed_graph_with_weights(self.canvas, self.graph, components)
             else:
                 utils.draw.draw_directed_graph(self.canvas, self.graph, components)
@@ -128,7 +128,7 @@ class ExerciseFourTab(BaseTab):
         if n < 0:
             messagebox.showinfo(title='Wykrzyknik!', message='Liczba wierzchołków nie może być ujemna!')
             return
-        
+
         while True:
             self.graph = utils.graph_utils.gen_rand_digraph_NP(n, 0.3).to_directed_adjacency_list()
             if self.graph.is_strongly_connected():
@@ -142,8 +142,8 @@ class ExerciseFourTab(BaseTab):
             messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
             return
 
-        if not isinstance(self.graph, WeightedDirectedAdjacencyList):
-            self.graph = WeightedDirectedAdjacencyList.from_directed_adj_list(self.graph, -5, 10)
+        if not isinstance(self.graph, DirectedWeightedAdjacencyList):
+            self.graph = DirectedWeightedAdjacencyList.from_directed_adj_list(self.graph, -5, 10)
         else:
             self.graph.set_random_weights(-5, 10)
 
@@ -179,8 +179,8 @@ class ExerciseFourTab(BaseTab):
         if self.graph is None:
             messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
             return
-        
-        if not isinstance(self.graph, WeightedDirectedAdjacencyList):
+
+        if not isinstance(self.graph, DirectedWeightedAdjacencyList):
             messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wylosować wagi!')
             return
 

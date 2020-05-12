@@ -93,7 +93,7 @@ def draw_graph_with_weights(canvas, graph, center_indices=None, minimal_tree=Non
             if minimal_tree and neighbour in minimal_tree.graph[i]:
                 canvas.create_line(x, y, neighbour_x, neighbour_y, fill=color, width=2)
             else:
-               canvas.create_line(x, y, neighbour_x, neighbour_y)
+                canvas.create_line(x, y, neighbour_x, neighbour_y)
 
             text_x = min(x, neighbour_x) + abs(x - neighbour_x)/2
             text_y = min(y, neighbour_y) + abs(y - neighbour_y)/2
@@ -150,6 +150,7 @@ def draw_directed_graph(canvas, graph, components=None):
 
         canvas.create_text(x, y, text=str(i))
 
+
 def draw_directed_graph_with_weights(canvas, graph, components=None):
     canvas.delete("all")
 
@@ -179,7 +180,7 @@ def draw_directed_graph_with_weights(canvas, graph, components=None):
             neighbour_angle = diff_angle * neighbour.index
             neighbour_x = center[0] + (r * 0.8) * sin(neighbour_angle)
             neighbour_y = center[1] - (r * 0.8) * cos(neighbour_angle)
-    
+
             text_x = min(x, neighbour_x) + abs(x - neighbour_x)/2
             text_y = min(y, neighbour_y) + abs(y - neighbour_y)/2
 
@@ -195,5 +196,5 @@ def draw_directed_graph_with_weights(canvas, graph, components=None):
             create_circle(canvas, x, y, r * 0.2, colors[components[i] - 1], width=2)
         else:
             create_circle(canvas, x, y, r * 0.2)
-            
+
         canvas.create_text(x, y, text=str(i))

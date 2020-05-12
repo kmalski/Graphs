@@ -45,13 +45,13 @@ class ExerciseSixTab(BaseTab):
 
         ttk.Button(menu_frame, text='Metodą błądzenia przypadkowego', width=30, command=self.random_walk_pagerank)\
             .grid(row=4, column=0, columnspan=1, pady=3)
-    
+
         ttk.Button(menu_frame, text='Metodą iteracyjną', width=30, command=self.iterative_pagerank)\
             .grid(row=5, column=0, columnspan=1, pady=3)
 
         ttk.Separator(menu_frame, orient='horizontal')\
             .grid(row=6, column=0, sticky='EW', pady=15)
-        
+
         ########################### 2 ###########################
 
         ttk.Button(menu_frame, text='Wczytaj plik...', width=30, command=self.load_from_file)\
@@ -104,7 +104,7 @@ class ExerciseSixTab(BaseTab):
         if self.graph is None:
             messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić graf!')
             return
-        
+
         pagerank = self.graph.random_walk_pagerank(10000)
 
         self.print_graph()
@@ -130,7 +130,7 @@ class ExerciseSixTab(BaseTab):
         self.graph = CoordinatedAdjacencyList.from_file(file_path)
         self.visualization = self.graph.to_networkX()
         self.axis.clear()
-        pos=nx.get_node_attributes(self.visualization,'pos')
+        pos = nx.get_node_attributes(self.visualization, 'pos')
         nx.draw(self.visualization, pos=pos, ax=self.axis)
         self.canvas.draw()
         self.clear_text()
@@ -150,11 +150,11 @@ class ExerciseSixTab(BaseTab):
         if self.graph is None or not isinstance(self.graph, CoordinatedAdjacencyList):
             messagebox.showinfo(title='Wykrzyknik!', message='Najpierw musisz wprowadzić poprawny graf!')
             return
-        
+
         self.graph.simulated_annealing(max_it)
         self.visualization = self.graph.to_networkX()
         self.axis.clear()
-        pos=nx.get_node_attributes(self.visualization,'pos')
+        pos = nx.get_node_attributes(self.visualization, 'pos')
         nx.draw(self.visualization, pos=pos, ax=self.axis)
         self.canvas.draw()
         self.append_cycle_length_info('\nCykl wyjściowy:\n')
